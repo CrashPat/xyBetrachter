@@ -15,9 +15,10 @@ public:
 private slots:
 	void n2DwurdeGesschlossen() {close();}
 private:
-	void erstelle_n2D(QList<QLineSeries *> &listLineSeries, QList<QString> &nameListGrafen);
+	void addSeriesSin();
+	void erstelle_n2D();
 	n2D *n2d = NULL;
-	QList<QLineSeries *> n2DlistLineSeries;
-	QList<QString> n2DnameListBox;
+	QList<QLineSeries *> n2DSeries;
+	QList<QString> n2DnameList;
 };
 #endif // MAINWINDOW_H

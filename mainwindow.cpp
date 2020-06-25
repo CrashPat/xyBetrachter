@@ -1,15 +1,24 @@
 #include "mainwindow.h"
+#include <QtCore/QtMath>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
-	for (int n = 0; n < 3; ++n) {
-		QLineSeries* series = new QLineSeries();
-		n2DlistLineSeries.append(series); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
-		n2DnameListBox.append(QString().number(n));
-	}
-	n2DnameListBox << "a" << "b" << "c";
-	erstelle_n2D(n2DlistLineSeries,n2DnameListBox);
+//	for (int n = 0; n < 3; ++n) {
+//		QLineSeries* series = new QLineSeries();
+//		series->append(1, 20+n);
+//		series->append(2, 21+n);
+//		series->append(3, 22+n);
+//		n2DSeries.append(series); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
+//		n2DnameList.append(QString().number(n));
+//	}
+	addSeriesSin();
+	addSeriesSin();
+	addSeriesSin();
+	addSeriesSin();
+	addSeriesSin();
+	addSeriesSin();
+	erstelle_n2D();
 	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
 }
 
@@ -24,9 +33,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	qDebug() << "Bin de Main closeEvent";
 }
 
-void MainWindow::erstelle_n2D(QList<QLineSeries *> &listLineSeries, QList<QString> &nameListGrafen)
+void MainWindow::erstelle_n2D()
 {
-	n2d = new n2D(listLineSeries, nameListGrafen);
+	n2d = new n2D(n2DSeries, n2DnameList);
 	//[n2d]
 
 	//Achsen setzen
@@ -50,4 +59,37 @@ void MainWindow::erstelle_n2D(QList<QLineSeries *> &listLineSeries, QList<QStrin
 	n2d->resize(QSize(1000,500));
 	n2d->move(QPoint(0,0));
 	n2d->show();
+}
+
+void MainWindow::addSeriesSin()
+{
+
+	//	for (int n = 0; n < 3; ++n) {
+	//		QLineSeries* series = new QLineSeries();
+	//		series->append(1, 20+n);
+	//		series->append(2, 21+n);
+	//		series->append(3, 22+n);
+	//		n2DSeries.append(series); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
+	//		n2DnameList.append(QString().number(n));
+	//	}
+
+	QLineSeries *series = new QLineSeries();
+	n2DSeries.append(series);
+	//series->setName(QString("line " + QString::number(n2DSeries.count())));
+	n2DnameList.append(QString("line " + QString::number(n2DSeries.count())));
+
+
+	// Make some sine wave for data
+	QList<QPointF> data;
+	int offset = n2DSeries.count();
+	for (int i = 0; i < 360; i++) {
+		qreal x = offset * 20 + i;
+		data.append(QPointF(i, qSin(qDegreesToRadians(x))));
+	}
+
+	series->append(data);
+//    m_chart->addSeries(series);
+
+//    if (m_series.count() == 1)
+//        m_chart->createDefaultAxes();
 }

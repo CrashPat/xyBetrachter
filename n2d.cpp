@@ -96,9 +96,12 @@ void n2D::addSeries(QLineSeries *series, QString nameGrafen)
 {
 	 m_series.append(series);
 
+	 series->setName(nameGrafen);
+
 	 //series->setName(QString(QString::number(m_series.count())) + ")");
-	 QStringList nrMitKlammer = nameGrafen.split(' ');
-	 series->setName(nrMitKlammer.first());
+
+//	 QStringList nrMitKlammer = nameGrafen.split(' ');
+//	 series->setName(nrMitKlammer.first());
 
 	 m_chart->addSeries(series);
 }
