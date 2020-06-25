@@ -11,11 +11,13 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
+	void closeEvent(QCloseEvent *event);
+private slots:
+	void n2DwurdeGesschlossen() {close();}
 private:
 	void erstelle_n2D();
-
-	n2D *n2d;
-	QList<QLineSeries *> listLineSeries;
-	QList<QString> nameListBox;
+	n2D *n2d = NULL;
+	QList<QLineSeries *> n2DlistLineSeries;
+	QList<QString> n2DnameListBox;
 };
 #endif // MAINWINDOW_H

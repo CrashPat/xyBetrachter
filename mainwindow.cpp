@@ -3,21 +3,27 @@
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
+	//QLineSeries pl, *pls = sg->getMittelwertSerie();
+	//n2DlistLineSeries.append(pls); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
+	n2DnameListBox << "a" << "b" << "c";
 	erstelle_n2D();
+	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
 }
 
 MainWindow::~MainWindow()
 {
+	// siehe closeEvent()
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	delete n2d;
+	qDebug() << "Bin de Main closeEvent";
 }
 
 void MainWindow::erstelle_n2D()
 {
-	QList<QLineSeries *> listLineSeries;
-
-	QList<QString> nameListBox;
-	nameListBox << "a" << "b" << "c";
-
-	n2d = new n2D(listLineSeries, nameListBox);
+	n2d = new n2D(n2DlistLineSeries, n2DnameListBox);
 	//[n2d]
 
 	//Achsen setzen

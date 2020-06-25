@@ -61,7 +61,10 @@ class n2D: public QWidget// QDialog
 {
 	Q_OBJECT
 protected:
-	void closeEvent(QCloseEvent *event) override {m_fensterGeschlossen = true;}
+	void closeEvent(QCloseEvent *event) override {
+		m_fensterGeschlossen = true;
+		emit fensterGeschlossen();
+	}
 public:
 	explicit n2D(QList<QLineSeries *> listLineSeries, QList<QString> nameListGrafen);
 	~n2D();
@@ -84,7 +87,7 @@ public slots:
 signals:
 	void changedMinX(double minX);
 	void changedMaxX(double minX);
-	//void fensterGeschlossen();  // Falls das Fenster n2D selber geschlossen wird, nur hide()!
+	void fensterGeschlossen();
 
 private:
 	static int countInstances;

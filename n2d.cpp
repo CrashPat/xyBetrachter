@@ -66,7 +66,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries, QList<QString> nameListGrafen)
 	connectMarkers();
 
 	// Set the title and show legend
-	setWindowTitle(tr("n 2D"));
+	setWindowTitle(tr("xyBetrachter: n 2D"));
 	//m_chart->setTitle("Legendmarker example (click on legend)");
 	m_chart->legend()->setVisible(true);
 //	m_chart->legend()->setAlignment(Qt::AlignRight);
