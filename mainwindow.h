@@ -12,6 +12,7 @@ public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
 	void closeEvent(QCloseEvent *event);
+	bool getDataOneFile(QString DateiMitPfad);
 private slots:
 	void n2DwurdeGesschlossen() {close();}
 private:

@@ -1,9 +1,11 @@
 #include "mainwindow.h"
 #include <QtCore/QtMath>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
+	// Beispiel für Daten 1
 //	for (int n = 0; n < 3; ++n) {
 //		QLineSeries* series = new QLineSeries();
 //		series->append(1, 20+n);
@@ -12,14 +14,16 @@ MainWindow::MainWindow(QWidget *parent)
 //		n2DSeries.append(series); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
 //		n2DnameList.append(QString().number(n));
 //	}
-	addSeriesSin();
-	addSeriesSin();
-	addSeriesSin();
-	addSeriesSin();
-	addSeriesSin();
-	addSeriesSin();
+
+	//Beispiel für Daten 2
+//	addSeriesSin();
+//	addSeriesSin();
+//	addSeriesSin();
+
+	// --> w.getDataOneFile(args.last()); liest Daten in main ein.
 	erstelle_n2D();
 	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
+	//n2d->setRasterXAchse(10); --> geht noch nicht
 }
 
 MainWindow::~MainWindow()
@@ -29,8 +33,23 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	delete n2d;
+	//delete n2d;
 	qDebug() << "Bin de Main closeEvent";
+}
+
+bool MainWindow::getDataOneFile(QString DateiMitPfad)
+{
+	/// open file
+	DateiMitPfad = "";
+	QFile file(DateiMitPfad);
+	if (!file.open(QIODevice::ReadOnly)){ // öffnen der Datei
+		QMessageBox::warning(this, "Warnung", tr("Folgende Datei konnte nicht geöffnet werden: \"%1\"").arg(DateiMitPfad) );
+		return false;
+	}
+	qDebug() << "Datei" << DateiMitPfad << "wurde geöffnet.";
+
+	file.close();
+	return true;
 }
 
 void MainWindow::erstelle_n2D()

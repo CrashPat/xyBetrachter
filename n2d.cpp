@@ -97,8 +97,8 @@ void n2D::addSeries(QLineSeries *series)
 	 m_series.append(series);
 	 m_chart->addSeries(series);
 
-	 if (m_series.count() == 1)
-		 m_chart->createDefaultAxes();
+//	 if (m_series.count() == 1)
+//		 m_chart->createDefaultAxes();
 }
 
 void n2D::removeSeries()
@@ -150,49 +150,49 @@ void n2D::handleMarkerClicked()
 	 {
 		  case QLegendMarker::LegendMarkerTypeXY:
 		  {
-//![5]
-		  // Toggle visibility of series
-		  marker->series()->setVisible(!marker->series()->isVisible());
-		  marker->series()->attachedAxes().last()->setVisible(marker->series()->isVisible()); // y-Achse Ein/Aus blenden
+	//![5]
+			  // Toggle visibility of series
+			  marker->series()->setVisible(!marker->series()->isVisible());
+			  marker->series()->attachedAxes().last()->setVisible(marker->series()->isVisible()); // y-Achse Ein/Aus blenden
 
-		  // Turn legend marker back to visible, since hiding series also hides the marker
-		  // and we don't want it to happen now.
-		  marker->setVisible(true);
-//![5]
+			  // Turn legend marker back to visible, since hiding series also hides the marker
+			  // and we don't want it to happen now.
+			  marker->setVisible(true);
+	//![5]
 
-//![6]
-		  // Dim the marker, if series is not visible
-		  qreal alpha = 1.0;
+	//![6]
+			  // Dim the marker, if series is not visible
+			  qreal alpha = 1.0;
 
-		  if (!marker->series()->isVisible())
-				alpha = 0.5;
+			  if (!marker->series()->isVisible())
+					alpha = 0.5;
 
-		  QColor color;
-		  QBrush brush = marker->labelBrush();
-		  color = brush.color();
-		  color.setAlphaF(alpha);
-		  brush.setColor(color);
-		  marker->setLabelBrush(brush);
+			  QColor color;
+			  QBrush brush = marker->labelBrush();
+			  color = brush.color();
+			  color.setAlphaF(alpha);
+			  brush.setColor(color);
+			  marker->setLabelBrush(brush);
 
-		  brush = marker->brush();
-		  color = brush.color();
-		  color.setAlphaF(alpha);
-		  brush.setColor(color);
-		  marker->setBrush(brush);
+			  brush = marker->brush();
+			  color = brush.color();
+			  color.setAlphaF(alpha);
+			  brush.setColor(color);
+			  marker->setBrush(brush);
 
-		  QPen pen = marker->pen();
-		  color = pen.color();
-		  color.setAlphaF(alpha);
-		  pen.setColor(color);
-		  marker->setPen(pen);
+			  QPen pen = marker->pen();
+			  color = pen.color();
+			  color.setAlphaF(alpha);
+			  pen.setColor(color);
+			  marker->setPen(pen);
 
-//![6]
-		  break;
+	//![6]
+			  break;
 		  }
 	 default:
 		  {
-		  qDebug() << "Unknown marker type";
-		  break;
+			  qDebug() << "Unknown marker type";
+			  break;
 		  }
 	 }
 }
