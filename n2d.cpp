@@ -15,7 +15,7 @@ QT_CHARTS_USE_NAMESPACE
 
 int n2D::countInstances = 0;
 
-n2D::n2D(QList<QLineSeries *> listLineSeries, QList<QString> nameListGrafen)
+n2D::n2D(QList<QLineSeries *> listLineSeries)
 {
 	qDebug() << "n2D(): Anzahl Instanzen" << ++countInstances;
 
@@ -39,14 +39,14 @@ n2D::n2D(QList<QLineSeries *> listLineSeries, QList<QString> nameListGrafen)
 	//![2]
 
 	// Add few series & Kopie der Werte erstellen
-	int i = 0;
 	foreach (QLineSeries *ls, listLineSeries) {
 		// Serie kopieren da sonst die Original Serie abstürzt
-		QList<QPointF> vpf = ls->points(); // !!! erzeugt eine reale Kopie !!!
+		QList<QPointF> vpf = ls->points(); // !!! erzeugt eine reale Kopie nur der Datenpunkte !!!
 		QLineSeries *series = new QLineSeries();
 		series->append(vpf);
 		series->setUseOpenGL(true);
-		addSeries(series, nameListGrafen.at(i++));
+		series->setName(ls->name());
+		addSeries(series);
 
 		// Dünnen Grafen zeichnen:
 		QPen pen = series->pen();
@@ -92,18 +92,13 @@ n2D::~n2D()
 	qDebug() << "~n2D(): Anzahl Instanzen" << --countInstances;
 }
 
-void n2D::addSeries(QLineSeries *series, QString nameGrafen)
+void n2D::addSeries(QLineSeries *series)
 {
 	 m_series.append(series);
-
-	 series->setName(nameGrafen);
-
-	 //series->setName(QString(QString::number(m_series.count())) + ")");
-
-//	 QStringList nrMitKlammer = nameGrafen.split(' ');
-//	 series->setName(nrMitKlammer.first());
-
 	 m_chart->addSeries(series);
+
+	 if (m_series.count() == 1)
+		 m_chart->createDefaultAxes();
 }
 
 void n2D::removeSeries()

@@ -66,7 +66,7 @@ protected:
 		emit fensterGeschlossen();
 	}
 public:
-	explicit n2D(QList<QLineSeries *> listLineSeries, QList<QString> nameListGrafen);
+	explicit n2D(QList<QLineSeries *> listLineSeries);
 	~n2D();
 	void setMinMaxXAchse(QPointF x);
 	void setRasterXAchse(float rasterX);
@@ -74,7 +74,7 @@ public:
 	bool getFensterGeschlossen() {return m_fensterGeschlossen;}
 
 public slots:
-	void addSeries(QLineSeries *series, QString nameGrafen);
+	void addSeries(QLineSeries *series);
 	void removeSeries();
 	void connectMarkers();
 	void disconnectMarkers();

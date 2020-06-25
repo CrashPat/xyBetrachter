@@ -35,7 +35,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::erstelle_n2D()
 {
-	n2d = new n2D(n2DSeries, n2DnameList);
+	n2d = new n2D(n2DSeries);
 	//[n2d]
 
 	//Achsen setzen
@@ -63,21 +63,9 @@ void MainWindow::erstelle_n2D()
 
 void MainWindow::addSeriesSin()
 {
-
-	//	for (int n = 0; n < 3; ++n) {
-	//		QLineSeries* series = new QLineSeries();
-	//		series->append(1, 20+n);
-	//		series->append(2, 21+n);
-	//		series->append(3, 22+n);
-	//		n2DSeries.append(series); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
-	//		n2DnameList.append(QString().number(n));
-	//	}
-
 	QLineSeries *series = new QLineSeries();
 	n2DSeries.append(series);
-	//series->setName(QString("line " + QString::number(n2DSeries.count())));
-	n2DnameList.append(QString("line " + QString::number(n2DSeries.count())));
-
+	series->setName(QString("line " + QString::number(n2DSeries.count())));
 
 	// Make some sine wave for data
 	QList<QPointF> data;
