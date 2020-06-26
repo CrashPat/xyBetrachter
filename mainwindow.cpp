@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QtCore/QtMath>
 #include <QMessageBox>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -38,8 +39,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	qDebug() << "Bin de Main closeEvent";
 }
 
-#include <QDir>
-
 bool MainWindow::findAndPlotAllFiles()
 {
 	QString pfad("C:/Users/Patrik Roth/Downloads/");
@@ -60,10 +59,22 @@ bool MainWindow::getDataOneFile(QString DateiMitPfad)
 {
 	/// open file
 	QFile file(DateiMitPfad);
+
 	if (!file.open(QIODevice::ReadOnly)){ // öffnen der Datei
 		QMessageBox::warning(this, "Warnung", tr("Folgende Datei konnte nicht geöffnet werden: \"%1\"").arg(DateiMitPfad) );
 		return false;
 	}
+
+	/// Dateiinhalt (filecontent) in DataOneFile
+	std::vector<float> werte;
+	werte.resize(file.size() / sizeof(float));
+	file.read(reinterpret_cast<char *>(&werte[0]), file.size());
+
+	qDebug() << "werte.at(0) =" << werte.at(0); // Werte ausgeben
+//	qDebug() << werte; // Werte ausgeben
+//	qDebug() << "file.size() =" << file.size();
+//	qDebug() << "werte.size() =" << werte.size();
+//	qDebug() << "sizeof(float) =" << sizeof(float);
 	qDebug() << "Datei" << DateiMitPfad << "wurde geöffnet.";
 
 	file.close();
