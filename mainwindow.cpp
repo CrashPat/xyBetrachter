@@ -80,7 +80,9 @@ bool MainWindow::getDataOneFile(QString DateiMitPfad)
 	// Daten bei n2D eintragen:
 	QLineSeries *series = new QLineSeries();
 	n2DSeries.append(series);
-	series->setName(QString("line " + QString::number(n2DSeries.count())));
+//	series->setName(QString("line " + QString::number(n2DSeries.count())));
+	QFileInfo fileInfo(file.fileName()); // um den Pfad zu entfernen
+	series->setName(fileInfo.fileName());
 	QList<QPointF> data;
 	for (int i = 0; i < werte.size(); i++) {
 		data.append(QPointF(i, werte[i]));
