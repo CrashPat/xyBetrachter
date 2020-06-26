@@ -18,10 +18,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 	//Beispiel für Daten 2
 //	addSeriesSin();
-	addSeriesSin();
-	addSeriesSin();
+//	addSeriesSin();
+//	addSeriesSin();
 
-	// --> w.getDataOneFile(args.last()); liest Daten in main ein.
 	findAndPlotAllFiles();
 	erstelle_n2D();
 	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
@@ -69,6 +68,7 @@ bool MainWindow::getDataOneFile(QString DateiMitPfad)
 	std::vector<float> werte;
 	werte.resize(file.size() / sizeof(float));
 	file.read(reinterpret_cast<char *>(&werte[0]), file.size());
+	file.close();
 
 	qDebug() << "werte.at(0) =" << werte.at(0); // Werte ausgeben
 //	qDebug() << werte; // Werte ausgeben
@@ -77,7 +77,16 @@ bool MainWindow::getDataOneFile(QString DateiMitPfad)
 //	qDebug() << "sizeof(float) =" << sizeof(float);
 	qDebug() << "Datei" << DateiMitPfad << "wurde geöffnet.";
 
-	file.close();
+	// Daten bei n2D eintragen:
+	QLineSeries *series = new QLineSeries();
+	n2DSeries.append(series);
+	series->setName(QString("line " + QString::number(n2DSeries.count())));
+	QList<QPointF> data;
+	for (int i = 0; i < werte.size(); i++) {
+		data.append(QPointF(i, werte[i]));
+	}
+	series->append(data);
+
 	return true;
 }
 
@@ -124,8 +133,4 @@ void MainWindow::addSeriesSin()
 	}
 
 	series->append(data);
-//    m_chart->addSeries(series);
-
-//    if (m_series.count() == 1)
-//        m_chart->createDefaultAxes();
 }

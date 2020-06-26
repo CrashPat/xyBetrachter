@@ -33,7 +33,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	m_axisX->setLabelsPosition(QCategoryAxis::AxisLabelsPositionOnValue);
 	//m_axisX->setTickCount(((maxX-minX)/rasterX)+1); // Raster wird gesetzt
 	//m_axisX->setRange(minX, maxX); // Bereich wird gesetzt
-	m_chart->addAxis(m_axisX, Qt::AlignBottom);
+	//m_chart->addAxis(m_axisX, Qt::AlignBottom);
 //	setMinMaxXAchse(QPointF(minX, maxX));
 //	setRasterXAchse(rasterX);
 	//![2]
@@ -57,7 +57,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		QValueAxis *axisY = new QValueAxis;
 		m_axisYList.append(axisY);
 		m_chart->addAxis(axisY, Qt::AlignLeft);
-		series->attachAxis(m_axisX);
+		//series->attachAxis(m_axisX);
 		series->attachAxis(axisY);
 		axisY->setLinePenColor(series->pen().color());
 		axisY->setLabelsColor(series->pen().color());
@@ -97,8 +97,10 @@ void n2D::addSeries(QLineSeries *series)
 	 m_series.append(series);
 	 m_chart->addSeries(series);
 
-//	 if (m_series.count() == 1)
-//		 m_chart->createDefaultAxes();
+	 if (m_series.count() == 1) {
+		 m_chart->createDefaultAxes();
+		 m_chart->axisY()->hide();
+	 }
 }
 
 void n2D::removeSeries()
