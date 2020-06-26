@@ -17,10 +17,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 	//Beispiel für Daten 2
 //	addSeriesSin();
-//	addSeriesSin();
-//	addSeriesSin();
+	addSeriesSin();
+	addSeriesSin();
 
 	// --> w.getDataOneFile(args.last()); liest Daten in main ein.
+	findAndPlotAllFiles();
 	erstelle_n2D();
 	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
 	//n2d->setRasterXAchse(10); --> geht noch nicht
@@ -37,10 +38,27 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	qDebug() << "Bin de Main closeEvent";
 }
 
+#include <QDir>
+
+bool MainWindow::findAndPlotAllFiles()
+{
+	QString pfad("C:/Users/Patrik Roth/Downloads/");
+
+	QDir dir(pfad); // auf Ordner /KohN-1
+	QStringList filters;
+	filters << "*.bin";
+	dir.setNameFilters(filters);
+	foreach (QString dateiName, dir.entryList())
+	{
+		getDataOneFile(pfad + dateiName);
+	}
+
+	return true;
+}
+
 bool MainWindow::getDataOneFile(QString DateiMitPfad)
 {
 	/// open file
-	DateiMitPfad = "";
 	QFile file(DateiMitPfad);
 	if (!file.open(QIODevice::ReadOnly)){ // öffnen der Datei
 		QMessageBox::warning(this, "Warnung", tr("Folgende Datei konnte nicht geöffnet werden: \"%1\"").arg(DateiMitPfad) );
