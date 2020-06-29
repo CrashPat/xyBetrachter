@@ -24,11 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
 //	addSeriesSin();
 //	addSeriesSin();
 
-	findAndPlotAllFiles();
-	erstelle_n2D();
-	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
-	connect(n2d, SIGNAL(reOpenSignal()), this, SLOT(open_n2D()));
-	//n2d->setRasterXAchse(10); --> geht noch nicht
+	open_n2D();
 }
 
 MainWindow::~MainWindow()
@@ -44,6 +40,18 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::open_n2D()
 {
+	if (n2d) {
+		n2d->~n2D();
+		while (!n2DSeries.isEmpty())
+			 delete n2DSeries.takeFirst();
+		qDebug() << "n2d->~n2D();";
+	}
+
+	findAndPlotAllFiles();
+	erstelle_n2D();
+	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
+	connect(n2d, SIGNAL(reOpenSignal()), this, SLOT(open_n2D()));
+	//n2d->setRasterXAchse(10); --> geht noch nicht
 	qDebug() << "MainWindow::open_n2D()";
 }
 

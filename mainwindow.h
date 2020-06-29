@@ -12,13 +12,14 @@ public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
 	void closeEvent(QCloseEvent *event);
-	bool findAndPlotAllFiles();
 private slots:
 	void n2DwurdeGesschlossen() {close();}
+	void open_n2D();
 private:
+	bool findAndPlotAllFiles();
+	void erstelle_n2D();
 	bool getDataOneFile(QString DateiMitPfad);
 	void addSeriesSin();
-	void erstelle_n2D();
 	n2D *n2d = NULL;
 	QList<QLineSeries *> n2DSeries;
 	QList<QString> n2DnameList;
