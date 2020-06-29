@@ -91,6 +91,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(m_reopenSCut, SIGNAL(activated()), this, SLOT(reOpenSlot()));
 	m_closeSCut = new QShortcut(QKeySequence("Q"), this);
 	QObject::connect(m_closeSCut, SIGNAL(activated()), this, SLOT(close()));
+	m_hilfe = new QShortcut(QKeySequence("F1"), this);
+	QObject::connect(m_hilfe, SIGNAL(activated()), this, SLOT(hilfeSlot()));
 }
 
 n2D::~n2D()

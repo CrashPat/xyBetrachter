@@ -4,7 +4,7 @@
 #include <QDir>
 #include <QGuiApplication>
 #include <QScreen>
-#include <QShortcut>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -51,21 +51,20 @@ void MainWindow::open_n2D()
 	erstelle_n2D();
 	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
 	connect(n2d, SIGNAL(reOpenSignal()), this, SLOT(open_n2D()));
+	connect(n2d, SIGNAL(hilfeSignal()), this, SLOT(hilfeDialog()));
 	//n2d->setRasterXAchse(10); --> geht noch nicht
 	qDebug() << "MainWindow::open_n2D()";
 }
 
 bool MainWindow::findAndPlotAllFiles()
 {
-	QString pfad("C:/Users/Patrik Roth/Downloads/");
-
-	QDir dir(pfad); // auf Ordner /KohN-1
+	QDir dir(m_pfad); // auf Ordner /KohN-1
 	QStringList filters;
 	filters << "*.bin";
 	dir.setNameFilters(filters);
 	foreach (QString dateiName, dir.entryList())
 	{
-		getDataOneFile(pfad + dateiName);
+		getDataOneFile(m_pfad + dateiName);
 	}
 
 	return true;
@@ -155,4 +154,15 @@ void MainWindow::addSeriesSin()
 	}
 
 	series->append(data);
+}
+
+void MainWindow::hilfeDialog()
+{
+		QMessageBox::information(n2d, "Hilfe", tr( "ShortCuts: \n"
+												   "- [Q] = Quit: Programm wird beendet.\n"
+												   "- [R] = Reload: Grafen werden gelöscht und die Binärdateien\n"
+												   "	werden neu eingelesen.\n"
+												   "	Pfad der geladenen Binärdateien: \"%1\"\n"
+												   "\n"
+												   "					patrik.roth@gmx.de, 29.06.2020").arg(m_pfad) );
 }

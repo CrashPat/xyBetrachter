@@ -84,12 +84,14 @@ public slots:
 	void xAchsenBereich(qreal minX, qreal maxX);
 	void close() {delete this;}
 	void reOpenSlot() {emit reOpenSignal();}
+	void hilfeSlot() {emit hilfeSignal();}
 
 signals:
 	void changedMinX(double minX);
 	void changedMaxX(double minX);
 	void fensterGeschlossen();
 	void reOpenSignal();
+	void hilfeSignal();
 
 private:
 	static int countInstances;
@@ -107,6 +109,7 @@ private:
 
 	QShortcut *m_reopenSCut;
 	QShortcut *m_closeSCut;
+	QShortcut *m_hilfe;
 };
 
 #endif // N2D_H

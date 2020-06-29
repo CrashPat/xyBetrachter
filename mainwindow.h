@@ -15,6 +15,7 @@ public:
 private slots:
 	void n2DwurdeGesschlossen() {close();}
 	void open_n2D();
+	void hilfeDialog();
 private:
 	bool findAndPlotAllFiles();
 	void erstelle_n2D();
@@ -23,5 +24,6 @@ private:
 	n2D *n2d = NULL;
 	QList<QLineSeries *> n2DSeries;
 	QList<QString> n2DnameList;
+	const QString m_pfad = ("C:/Users/Patrik Roth/Downloads/");
 };
 #endif // MAINWINDOW_H
