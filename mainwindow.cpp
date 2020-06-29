@@ -2,6 +2,8 @@
 #include <QtCore/QtMath>
 #include <QMessageBox>
 #include <QDir>
+#include <QGuiApplication>
+#include <QScreen>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -115,8 +117,12 @@ void MainWindow::erstelle_n2D()
 //	connect(n2d, SIGNAL(changedMaxX(double)), this, SLOT(setSurfGrafAchsen()));
 	//connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(close_n2D())); Verursacht ABSTURZ: Warum?
 
-	n2d->resize(QSize(1000,500));
-	n2d->move(QPoint(0,0));
+	//QSize screenSize = QApplication::desktop()->screen()->size();
+	QSize screenSize = QGuiApplication::screens().first()->availableVirtualSize(); //Desktopsize ohne Taskleiste
+	n2d->setMinimumWidth(screenSize.width() / 4); // Breite
+	n2d->setMinimumHeight(screenSize.height() / 4); // Höhe
+	n2d->resize(QSize(screenSize.width()/1.3, screenSize.height()/1.3)); // Breite, Höhe
+	//n2d->move(QPoint(0,0));
 	n2d->show();
 }
 
