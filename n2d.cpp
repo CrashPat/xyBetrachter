@@ -1,4 +1,4 @@
-#include "n2d.h"
+﻿#include "n2d.h"
 //#include <QtCharts/QChart>
 //#include <QtCharts/QChartView>
 #include <QtWidgets/QPushButton>
@@ -10,6 +10,7 @@
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QXYLegendMarker>
 #include <QtCore/QtMath>
+#include <QShortcut>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -70,7 +71,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	//m_chart->setTitle("Legendmarker example (click on legend)");
 	m_chart->legend()->setVisible(true);
 //	m_chart->legend()->setAlignment(Qt::AlignRight);
-	m_fensterGeschlossen = false;
 
 	m_chartView->setRubberBand(QChartView::HorizontalRubberBand); //
 	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
@@ -85,10 +85,18 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 //	foreach (QLineSeries *s, m_series) {
 //		qDebug() << s->color().rgba();
 //	}
+
+	// Shortcuts:
+	m_reopenSCut = new QShortcut(QKeySequence("R"), this);
+	QObject::connect(m_reopenSCut, SIGNAL(activated()), this, SLOT(reOpenSlot()));
+	m_closeSCut = new QShortcut(QKeySequence("Q"), this);
+	QObject::connect(m_closeSCut, SIGNAL(activated()), this, SLOT(close()));
 }
 
 n2D::~n2D()
 {
+	delete m_reopenSCut;
+	delete m_closeSCut;
 	qDebug() << "~n2D(): Anzahl Instanzen" << --countInstances;
 }
 
@@ -301,3 +309,19 @@ void n2D::xAchsenBereich(qreal minX, qreal maxX)
 		setMinMaxXAchse(QPointF(min.x(), max.x()));
 	qDebug() << QString("n2D::xAchsenBereich(float minX = %1, float maxX = %2)").arg(minX).arg(maxX);
 }
+
+//#ifndef QT_NO_CONTEXTMENU // für rechten Mausklick
+//void n2D::contextMenuEvent(QContextMenuEvent *event)
+//{
+//	QMenu menu(this);
+//	menu.addActions(markierungenMenu->actions()); // Da sie gleich sind
+//	menu.addSeparator();
+//	menu.addAction(openAct);
+//	menu.addAction(deletAct);
+//	menu.setToolTipsVisible(true);
+//	menu.exec(event->globalPos());
+//}
+//#endif // QT_NO_CONTEXTMENU
+
+
+

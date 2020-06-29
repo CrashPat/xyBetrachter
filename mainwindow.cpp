@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QGuiApplication>
 #include <QScreen>
+#include <QShortcut>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -26,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
 	findAndPlotAllFiles();
 	erstelle_n2D();
 	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
+	connect(n2d, SIGNAL(reOpenSignal()), this, SLOT(open_n2D()));
 	//n2d->setRasterXAchse(10); --> geht noch nicht
 }
 
@@ -38,6 +40,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
 	//delete n2d;
 	qDebug() << "Bin de Main closeEvent";
+}
+
+void MainWindow::open_n2D()
+{
+	qDebug() << "MainWindow::open_n2D()";
 }
 
 bool MainWindow::findAndPlotAllFiles()
@@ -115,7 +122,6 @@ void MainWindow::erstelle_n2D()
 //	connect(n2d, SIGNAL(changedMaxX(double)), this, SLOT(setzeRasterVonMinMaxAchse_f()));
 //	connect(n2d, SIGNAL(changedMinX(double)), this, SLOT(setSurfGrafAchsen()));
 //	connect(n2d, SIGNAL(changedMaxX(double)), this, SLOT(setSurfGrafAchsen()));
-	//connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(close_n2D())); Verursacht ABSTURZ: Warum?
 
 	//QSize screenSize = QApplication::desktop()->screen()->size();
 	QSize screenSize = QGuiApplication::screens().first()->availableVirtualSize(); //Desktopsize ohne Taskleiste

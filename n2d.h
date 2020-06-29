@@ -54,6 +54,7 @@
 #include <QtCharts/QCategoryAxis>
 #include <QtCore/QDebug>
 #include <QMouseEvent>
+#include <QAction>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -62,7 +63,6 @@ class n2D: public QWidget// QDialog
 	Q_OBJECT
 protected:
 	void closeEvent(QCloseEvent *event) override {
-		m_fensterGeschlossen = true;
 		emit fensterGeschlossen();
 	}
 public:
@@ -71,7 +71,6 @@ public:
 	void setMinMaxXAchse(QPointF x);
 	void setRasterXAchse(float rasterX);
 	void setMinMaxYAchse(QPointF y, int instanzNr);
-	bool getFensterGeschlossen() {return m_fensterGeschlossen;}
 
 public slots:
 	void addSeries(QLineSeries *series);
@@ -83,11 +82,14 @@ public slots:
 	void handleMarkerClicked();
 
 	void xAchsenBereich(qreal minX, qreal maxX);
+	void close() {delete this;}
+	void reOpenSlot() {emit reOpenSignal();}
 
 signals:
 	void changedMinX(double minX);
 	void changedMaxX(double minX);
 	void fensterGeschlossen();
+	void reOpenSignal();
 
 private:
 	static int countInstances;
@@ -97,11 +99,14 @@ private:
 	QChartView *m_chartView;
 	QGridLayout *m_mainLayout;
 	QGridLayout *m_fontLayout;
+	QAction *reOpenAct;
 
 	//QValueAxis *m_axisX;
 	QCategoryAxis *m_axisX;
 	QList<QValueAxis *> m_axisYList; // für verschiedene Achsenskalierungen
-	bool m_fensterGeschlossen; // wenn auf X von Fenster 'n 2D' gedrück wird
+
+	QShortcut *m_reopenSCut;
+	QShortcut *m_closeSCut;
 };
 
 #endif // N2D_H
