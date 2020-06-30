@@ -78,7 +78,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QShortcut *yLogarithmisch = new QShortcut(QKeySequence("L"), this);
 	QObject::connect(yLogarithmisch, SIGNAL(activated()), this, SLOT(setYLogarithmisch()));
 	QShortcut *delLastSeries = new QShortcut(QKeySequence(Qt::Key_Delete), this);
-	QObject::connect(delLastSeries, SIGNAL(activated()), this, SLOT(removeSeries()));
+	QObject::connect(delLastSeries, SIGNAL(activated()), this, SLOT(removeHiddenSeries()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
 }
 
@@ -138,17 +138,17 @@ void n2D::setYLogarithmisch()
 	qDebug() << "setYLogarithmisch(), m_binLogarithmisch = " << m_binLogarithmisch;
 }
 
-void n2D::removeSeries()
+void n2D::removeHiddenSeries()
 {
-	 // Remove last series from chart
-	 if (m_series.count() > 0) {
-		  QLineSeries *series = m_series.last();
-		  //series->attachedAxes().last()->hide();
-		  delete series->attachedAxes().last();
-		  m_chart->removeSeries(series);
-		  m_series.removeLast();
-		  delete series;
-	 }
+	// Remove last series from chart
+	foreach (QLineSeries *series, m_series) {
+		if (!series->isVisible())
+		{
+			delete series->attachedAxes().last();
+			m_chart->removeSeries(series);
+			m_series.removeOne(series);
+		}
+	}
 }
 
 void n2D::connectMarkers()

@@ -68,13 +68,9 @@ protected:
 public:
 	explicit n2D(QList<QLineSeries *> listLineSeries);
 	~n2D();
-	void setMinMaxXAchse(QPointF x);
-	void setRasterXAchse(float rasterX);
-	void setMinMaxYAchse(QPointF y, int instanzNr);
 
 public slots:
-	void addSeries(QLineSeries *series);
-	void removeSeries();
+	void removeHiddenSeries();
 	void connectMarkers();
 	void disconnectMarkers();
 	void setSchriftgroesse(float fsize);
@@ -95,6 +91,12 @@ signals:
 	void hilfeSignal();
 
 private:
+	void addSeries(QLineSeries *series);
+
+	void setMinMaxXAchse(QPointF x);
+	void setRasterXAchse(float rasterX);
+	void setMinMaxYAchse(QPointF y, int instanzNr);
+
 	static int countInstances;
 	bool m_binLogarithmisch = false;
 	void toggleBit(bool &bit) {bit = !bit;}

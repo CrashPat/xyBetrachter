@@ -170,6 +170,9 @@ void MainWindow::hilfeDialog()
 			   "- [R] = Reload: Grafen werden gelöscht und die Binärdateien\n"
 			   "	werden neu eingelesen.\n"
 			   "	Pfad der geladenen Binärdateien: \"%1\"\n"
+			   "- [L] = y-Achsen werden logarithmisch dargestellt. Bei erneutem betätigen\n"
+			   "	wird wieder linear dargestellt.\n"
+			   "- [Entf] = Die ausgeblendeten Grafen werden gelöscht.\n"
 			   "\n"
-			   "					patrik.roth@gmx.de, 29.06.2020").arg(m_pfad) );
+			   "					patrik.roth@gmx.de, 30.06.2020").arg(m_pfad) );
 }
