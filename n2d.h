@@ -71,6 +71,7 @@ public slots:
 	void connectMarkers();
 	void disconnectMarkers();
 	void setMinMaxXAchse();
+	void setTheme();
 
 	void handleMarkerClicked();
 	void xAchsenBereich(qreal min, qreal max) {qDebug() << "xAchsenBereich(" << min <<"," << max << ")";}
@@ -92,14 +93,12 @@ private:
 //	void setRasterXAchse(float rasterX);
 
 	static int countInstances;
-	bool m_binLogarithmisch = false;
 	void toggleBit(bool &bit) {bit = !bit;}
 	QChart *m_chart;
 	QList<QLineSeries *> m_series;
 
 	QChartView *m_chartView;
 	QGridLayout *m_mainLayout;
-	QGridLayout *m_fontLayout;
 
 	QCategoryAxis *m_axisX;
 };

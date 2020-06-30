@@ -62,6 +62,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	// Shortcuts:
 	QShortcut *hilfe = new QShortcut(QKeySequence("F1"), this);
 	QObject::connect(hilfe, SIGNAL(activated()), this, SLOT(hilfeSlot()));
+	QShortcut *delLastSeries = new QShortcut(QKeySequence(Qt::Key_Delete), this);
+	QObject::connect(delLastSeries, SIGNAL(activated()), this, SLOT(removeHiddenSeries()));
 	QShortcut *closeSCut = new QShortcut(QKeySequence("Q"), this);
 	QObject::connect(closeSCut, SIGNAL(activated()), this, SLOT(close()));
 	QShortcut *reopenSCut = new QShortcut(QKeySequence("R"), this);
@@ -70,9 +72,11 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(yLogarithmisch, SIGNAL(activated()), this, SLOT(setYLogarithmisch()));
 	QShortcut *xMinMax = new QShortcut(QKeySequence("M"), this);
 	QObject::connect(xMinMax, SIGNAL(activated()), this, SLOT(setMinMaxXAchse()));
-	QShortcut *delLastSeries = new QShortcut(QKeySequence(Qt::Key_Delete), this);
-	QObject::connect(delLastSeries, SIGNAL(activated()), this, SLOT(removeHiddenSeries()));
+	QShortcut *theme = new QShortcut(QKeySequence("T"), this);
+	QObject::connect(theme, SIGNAL(activated()), this, SLOT(setTheme()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
+
+	setTheme();
 }
 
 n2D::~n2D()
@@ -130,7 +134,8 @@ void n2D::addAxisYlogarithmisch(QLineSeries *series)
 
 void n2D::setYLogarithmisch()
 {
-	toggleBit(m_binLogarithmisch);
+	static 	bool binLogarithmisch = false;
+	toggleBit(binLogarithmisch);
 	// Remove attachedAxes
 
 	foreach (QLineSeries *series, m_series) {
@@ -139,14 +144,14 @@ void n2D::setYLogarithmisch()
 		//series->detachAxis(series->attachedAxes().last());
 		delete series->attachedAxes().last();
 		//m_chart->removeSeries(series);
-		if (!m_binLogarithmisch)
+		if (!binLogarithmisch)
 			addAxisYlinear(series);
 		else
 			addAxisYlogarithmisch(series);
 		series->setVisible(isVisible);
 		series->attachedAxes().last()->setVisible(isVisible);
 	}
-	qDebug() << "setYLogarithmisch(), m_binLogarithmisch = " << m_binLogarithmisch;
+	qDebug() << "setYLogarithmisch(), binLogarithmisch = " << binLogarithmisch;
 }
 
 void n2D::removeHiddenSeries()
@@ -243,6 +248,26 @@ void n2D::setMinMaxXAchse()
 	QList<QPointF> p = m_series.at(0)->points();
 	m_axisX->setRange(p.first().rx(), p.last().rx()); // geht leider nicht
 	qDebug() << QString("n2D::setMinMaxXAchse(), (%1,%2)").arg(p.first().rx()).arg(p.last().rx());
+}
+
+void n2D::setTheme()
+{
+	static bool binDark = false;
+	toggleBit(binDark);
+	QPalette pal = window()->palette();
+	if (binDark) {
+		m_chartView->chart()->setTheme(QChart::QChart::ChartThemeDark);
+		pal.setColor(QPalette::Window, QRgb(0x121218));
+		pal.setColor(QPalette::WindowText, QRgb(0xd6d6d6));
+	}
+	else
+	{
+		m_chartView->chart()->setTheme(QChart::ChartThemeLight);
+		pal.setColor(QPalette::Window, QRgb(0xf0f0f0));
+		pal.setColor(QPalette::WindowText, QRgb(0x404044));
+	}
+	 window()->setPalette(pal);
+	qDebug() << QString("n2D::setTheme(), binDark = %1").arg(binDark);
 }
 
 
