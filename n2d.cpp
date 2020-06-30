@@ -48,7 +48,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		addSeries(series);
 	}
 
-
 	connectMarkers();
 
 	// Set the title and show legend
@@ -59,12 +58,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 
 	m_chartView->setRubberBand(QChartView::HorizontalRubberBand); //
 	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
-
-
-//	qDebug() << "Serienfarben:";
-//	foreach (QLineSeries *s, m_series) {
-//		qDebug() << s->color().rgba();
-//	}
 
 	// Shortcuts:
 	QShortcut *hilfe = new QShortcut(QKeySequence("F1"), this);
