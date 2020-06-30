@@ -106,10 +106,6 @@ private:
 	//QValueAxis *m_axisX;
 	QCategoryAxis *m_axisX;
 	QList<QValueAxis *> m_axisYList; // für verschiedene Achsenskalierungen
-
-	QShortcut *m_reopenSCut;
-	QShortcut *m_closeSCut;
-	QShortcut *m_hilfe;
 };
 
 #endif // N2D_H

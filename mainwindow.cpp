@@ -9,26 +9,35 @@
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
-	// Beispiel für Daten 1
-//	for (int n = 0; n < 3; ++n) {
-//		QLineSeries* series = new QLineSeries();
-//		series->append(1, 20+n);
-//		series->append(2, 21+n);
-//		series->append(3, 22+n);
-//		n2DSeries.append(series); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
-//		n2DnameList.append(QString().number(n));
-//	}
+	qDebug() << "MainWindow()";
 
+	//#define BEISPIEL_DATEN
+	#ifdef BEISPIEL_DATEN
+	// Beispiel für Daten 1
+	for (int n = 0; n < 3; ++n) {
+		QLineSeries* series = new QLineSeries();
+		series->append(1, 20+n);
+		series->append(2, 21+n);
+		series->append(3, 22+n);
+		n2DSeries.append(series); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
+		n2DnameList.append(QString().number(n));
+	}
+	#endif //BEISPIEL_DATEN
+
+	//#define BEISPIEL_SINUS
+	#ifdef BEISPIEL_SINUS
 	//Beispiel für Daten 2
-//	addSeriesSin();
-//	addSeriesSin();
-//	addSeriesSin();
+	addSeriesSin();
+	addSeriesSin();
+	addSeriesSin();
+	#endif //BEISPIEL_SINUS
 
 	open_n2D();
 }
 
 MainWindow::~MainWindow()
 {
+	qDebug() << "~MainWindow()";
 	// siehe closeEvent()
 }
 
@@ -96,7 +105,6 @@ bool MainWindow::getDataOneFile(QString DateiMitPfad)
 	// Daten bei n2D eintragen:
 	QLineSeries *series = new QLineSeries();
 	n2DSeries.append(series);
-//	series->setName(QString("line " + QString::number(n2DSeries.count())));
 	QFileInfo fileInfo(file.fileName()); // um den Pfad zu entfernen
 	series->setName(fileInfo.fileName());
 	QList<QPointF> data;
@@ -120,15 +128,6 @@ void MainWindow::erstelle_n2D()
 //	foreach (SurfaceGraph *sg, listSurfaceGraph) {
 //		n2d->setMinMaxYAchse(QPointF(sg->get_k().minAkt, sg->get_k().maxAkt), i++);
 //	}
-
-//	n2d->setSchriftgroesse(schriftgroesseSBox->value());
-//	connect(schriftgroesseSBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), n2d, QOverload<float>::of(&n2D::setSchriftgroesse));
-//	connect(n2d, SIGNAL(changedMinX(double)), this->achseMinSBox_f, SLOT(setValue(double)));
-//	connect(n2d, SIGNAL(changedMaxX(double)), this->achseMaxSBox_f, SLOT(setValue(double)));
-//	connect(n2d, SIGNAL(changedMinX(double)), this, SLOT(setzeRasterVonMinMaxAchse_f()));
-//	connect(n2d, SIGNAL(changedMaxX(double)), this, SLOT(setzeRasterVonMinMaxAchse_f()));
-//	connect(n2d, SIGNAL(changedMinX(double)), this, SLOT(setSurfGrafAchsen()));
-//	connect(n2d, SIGNAL(changedMaxX(double)), this, SLOT(setSurfGrafAchsen()));
 
 	//QSize screenSize = QApplication::desktop()->screen()->size();
 	QSize screenSize = QGuiApplication::screens().first()->availableVirtualSize(); //Desktopsize ohne Taskleiste
@@ -160,12 +159,11 @@ void MainWindow::hilfeDialog()
 {
 		QMessageBox::information(n2d, "Hilfe",
 		  tr(  "Grafik:\n"
-			   "- Durch Clicken auf die Legende kann die zugehörige Grafik ein \n"
-			   "	bzw. ausgeblendet werden.\n"
-			   "- Durch Betätigen und halten der linken Maustaste kann in der \n"
-			   "	Grafik der gewünschte Frequenzbereich ausgewählt werden.\n"
-			   "- Durch Betätigen der rechten Maustaste wird der Frequenzbereich\n"
-			   "	vergrößert.\n"
+			   "- Clicken auf die Legende kann die zugehörige Grafik ein bzw. ausgeblendet\n"
+			   "	werden.\n"
+			   "- Betätigen und halten der linken Maustaste kann in der Grafik der \n"
+			   "	gewünschte x-Achsenbereich ausgewählt werden.\n"
+			   "- Betätigen der rechten Maustaste wird der x-Achsenbereich vergrößert.\n"
 			   "\n"
 			   "ShortCuts: \n"
 			   "- [Q] = Quit: Programm wird beendet.\n"

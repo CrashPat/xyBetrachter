@@ -67,18 +67,14 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	connectMarkers();
 
 	// Set the title and show legend
-	setWindowTitle(tr("xyBetrachter: n x 2D             [F1] = Hilfe"));
+	setWindowTitle(tr("xyBetrachter: n x 2D               [F1] = Hilfe"));
 	//m_chart->setTitle("Legendmarker example (click on legend)");
 	m_chart->legend()->setVisible(true);
-//	m_chart->legend()->setAlignment(Qt::AlignRight);
+	//m_chart->legend()->setAlignment(Qt::AlignRight);
 
 	m_chartView->setRubberBand(QChartView::HorizontalRubberBand); //
 	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
 
-
-//	connect(m_chart->series().at(1), SIGNAL(hovered(QPointF, bool)), this, SLOT(tooltip(QPointF, bool)));
-	//connect(m_chartView, &QChartView::mouseReleaseEvent, this, &n2D::plotAreaChanged);
-//	connect(m_chart, SIGNAL(geometryChanged), this, SLOT(plotAreaChanged()));
 	connect(m_axisX, SIGNAL(rangeChanged(qreal, qreal)), this, SLOT(xAchsenBereich(qreal, qreal))); // für HorizontalRubberBand
 
 //	qDebug() << "Serienfarben:";
@@ -87,18 +83,17 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 //	}
 
 	// Shortcuts:
-	m_reopenSCut = new QShortcut(QKeySequence("R"), this);
-	QObject::connect(m_reopenSCut, SIGNAL(activated()), this, SLOT(reOpenSlot()));
-	m_closeSCut = new QShortcut(QKeySequence("Q"), this);
-	QObject::connect(m_closeSCut, SIGNAL(activated()), this, SLOT(close()));
-	m_hilfe = new QShortcut(QKeySequence("F1"), this);
-	QObject::connect(m_hilfe, SIGNAL(activated()), this, SLOT(hilfeSlot()));
+	QShortcut *hilfe = new QShortcut(QKeySequence("F1"), this);
+	QObject::connect(hilfe, SIGNAL(activated()), this, SLOT(hilfeSlot()));
+	QShortcut *closeSCut = new QShortcut(QKeySequence("Q"), this);
+	QObject::connect(closeSCut, SIGNAL(activated()), this, SLOT(close()));
+	QShortcut *reopenSCut = new QShortcut(QKeySequence("R"), this);
+	QObject::connect(reopenSCut, SIGNAL(activated()), this, SLOT(reOpenSlot()));
 }
 
 n2D::~n2D()
 {
-	delete m_reopenSCut;
-	delete m_closeSCut;
+//	delete m_closeSCut; ...
 	qDebug() << "~n2D(): Anzahl Instanzen" << --countInstances;
 }
 
@@ -126,7 +121,6 @@ void n2D::removeSeries()
 
 void n2D::connectMarkers()
 {
-//![1]
 	 // Connect all markers to handler
 	 const auto markers = m_chart->legend()->markers();
 	 for (QLegendMarker *marker : markers) {
@@ -135,30 +129,23 @@ void n2D::connectMarkers()
 									 this, &n2D::handleMarkerClicked);
 		  QObject::connect(marker, &QLegendMarker::clicked, this, &n2D::handleMarkerClicked);
 	 }
-//![1]
 }
 
 void n2D::disconnectMarkers()
 {
-//![2]
 	 const auto markers = m_chart->legend()->markers();
 	 for (QLegendMarker *marker : markers) {
 		  QObject::disconnect(marker, &QLegendMarker::clicked,
 									 this, &n2D::handleMarkerClicked);
 	 }
-//![2]
 }
 
 void n2D::handleMarkerClicked()
 {
-//![3]
 	 QLegendMarker* marker = qobject_cast<QLegendMarker*> (sender());
 	 Q_ASSERT(marker);
-//![3]
 
-//![4]
 	 switch (marker->type())
-//![4]
 	 {
 		  case QLegendMarker::LegendMarkerTypeXY:
 		  {
@@ -197,7 +184,6 @@ void n2D::handleMarkerClicked()
 			  color.setAlphaF(alpha);
 			  pen.setColor(color);
 			  marker->setPen(pen);
-
 	//![6]
 			  break;
 		  }
@@ -242,17 +228,6 @@ void n2D::setRasterXAchse(float rasterX)
 		m_axisX->setLabelsAngle(0); gedreht = false;
 	}
 
-//	if (!jaXAchse & !jaHarmonische) {// xAchse ein-, ausblenden
-//		m_axisX->setLabelsVisible(false);
-//		m_axisX->setLabelsAngle(0);
-//		QFont schriftKleinste; // = m_axisX->labelsFont(); // ...Schriftgröße einlesen
-//		schriftKleinste.setPointSize(1);
-//		m_axisX->setLabelsFont(schriftKleinste);
-//	} else {
-//		m_axisX->setLabelsVisible(true);
-//		m_axisX->setLabelsFont(schrift);
-//	}
-
 //	if (jaXAchse) {
 		if (m_axisX->categoriesLabels().count()!=0) { // Einheit in Hz beim ersten Label setzen
 			QString erstesLabel = m_axisX->categoriesLabels().at(0);
@@ -278,22 +253,6 @@ void n2D::setSchriftgroesse(float fsize)
 	foreach (QValueAxis *axisY, m_axisYList) {
 		axisY->setLabelsFont(schrift);
 	}
-
-//	if (qSchrift != QFont()) // für hinundherschalten der logarithmischeYAchse()
-//		schrift = qSchrift;
-
-//	if (jaXAchse | jaHarmonische)
-//		axisX->setLabelsFont(schrift); // FIX: damit beim ausgebelenten nich ein breiter weißer Rahmen enststeht wenn zwischen lograithmisch hin und her geschaltet wird.
-//	//qDebug() << "schrift.pointSize()" << schrift.pointSize();
-//	if (axisY != NULL) {
-//		axisY->setTitleFont(schrift);
-//		axisY->setLabelsFont(schrift);
-//	}
-//	if (axisYlog != NULL) {
-//		axisYlog->setTitleFont(schrift);
-//		axisYlog->setLabelsFont(schrift);
-//	}
-//	markierung->setSchriftgroesse();
 }
 
 void n2D::xAchsenBereich(qreal minX, qreal maxX)
@@ -311,19 +270,6 @@ void n2D::xAchsenBereich(qreal minX, qreal maxX)
 		setMinMaxXAchse(QPointF(min.x(), max.x()));
 	qDebug() << QString("n2D::xAchsenBereich(float minX = %1, float maxX = %2)").arg(minX).arg(maxX);
 }
-
-//#ifndef QT_NO_CONTEXTMENU // für rechten Mausklick
-//void n2D::contextMenuEvent(QContextMenuEvent *event)
-//{
-//	QMenu menu(this);
-//	menu.addActions(markierungenMenu->actions()); // Da sie gleich sind
-//	menu.addSeparator();
-//	menu.addAction(openAct);
-//	menu.addAction(deletAct);
-//	menu.setToolTipsVisible(true);
-//	menu.exec(event->globalPos());
-//}
-//#endif // QT_NO_CONTEXTMENU
 
 
 
