@@ -85,6 +85,7 @@ public slots:
 	void close() {delete this;}
 	void reOpenSlot() {emit reOpenSignal();}
 	void hilfeSlot() {emit hilfeSignal();}
+	void setYLogarithmisch();
 
 signals:
 	void changedMinX(double minX);
@@ -95,6 +96,8 @@ signals:
 
 private:
 	static int countInstances;
+	bool m_binLogarithmisch = false;
+	void toggleBit(bool &bit) {bit = !bit;}
 	QChart *m_chart;
 	QList<QLineSeries *> m_series;
 

@@ -48,20 +48,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		series->setUseOpenGL(true);
 		series->setName(ls->name());
 		addSeries(series);
-
-		// Dünnen Grafen zeichnen:
-		QPen pen = series->pen();
-		pen.setWidth(1);
-		series->setPen(pen);
-
-		// Achsen anhängen:
-		QValueAxis *axisY = new QValueAxis;
-		m_axisYList.append(axisY);
-		m_chart->addAxis(axisY, Qt::AlignLeft);
-		//series->attachAxis(m_axisX);
-		series->attachAxis(axisY);
-		axisY->setLinePenColor(series->pen().color());
-		axisY->setLabelsColor(series->pen().color());
 	}
 
 	connectMarkers();
@@ -89,6 +75,11 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(closeSCut, SIGNAL(activated()), this, SLOT(close()));
 	QShortcut *reopenSCut = new QShortcut(QKeySequence("R"), this);
 	QObject::connect(reopenSCut, SIGNAL(activated()), this, SLOT(reOpenSlot()));
+	QShortcut *yLogarithmisch = new QShortcut(QKeySequence("L"), this);
+	QObject::connect(yLogarithmisch, SIGNAL(activated()), this, SLOT(setYLogarithmisch()));
+	QShortcut *delLastSeries = new QShortcut(QKeySequence(Qt::Key_Delete), this);
+	QObject::connect(delLastSeries, SIGNAL(activated()), this, SLOT(removeSeries()));
+	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
 }
 
 n2D::~n2D()
@@ -106,6 +97,45 @@ void n2D::addSeries(QLineSeries *series)
 		 m_chart->createDefaultAxes();
 		 m_chart->axisY()->hide();
 	 }
+	 // Dünnen Grafen zeichnen:
+	 QPen pen = series->pen();
+	 pen.setWidth(1);
+	 series->setPen(pen);
+
+	 // Achsen anhängen:
+	 QValueAxis *axisY = new QValueAxis;
+	 m_axisYList.append(axisY);
+	 m_chart->addAxis(axisY, Qt::AlignLeft);
+	 //series->attachAxis(m_axisX);
+	 series->attachAxis(axisY);
+	 axisY->setLinePenColor(series->pen().color());
+	 axisY->setLabelsColor(series->pen().color());
+}
+
+void n2D::setYLogarithmisch()
+{
+	toggleBit(m_binLogarithmisch);
+	if (!m_binLogarithmisch)
+	{
+//		QValueAxis *axisX = new QValueAxis();
+//		//axisX->setTitleText("Data point");
+//		//axisX->setLabelFormat("%i");
+//		axisX->setTickCount(series->count());
+//		chart->addAxis(axisX, Qt::AlignBottom);
+//		series->attachAxis(axisX);
+//	}
+//	else
+//	{
+//		QLogValueAxis *axisY = new QLogValueAxis();
+//		//axisY->setTitleText("Values");
+//		//axisY->setLabelFormat("%g");
+//		//axisY->setBase(8.0);
+//		//axisY->setMinorTickCount(-1);
+//		chart->addAxis(axisY, Qt::AlignLeft);
+//		series->attachAxis(axisY);
+	}
+
+	qDebug() << "setYLogarithmisch(), m_binLogarithmisch = " << m_binLogarithmisch;
 }
 
 void n2D::removeSeries()
@@ -113,6 +143,8 @@ void n2D::removeSeries()
 	 // Remove last series from chart
 	 if (m_series.count() > 0) {
 		  QLineSeries *series = m_series.last();
+		  //series->attachedAxes().last()->hide();
+		  delete series->attachedAxes().last();
 		  m_chart->removeSeries(series);
 		  m_series.removeLast();
 		  delete series;
