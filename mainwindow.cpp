@@ -158,11 +158,20 @@ void MainWindow::addSeriesSin()
 
 void MainWindow::hilfeDialog()
 {
-		QMessageBox::information(n2d, "Hilfe", tr( "ShortCuts: \n"
-												   "- [Q] = Quit: Programm wird beendet.\n"
-												   "- [R] = Reload: Grafen werden gelöscht und die Binärdateien\n"
-												   "	werden neu eingelesen.\n"
-												   "	Pfad der geladenen Binärdateien: \"%1\"\n"
-												   "\n"
-												   "					patrik.roth@gmx.de, 29.06.2020").arg(m_pfad) );
+		QMessageBox::information(n2d, "Hilfe",
+		  tr(  "Grafik:\n"
+			   "- Durch Clicken auf die Legende kann die zugehörige Grafik ein \n"
+			   "	bzw. ausgeblendet werden.\n"
+			   "- Durch Betätigen und halten der linken Maustaste kann in der \n"
+			   "	Grafik der gewünschte Frequenzbereich ausgewählt werden.\n"
+			   "- Durch Betätigen der rechten Maustaste wird der Frequenzbereich\n"
+			   "	vergrößert.\n"
+			   "\n"
+			   "ShortCuts: \n"
+			   "- [Q] = Quit: Programm wird beendet.\n"
+			   "- [R] = Reload: Grafen werden gelöscht und die Binärdateien\n"
+			   "	werden neu eingelesen.\n"
+			   "	Pfad der geladenen Binärdateien: \"%1\"\n"
+			   "\n"
+			   "					patrik.roth@gmx.de, 29.06.2020").arg(m_pfad) );
 }
