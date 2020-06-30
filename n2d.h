@@ -54,7 +54,6 @@
 #include <QtCharts/QCategoryAxis>
 #include <QtCore/QDebug>
 #include <QMouseEvent>
-#include <QAction>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -73,29 +72,26 @@ public slots:
 	void removeHiddenSeries();
 	void connectMarkers();
 	void disconnectMarkers();
-	//void setSchriftgroesse(float fsize);
+	void setMinMaxXAchse();
 
 	void handleMarkerClicked();
 
-	//void xAchsenBereich(qreal minX, qreal maxX);
 	void close() {delete this;}
 	void reOpenSlot() {emit reOpenSignal();}
 	void hilfeSlot() {emit hilfeSignal();}
 	void setYLogarithmisch();
 
 signals:
-//	void changedMinX(double minX);
-//	void changedMaxX(double minX);
 	void fensterGeschlossen();
 	void reOpenSignal();
 	void hilfeSignal();
 
 private:
 	void addSeries(QLineSeries *series);
+	void addAxisYlinear(QLineSeries *series);
+	void addAxisYlogarithmisch(QLineSeries *series);
 
-	//void setMinMaxXAchse(QPointF x);
 	void setRasterXAchse(float rasterX);
-	//void setMinMaxYAchse(QPointF y, int instanzNr);
 
 	static int countInstances;
 	bool m_binLogarithmisch = false;
@@ -106,11 +102,8 @@ private:
 	QChartView *m_chartView;
 	QGridLayout *m_mainLayout;
 	QGridLayout *m_fontLayout;
-	QAction *reOpenAct;
 
-	//QValueAxis *m_axisX;
 	QCategoryAxis *m_axisX;
-	QList<QValueAxis *> m_axisYList; // für verschiedene Achsenskalierungen
 };
 
 #endif // N2D_H

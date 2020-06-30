@@ -11,6 +11,7 @@
 #include <QtCharts/QXYLegendMarker>
 #include <QtCore/QtMath>
 #include <QShortcut>
+#include <QtCharts/QLogValueAxis>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -78,7 +79,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QShortcut *yLogarithmisch = new QShortcut(QKeySequence("L"), this);
 	QObject::connect(yLogarithmisch, SIGNAL(activated()), this, SLOT(setYLogarithmisch()));
 	QShortcut *xMinMax = new QShortcut(QKeySequence("M"), this);
-	QObject::connect(xMinMax, SIGNAL(activated()), this, SLOT(setYLogarithmisch()));
+	QObject::connect(xMinMax, SIGNAL(activated()), this, SLOT(setMinMaxXAchse()));
 	QShortcut *delLastSeries = new QShortcut(QKeySequence(Qt::Key_Delete), this);
 	QObject::connect(delLastSeries, SIGNAL(activated()), this, SLOT(removeHiddenSeries()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
@@ -104,39 +105,52 @@ void n2D::addSeries(QLineSeries *series)
 	 pen.setWidth(1);
 	 series->setPen(pen);
 
-	 // Achsen anhängen:
-	 QValueAxis *axisY = new QValueAxis;
-	 m_axisYList.append(axisY);
-	 m_chart->addAxis(axisY, Qt::AlignLeft);
-	 //series->attachAxis(m_axisX);
-	 series->attachAxis(axisY);
-	 axisY->setLinePenColor(series->pen().color());
-	 axisY->setLabelsColor(series->pen().color());
+	 addAxisYlinear(series);
+	 //addAxisYlogarithmisch(series);
+}
+
+void n2D::addAxisYlinear(QLineSeries *series)
+{
+	// Achsen anhängen:
+	QValueAxis *axisY = new QValueAxis;
+	m_chart->addAxis(axisY, Qt::AlignLeft);
+	series->attachAxis(axisY);
+	axisY->setLinePenColor(series->pen().color());
+	axisY->setLabelsColor(series->pen().color());
+}
+
+void n2D::addAxisYlogarithmisch(QLineSeries *series)
+{
+	// Achsen anhängen:
+	QLogValueAxis *axisY = new QLogValueAxis;
+	//axisY->setTitleText("Values");
+	//axisY->setLabelFormat("%g");
+	//axisY->setBase(8.0);
+	axisY->setMinorTickCount(-1);
+	m_chart->addAxis(axisY, Qt::AlignLeft);
+	series->attachAxis(axisY);
+	axisY->setLinePenColor(series->pen().color());
+	axisY->setLabelsColor(series->pen().color());
 }
 
 void n2D::setYLogarithmisch()
 {
 	toggleBit(m_binLogarithmisch);
-	if (!m_binLogarithmisch)
-	{
-//		QValueAxis *axisX = new QValueAxis();
-//		//axisX->setTitleText("Data point");
-//		//axisX->setLabelFormat("%i");
-//		axisX->setTickCount(series->count());
-//		chart->addAxis(axisX, Qt::AlignBottom);
-//		series->attachAxis(axisX);
-//	}
-//	else
-//	{
-//		QLogValueAxis *axisY = new QLogValueAxis();
-//		//axisY->setTitleText("Values");
-//		//axisY->setLabelFormat("%g");
-//		//axisY->setBase(8.0);
-//		//axisY->setMinorTickCount(-1);
-//		chart->addAxis(axisY, Qt::AlignLeft);
-//		series->attachAxis(axisY);
-	}
+	// Remove attachedAxes
 
+	foreach (QLineSeries *series, m_series) {
+		qDebug() << "series->name() =" << series->name();
+		bool isVisible = series->attachedAxes().last()->isVisible();
+		//series->detachAxis(series->attachedAxes().last());
+		delete series->attachedAxes().last();
+		//m_chart->removeSeries(series);
+		if (!m_binLogarithmisch)
+			addAxisYlinear(series);
+		else
+			addAxisYlogarithmisch(series);
+		series->setVisible(isVisible);
+		series->attachedAxes().last()->setVisible(isVisible);
+	}
 	qDebug() << "setYLogarithmisch(), m_binLogarithmisch = " << m_binLogarithmisch;
 }
 
@@ -229,12 +243,6 @@ void n2D::handleMarkerClicked()
 	 }
 }
 
-//void n2D::setMinMaxXAchse(QPointF x)
-//{
-//	m_chart->axisX()->setRange(x.x(), x.y());
-//	//qDebug() << QString("n2D::setMinMaxXAchse(QPointF(%1,%2))").arg(x.x()).arg(x.y());
-//}
-
 void n2D::setRasterXAchse(float rasterX)
 { // ähnlich wie Chart2D::setRaster(float *pRasterHz)
 	float minX, maxX;
@@ -271,39 +279,15 @@ void n2D::setRasterXAchse(float rasterX)
 //	}
 }
 
-//void n2D::setMinMaxYAchse(QPointF y, int instanzNr)
-//{
-//	m_axisYList.at(instanzNr)->setRange(y.x(), y.y());
-//	//m_chart->axisY()->setRange(y.x(), y.y());
-//	//qDebug() << QString("n2D::setMinMaxYAchse(QPointF(%1,%2))").arg(y.x()).arg(y.y());
-//}
 
-//void n2D::setSchriftgroesse(float fsize)
-//{
-//	QFont schrift;
-//	schrift.setPointSize(fsize);
-//	m_chart->legend()->setFont(schrift);
-//	m_axisX->setLabelsFont(schrift);
-//	foreach (QValueAxis *axisY, m_axisYList) {
-//		axisY->setLabelsFont(schrift);
-//	}
-//}
+void n2D::setMinMaxXAchse()
+{
+	QList<QPointF> p = m_series.at(0)->points();
+	//m_axisX->setRange(p.first().rx(), p.last().rx());
+	m_chart->axisX()->setRange(p.first(),p.last());
+	qDebug() << QString("n2D::setMinMaxXAchse(), (%1,%2)").arg(p.first().rx()).arg(p.last().rx());
+}
 
-//void n2D::xAchsenBereich(qreal minX, qreal maxX)
-//{ // für HorizontalRubberBand
-//	QList<QPointF> p = m_series.at(0)->points();
-//	QPointF min, max;
-//	min = p.first();
-//	max = p.last();
-
-////	if ( minX >= min.x())
-////		emit changedMinX(minX);
-////	if (maxX <= max.x())
-////		emit changedMaxX(maxX);
-//	if ((minX < min.x()) | (maxX > max.x()))
-//		setMinMaxXAchse(QPointF(min.x(), max.x()));
-//	qDebug() << QString("n2D::xAchsenBereich(float minX = %1, float maxX = %2)").arg(minX).arg(maxX);
-//}
 
 
 

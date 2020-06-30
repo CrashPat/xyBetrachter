@@ -119,15 +119,6 @@ bool MainWindow::getDataOneFile(QString DateiMitPfad)
 void MainWindow::erstelle_n2D()
 {
 	n2d = new n2D(n2DSeries);
-	//[n2d]
-
-	//Achsen setzen
-//	n2d->setMinMaxXAchse(QPointF(achseMinSBox_f->value(), achseMaxSBox_f->value()));
-//	n2d->setRasterXAchse(achseRasterSBox_f->value());
-//	int i = 0;
-//	foreach (SurfaceGraph *sg, listSurfaceGraph) {
-//		n2d->setMinMaxYAchse(QPointF(sg->get_k().minAkt, sg->get_k().maxAkt), i++);
-//	}
 
 	//QSize screenSize = QApplication::desktop()->screen()->size();
 	QSize screenSize = QGuiApplication::screens().first()->availableVirtualSize(); //Desktopsize ohne Taskleiste
@@ -171,8 +162,8 @@ void MainWindow::hilfeDialog()
 			   "	werden neu eingelesen.\n"
 			   "	Pfad der geladenen Binärdateien: \"%1\"\n"
 			   "- [L] = y-Achsen werden logarithmisch dargestellt. Bei erneutem betätigen\n"
-			   "	wird wieder linear dargestellt.\n"
-			   "- [M] = x-Achsen wird auf Ihre maximale Dartellung gebracht.\n"
+			   "	wird wieder linear dargestellt. Fehlerhaft\n"
+			   "- [M] = x-Achsen wird auf ihre maximale Dartellung gebracht.\n"
 			   "- [Entf] = Die ausgeblendeten Grafen werden gelöscht.\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 30.06.2020").arg(m_pfad) );
