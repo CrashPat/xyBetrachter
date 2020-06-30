@@ -73,19 +73,19 @@ public slots:
 	void removeHiddenSeries();
 	void connectMarkers();
 	void disconnectMarkers();
-	void setSchriftgroesse(float fsize);
+	//void setSchriftgroesse(float fsize);
 
 	void handleMarkerClicked();
 
-	void xAchsenBereich(qreal minX, qreal maxX);
+	//void xAchsenBereich(qreal minX, qreal maxX);
 	void close() {delete this;}
 	void reOpenSlot() {emit reOpenSignal();}
 	void hilfeSlot() {emit hilfeSignal();}
 	void setYLogarithmisch();
 
 signals:
-	void changedMinX(double minX);
-	void changedMaxX(double minX);
+//	void changedMinX(double minX);
+//	void changedMaxX(double minX);
 	void fensterGeschlossen();
 	void reOpenSignal();
 	void hilfeSignal();
@@ -93,9 +93,9 @@ signals:
 private:
 	void addSeries(QLineSeries *series);
 
-	void setMinMaxXAchse(QPointF x);
+	//void setMinMaxXAchse(QPointF x);
 	void setRasterXAchse(float rasterX);
-	void setMinMaxYAchse(QPointF y, int instanzNr);
+	//void setMinMaxYAchse(QPointF y, int instanzNr);
 
 	static int countInstances;
 	bool m_binLogarithmisch = false;

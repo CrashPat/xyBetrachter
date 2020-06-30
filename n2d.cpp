@@ -61,7 +61,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	m_chartView->setRubberBand(QChartView::HorizontalRubberBand); //
 	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
 
-	connect(m_axisX, SIGNAL(rangeChanged(qreal, qreal)), this, SLOT(xAchsenBereich(qreal, qreal))); // für HorizontalRubberBand
+	//connect(m_axisX, SIGNAL(rangeChanged(qreal, qreal)), this, SLOT(xAchsenBereich(qreal, qreal))); // für HorizontalRubberBand
 
 //	qDebug() << "Serienfarben:";
 //	foreach (QLineSeries *s, m_series) {
@@ -77,6 +77,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(reopenSCut, SIGNAL(activated()), this, SLOT(reOpenSlot()));
 	QShortcut *yLogarithmisch = new QShortcut(QKeySequence("L"), this);
 	QObject::connect(yLogarithmisch, SIGNAL(activated()), this, SLOT(setYLogarithmisch()));
+	QShortcut *xMinMax = new QShortcut(QKeySequence("M"), this);
+	QObject::connect(xMinMax, SIGNAL(activated()), this, SLOT(setYLogarithmisch()));
 	QShortcut *delLastSeries = new QShortcut(QKeySequence(Qt::Key_Delete), this);
 	QObject::connect(delLastSeries, SIGNAL(activated()), this, SLOT(removeHiddenSeries()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
@@ -227,11 +229,11 @@ void n2D::handleMarkerClicked()
 	 }
 }
 
-void n2D::setMinMaxXAchse(QPointF x)
-{
-	m_chart->axisX()->setRange(x.x(), x.y());
-	//qDebug() << QString("n2D::setMinMaxXAchse(QPointF(%1,%2))").arg(x.x()).arg(x.y());
-}
+//void n2D::setMinMaxXAchse(QPointF x)
+//{
+//	m_chart->axisX()->setRange(x.x(), x.y());
+//	//qDebug() << QString("n2D::setMinMaxXAchse(QPointF(%1,%2))").arg(x.x()).arg(x.y());
+//}
 
 void n2D::setRasterXAchse(float rasterX)
 { // ähnlich wie Chart2D::setRaster(float *pRasterHz)
@@ -269,39 +271,39 @@ void n2D::setRasterXAchse(float rasterX)
 //	}
 }
 
-void n2D::setMinMaxYAchse(QPointF y, int instanzNr)
-{
-	m_axisYList.at(instanzNr)->setRange(y.x(), y.y());
-	//m_chart->axisY()->setRange(y.x(), y.y());
-	//qDebug() << QString("n2D::setMinMaxYAchse(QPointF(%1,%2))").arg(y.x()).arg(y.y());
-}
+//void n2D::setMinMaxYAchse(QPointF y, int instanzNr)
+//{
+//	m_axisYList.at(instanzNr)->setRange(y.x(), y.y());
+//	//m_chart->axisY()->setRange(y.x(), y.y());
+//	//qDebug() << QString("n2D::setMinMaxYAchse(QPointF(%1,%2))").arg(y.x()).arg(y.y());
+//}
 
-void n2D::setSchriftgroesse(float fsize)
-{
-	QFont schrift;
-	schrift.setPointSize(fsize);
-	m_chart->legend()->setFont(schrift);
-	m_axisX->setLabelsFont(schrift);
-	foreach (QValueAxis *axisY, m_axisYList) {
-		axisY->setLabelsFont(schrift);
-	}
-}
+//void n2D::setSchriftgroesse(float fsize)
+//{
+//	QFont schrift;
+//	schrift.setPointSize(fsize);
+//	m_chart->legend()->setFont(schrift);
+//	m_axisX->setLabelsFont(schrift);
+//	foreach (QValueAxis *axisY, m_axisYList) {
+//		axisY->setLabelsFont(schrift);
+//	}
+//}
 
-void n2D::xAchsenBereich(qreal minX, qreal maxX)
-{ // für HorizontalRubberBand
-	QList<QPointF> p = m_series.at(0)->points();
-	QPointF min, max;
-	min = p.first();
-	max = p.last();
+//void n2D::xAchsenBereich(qreal minX, qreal maxX)
+//{ // für HorizontalRubberBand
+//	QList<QPointF> p = m_series.at(0)->points();
+//	QPointF min, max;
+//	min = p.first();
+//	max = p.last();
 
-	if ( minX >= min.x())
-		emit changedMinX(minX);
-	if (maxX <= max.x())
-		emit changedMaxX(maxX);
-	if ((minX <  min.x()) | (maxX > max.x()))
-		setMinMaxXAchse(QPointF(min.x(), max.x()));
-	qDebug() << QString("n2D::xAchsenBereich(float minX = %1, float maxX = %2)").arg(minX).arg(maxX);
-}
+////	if ( minX >= min.x())
+////		emit changedMinX(minX);
+////	if (maxX <= max.x())
+////		emit changedMaxX(maxX);
+//	if ((minX < min.x()) | (maxX > max.x()))
+//		setMinMaxXAchse(QPointF(min.x(), max.x()));
+//	qDebug() << QString("n2D::xAchsenBereich(float minX = %1, float maxX = %2)").arg(minX).arg(maxX);
+//}
 
 
 

@@ -172,6 +172,7 @@ void MainWindow::hilfeDialog()
 			   "	Pfad der geladenen Binärdateien: \"%1\"\n"
 			   "- [L] = y-Achsen werden logarithmisch dargestellt. Bei erneutem betätigen\n"
 			   "	wird wieder linear dargestellt.\n"
+			   "- [M] = x-Achsen wird auf Ihre maximale Dartellung gebracht.\n"
 			   "- [Entf] = Die ausgeblendeten Grafen werden gelöscht.\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 30.06.2020").arg(m_pfad) );
