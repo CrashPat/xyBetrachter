@@ -33,11 +33,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	//![2]
 	m_axisX = new QCategoryAxis;
 	m_axisX->setLabelsPosition(QCategoryAxis::AxisLabelsPositionOnValue);
-	//m_axisX->setTickCount(((maxX-minX)/rasterX)+1); // Raster wird gesetzt
-	//m_axisX->setRange(minX, maxX); // Bereich wird gesetzt
-	//m_chart->addAxis(m_axisX, Qt::AlignBottom);
-//	setMinMaxXAchse(QPointF(minX, maxX));
-//	setRasterXAchse(rasterX);
+	//m_chart->addAxis(m_axisX, Qt::AlignBottom); //MACHT PROBLEME
+//	connect(m_axisX, SIGNAL(rangeChanged(qreal, qreal)), this, SLOT(xAchsenBereich(qreal, qreal))); // für HorizontalRubberBand
 	//![2]
 
 	// Add few series & Kopie der Werte erstellen
@@ -51,6 +48,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		addSeries(series);
 	}
 
+
 	connectMarkers();
 
 	// Set the title and show legend
@@ -62,7 +60,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	m_chartView->setRubberBand(QChartView::HorizontalRubberBand); //
 	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
 
-	//connect(m_axisX, SIGNAL(rangeChanged(qreal, qreal)), this, SLOT(xAchsenBereich(qreal, qreal))); // für HorizontalRubberBand
 
 //	qDebug() << "Serienfarben:";
 //	foreach (QLineSeries *s, m_series) {
@@ -87,7 +84,10 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 
 n2D::~n2D()
 {
-//	delete m_closeSCut; ...
+	//delete m_chartView;
+	//delete m_chart;
+	//delete m_axisX;
+	//delete m_mainLayout;
 	qDebug() << "~n2D(): Anzahl Instanzen" << --countInstances;
 }
 
@@ -114,6 +114,7 @@ void n2D::addAxisYlinear(QLineSeries *series)
 	// Achsen anhängen:
 	QValueAxis *axisY = new QValueAxis;
 	m_chart->addAxis(axisY, Qt::AlignLeft);
+	//series->attachAxis(m_axisX);
 	series->attachAxis(axisY);
 	axisY->setLinePenColor(series->pen().color());
 	axisY->setLabelsColor(series->pen().color());
@@ -128,6 +129,7 @@ void n2D::addAxisYlogarithmisch(QLineSeries *series)
 	//axisY->setBase(8.0);
 	axisY->setMinorTickCount(-1);
 	m_chart->addAxis(axisY, Qt::AlignLeft);
+	//series->attachAxis(m_axisX);
 	series->attachAxis(axisY);
 	axisY->setLinePenColor(series->pen().color());
 	axisY->setLabelsColor(series->pen().color());
@@ -140,7 +142,7 @@ void n2D::setYLogarithmisch()
 
 	foreach (QLineSeries *series, m_series) {
 		qDebug() << "series->name() =" << series->name();
-		bool isVisible = series->attachedAxes().last()->isVisible();
+		bool isVisible = series->isVisible();
 		//series->detachAxis(series->attachedAxes().last());
 		delete series->attachedAxes().last();
 		//m_chart->removeSeries(series);
@@ -243,50 +245,16 @@ void n2D::handleMarkerClicked()
 	 }
 }
 
-void n2D::setRasterXAchse(float rasterX)
-{ // ähnlich wie Chart2D::setRaster(float *pRasterHz)
-	float minX, maxX;
-	minX = m_axisX->min();
-	maxX = m_axisX->max();
-	//qDebug() << QString("n2D::setRasterXAchse(rasterX = %1)").arg(rasterX);
-
-	foreach(QString label, m_axisX->categoriesLabels()) {
-		m_axisX->remove(label);
-	}
-	int vielfacheStart = ceil(minX/rasterX); // damit nur der Achsenausschnitt beschriftet wird
-	int nAbbruch = 500; // wenn ausversehen ein zu kleines Raster gesetzt wurde
-	for (float rHz = rasterX*vielfacheStart; rHz <= maxX; rHz = rHz + rasterX ) {
-		m_axisX->append(QString("%1").arg(rHz), rHz);
-		nAbbruch--;
-		if (nAbbruch<=0) {
-			//QMessageBox::warning(this, "Raster zu klein", QString("Ihr 2D-Raster ist auf %1 Hz eingestellt und für die Darstellung somit zu klein. Bitte erhöhen sie das 2D-Raster.").arg(rasterHz));
-			break;
-		}
-	}
-	bool gedreht;
-	if (m_axisX->count()>11) {// Bei vielen Labels um -90° drehen um Platz zu sparen.
-		m_axisX->setLabelsAngle(-90); gedreht = true;
-	} else {
-		m_axisX->setLabelsAngle(0); gedreht = false;
-	}
-
-//	if (jaXAchse) {
-		if (m_axisX->categoriesLabels().count()!=0) { // Einheit in Hz beim ersten Label setzen
-			QString erstesLabel = m_axisX->categoriesLabels().at(0);
-			//if (*pBinDemod) m_axisX->replaceLabel(erstesLabel, erstesLabel + " ms");
-			///*else*/ m_axisX->replaceLabel(erstesLabel, erstesLabel + " Hz");
-		}
-//	}
-}
-
-
 void n2D::setMinMaxXAchse()
 {
 	QList<QPointF> p = m_series.at(0)->points();
-	//m_axisX->setRange(p.first().rx(), p.last().rx());
-	m_chart->axisX()->setRange(p.first(),p.last());
+	m_axisX->setRange(p.first().rx(), p.last().rx()); // geht leider nicht
 	qDebug() << QString("n2D::setMinMaxXAchse(), (%1,%2)").arg(p.first().rx()).arg(p.last().rx());
 }
+
+
+
+
 
 
 

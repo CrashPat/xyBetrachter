@@ -61,9 +61,7 @@ class n2D: public QWidget// QDialog
 {
 	Q_OBJECT
 protected:
-	void closeEvent(QCloseEvent *event) override {
-		emit fensterGeschlossen();
-	}
+	void closeEvent(QCloseEvent *event) override {emit fensterGeschlossen();}
 public:
 	explicit n2D(QList<QLineSeries *> listLineSeries);
 	~n2D();
@@ -75,6 +73,7 @@ public slots:
 	void setMinMaxXAchse();
 
 	void handleMarkerClicked();
+	void xAchsenBereich(qreal min, qreal max) {qDebug() << "xAchsenBereich(" << min <<"," << max << ")";}
 
 	void close() {delete this;}
 	void reOpenSlot() {emit reOpenSignal();}
@@ -90,8 +89,7 @@ private:
 	void addSeries(QLineSeries *series);
 	void addAxisYlinear(QLineSeries *series);
 	void addAxisYlogarithmisch(QLineSeries *series);
-
-	void setRasterXAchse(float rasterX);
+//	void setRasterXAchse(float rasterX);
 
 	static int countInstances;
 	bool m_binLogarithmisch = false;
