@@ -125,7 +125,7 @@ void MainWindow::erstelle_n2D()
 	n2d->setMinimumWidth(screenSize.width() / 4); // Breite
 	n2d->setMinimumHeight(screenSize.height() / 4); // Höhe
 	n2d->resize(QSize(screenSize.width()/1.3, screenSize.height()/1.3)); // Breite, Höhe
-	//n2d->move(QPoint(0,0));
+	n2d->move(QPoint(0,0));
 	n2d->show();
 }
 
@@ -157,14 +157,15 @@ void MainWindow::hilfeDialog()
 			   "- Betätigen der rechten Maustaste wird der x-Achsenbereich vergrößert.\n"
 			   "\n"
 			   "ShortCuts: \n"
-			   "- [Q] = Quit: Programm wird beendet.\n"
-			   "- [R] = Reload: Grafen werden gelöscht und die Binärdateien\n"
+			   "- [Q] 	Quit: Programm wird beendet.\n"
+			   "- [R] 	Reload: Grafen werden gelöscht und die Binärdateien\n"
 			   "	werden neu eingelesen.\n"
 			   "	Pfad der geladenen Binärdateien: \"%1\"\n"
-			   "- [L] = y-Achsen werden logarithmisch dargestellt. Bei erneutem betätigen\n"
+			   "- [Entf]	Die ausgeblendeten Grafen werden gelöscht.\n"
+			   "- [L] 	y-Achsen werden logarithmisch dargestellt. Bei erneutem betätigen\n"
 			   "	wird wieder linear dargestellt. Fehlerhaft\n"
-			   "- [M] = x-Achsen wird auf ihre maximale Dartellung gebracht.\n"
-			   "- [Entf] = Die ausgeblendeten Grafen werden gelöscht.\n"
+			   "- [M] 	x-Achsen wird auf ihre maximale Dartellung gebracht.\n"
+			   "- [T] 	Zwischen heller und dunkler Ansicht wechseln.\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 30.06.2020").arg(m_pfad) );
 }

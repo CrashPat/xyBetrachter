@@ -17,6 +17,15 @@ QT_CHARTS_USE_NAMESPACE
 
 int n2D::countInstances = 0;
 
+void n2D::mouseMoveEvent(QMouseEvent *event)
+{
+	//m_coordX->setText(QString("X: %1").arg(m_chart->mapToValue(event->pos()).x()));
+	//m_coordY->setText(QString("Y: %1").arg(m_chart->mapToValue(event->pos()).y()));
+	qDebug() << QString("X: %1, Y: %2").arg(m_chart->mapToValue(event->pos()).x())
+									   .arg(m_chart->mapToValue(event->pos()).y());
+	event->setAccepted(true);
+}
+
 n2D::n2D(QList<QLineSeries *> listLineSeries)
 {
 	qDebug() << "n2D(): Anzahl Instanzen" << ++countInstances;
@@ -27,8 +36,10 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 
 	// Create layout for grid and detached legend
 	m_mainLayout = new QGridLayout();
-	m_mainLayout->addWidget(m_chartView, 0, 1, 3, 1);
+	m_mainLayout->addWidget(m_chartView,0,0,0,0);
+	//m_mainLayout->setSpacing(0);
 	setLayout(m_mainLayout);
+	setTheme();
 
 	//![2]
 	m_axisX = new QCategoryAxis;
@@ -76,7 +87,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(theme, SIGNAL(activated()), this, SLOT(setTheme()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
 
-	setTheme();
 }
 
 n2D::~n2D()
@@ -134,7 +144,7 @@ void n2D::addAxisYlogarithmisch(QLineSeries *series)
 
 void n2D::setYLogarithmisch()
 {
-	static 	bool binLogarithmisch = false;
+	static bool binLogarithmisch = false;
 	toggleBit(binLogarithmisch);
 	// Remove attachedAxes
 
@@ -252,10 +262,9 @@ void n2D::setMinMaxXAchse()
 
 void n2D::setTheme()
 {
-	static bool binDark = false;
-	toggleBit(binDark);
+	toggleBit(m_binDark);
 	QPalette pal = window()->palette();
-	if (binDark) {
+	if (m_binDark) {
 		m_chartView->chart()->setTheme(QChart::QChart::ChartThemeDark);
 		pal.setColor(QPalette::Window, QRgb(0x121218));
 		pal.setColor(QPalette::WindowText, QRgb(0xd6d6d6));
@@ -267,7 +276,7 @@ void n2D::setTheme()
 		pal.setColor(QPalette::WindowText, QRgb(0x404044));
 	}
 	 window()->setPalette(pal);
-	qDebug() << QString("n2D::setTheme(), binDark = %1").arg(binDark);
+	qDebug() << QString("n2D::setTheme(), binDark = %1").arg(m_binDark);
 }
 
 

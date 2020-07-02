@@ -62,6 +62,7 @@ class n2D: public QWidget// QDialog
 	Q_OBJECT
 protected:
 	void closeEvent(QCloseEvent *event) override {emit fensterGeschlossen();}
+	void mouseMoveEvent(QMouseEvent *event) override;
 public:
 	explicit n2D(QList<QLineSeries *> listLineSeries);
 	~n2D();
@@ -101,6 +102,8 @@ private:
 	QGridLayout *m_mainLayout;
 
 	QCategoryAxis *m_axisX;
+
+	bool m_binDark = false;
 };
 
 #endif // N2D_H
