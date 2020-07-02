@@ -24,10 +24,11 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 
 	// Create chart view with the chart
 	m_chart = new QChart();
-	m_chartView = new ChartViewPat(m_chart);
-	//m_chartView->setRubberBand(QChartView::HorizontalRubberBand); //
-	m_chartView->setMouseTracking(true);
-	qDebug() << "m_chartView->hasMouseTracking()" << m_chartView->hasMouseTracking();
+	setChart(m_chart);
+	//m_chartView = new ChartViewPat(m_chart);
+	/*m_chartView->*/setRubberBand(QChartView::HorizontalRubberBand); //
+	/*m_chartView->*/setMouseTracking(true);
+	qDebug() << "m_chartView->hasMouseTracking()" << /*m_chartView->*/hasMouseTracking();
 	setMouseTracking(true);
 
 	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
@@ -36,12 +37,12 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	//	m_chartView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	// Create layout for grid and detached legend
-	m_mainLayout = new QGridLayout();
+//	m_mainLayout = new QGridLayout();
 
-	m_mainLayout->addWidget(m_chartView);
+//	m_mainLayout->addWidget(m_chartView);
 	//m_mainLayout->setSpacing(0);
-	setLayout(m_mainLayout);
-	setTheme();
+//	setLayout(m_mainLayout);
+	//setTheme();
 
 	//![2]
 	m_axisX = new QCategoryAxis;
@@ -51,15 +52,21 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	//![2]
 
 	// Add few series & Kopie der Werte erstellen
+	m_coordX = new QGraphicsSimpleTextItem(m_chart);
+	m_coordX->setPos(m_chart->size().width()/2, m_chart->size().height());
+
+	int n = 1;
 	foreach (QLineSeries *ls, listLineSeries) {
 		// Serie kopieren da sonst die Original Serie abstürzt
 		QList<QPointF> vpf = ls->points(); // !!! erzeugt eine reale Kopie nur der Datenpunkte !!!
 		QLineSeries *series = new QLineSeries();
 		series->append(vpf);
 		series->setUseOpenGL(true);
-		series->setName(ls->name());
+		series->setName(QString("%2 (%1)").arg(n++).arg(ls->name()));
 		addSeries(series);
+		m_coordListY.append(new QGraphicsSimpleTextItem(m_chart));
 	}
+
 
 	connectMarkers();
 
@@ -85,7 +92,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QShortcut *theme = new QShortcut(QKeySequence("T"), this);
 	QObject::connect(theme, SIGNAL(activated()), this, SLOT(setTheme()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
-
 }
 
 n2D::~n2D()
@@ -99,11 +105,27 @@ n2D::~n2D()
 
 void n2D::mouseMoveEvent(QMouseEvent *event)
 {
-	//m_coordX->setText(QString("X: %1").arg(m_chart->mapToValue(event->pos()).x()));
-	//m_coordY->setText(QString("Y: %1").arg(m_chart->mapToValue(event->pos()).y()));
-	qDebug() << QString("X: %1, Y: %2").arg(m_chart->mapToValue(event->pos()).x())
-									   .arg(m_chart->mapToValue(event->pos()).y());
-	event->setAccepted(true);
+//	QGraphicsSimpleTextItem *m_coordX = new QGraphicsSimpleTextItem(m_chart);
+//	m_coordX->setPos(m_chart->size().width()/2 - 50, m_chart->size().height());
+	qreal x = m_chart->size().width()-60;
+	qreal y = m_chart->size().height()-20;
+
+	m_coordX->setPos(x, y);
+	m_coordX->setText(QString("X:%1").arg(m_chart->mapToValue(event->pos()).x()));
+	int rechtsVersatz = 0;
+	for (int n = m_coordListY.count()-1; n+1 ; --n) {
+		x = rechtsVersatz*70+10;
+		m_coordListY.at(n)->setPos(x, y);
+		if (m_series.at(n)->isVisible()) {
+			++rechtsVersatz;
+			m_coordListY.at(n)->setPen(m_series.at(n)->pen());
+			m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(m_chart->mapToValue(event->pos(), m_series.at(n)).y()));
+		}
+		else
+			m_coordListY.at(n)->setText("");
+	}
+
+	QChartView::mouseMoveEvent(event); // muss weiter gereicht werden sonst geht Rubberband nicht
 }
 
 void n2D::addSeries(QLineSeries *series)
@@ -181,7 +203,17 @@ void n2D::removeHiddenSeries()
 			delete series->attachedAxes().last();
 			m_chart->removeSeries(series);
 			m_series.removeOne(series);
+			m_coordListY.last()->setText("");
+			m_coordListY.removeLast();
 		}
+	}
+	// richtig durchnummerrieren:
+	int n = 1;
+	foreach (QLineSeries *series, m_series) {
+		QString name = series->name();
+		int pos = name.lastIndexOf(QChar('('));
+		name = name.left(pos);
+		series->setName(QString("%1 (%2)").arg(name).arg(n++));
 	}
 }
 
@@ -273,13 +305,13 @@ void n2D::setTheme()
 	toggleBit(m_binDark);
 	QPalette pal = window()->palette();
 	if (m_binDark) {
-		m_chartView->chart()->setTheme(QChart::QChart::ChartThemeDark);
+		/*m_chartView->*/chart()->setTheme(QChart::QChart::ChartThemeDark);
 		pal.setColor(QPalette::Window, QRgb(0x121218));
 		pal.setColor(QPalette::WindowText, QRgb(0xd6d6d6));
 	}
 	else
 	{
-		m_chartView->chart()->setTheme(QChart::ChartThemeLight);
+		/*m_chartView->*/chart()->setTheme(QChart::ChartThemeLight);
 		pal.setColor(QPalette::Window, QRgb(0xf0f0f0));
 		pal.setColor(QPalette::WindowText, QRgb(0x404044));
 	}
