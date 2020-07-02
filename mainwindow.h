@@ -11,7 +11,7 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
-	void closeEvent(QCloseEvent *event);
+	void closeEvent(QCloseEvent *event) override;
 private slots:
 	void n2DwurdeGesschlossen() {close();}
 	void open_n2D();

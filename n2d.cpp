@@ -12,19 +12,11 @@
 #include <QtCore/QtMath>
 #include <QShortcut>
 #include <QtCharts/QLogValueAxis>
+#include <QLayout>
 
 QT_CHARTS_USE_NAMESPACE
 
 int n2D::countInstances = 0;
-
-void n2D::mouseMoveEvent(QMouseEvent *event)
-{
-	//m_coordX->setText(QString("X: %1").arg(m_chart->mapToValue(event->pos()).x()));
-	//m_coordY->setText(QString("Y: %1").arg(m_chart->mapToValue(event->pos()).y()));
-	qDebug() << QString("X: %1, Y: %2").arg(m_chart->mapToValue(event->pos()).x())
-									   .arg(m_chart->mapToValue(event->pos()).y());
-	event->setAccepted(true);
-}
 
 n2D::n2D(QList<QLineSeries *> listLineSeries)
 {
@@ -32,11 +24,21 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 
 	// Create chart view with the chart
 	m_chart = new QChart();
-	m_chartView = new QChartView(m_chart, this);
+	m_chartView = new ChartViewPat(m_chart);
+	//m_chartView->setRubberBand(QChartView::HorizontalRubberBand); //
+	m_chartView->setMouseTracking(true);
+	qDebug() << "m_chartView->hasMouseTracking()" << m_chartView->hasMouseTracking();
+	setMouseTracking(true);
+
+	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
+	//	m_chartView->setDragMode(QGraphicsView::NoDrag);
+	//	m_chartView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	//	m_chartView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	// Create layout for grid and detached legend
 	m_mainLayout = new QGridLayout();
-	m_mainLayout->addWidget(m_chartView,0,0,0,0);
+
+	m_mainLayout->addWidget(m_chartView);
 	//m_mainLayout->setSpacing(0);
 	setLayout(m_mainLayout);
 	setTheme();
@@ -67,9 +69,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	m_chart->legend()->setVisible(true);
 	//m_chart->legend()->setAlignment(Qt::AlignRight);
 
-	m_chartView->setRubberBand(QChartView::HorizontalRubberBand); //
-	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
-
 	// Shortcuts:
 	QShortcut *hilfe = new QShortcut(QKeySequence("F1"), this);
 	QObject::connect(hilfe, SIGNAL(activated()), this, SLOT(hilfeSlot()));
@@ -96,6 +95,15 @@ n2D::~n2D()
 	//delete m_axisX;
 	//delete m_mainLayout;
 	qDebug() << "~n2D(): Anzahl Instanzen" << --countInstances;
+}
+
+void n2D::mouseMoveEvent(QMouseEvent *event)
+{
+	//m_coordX->setText(QString("X: %1").arg(m_chart->mapToValue(event->pos()).x()));
+	//m_coordY->setText(QString("Y: %1").arg(m_chart->mapToValue(event->pos()).y()));
+	qDebug() << QString("X: %1, Y: %2").arg(m_chart->mapToValue(event->pos()).x())
+									   .arg(m_chart->mapToValue(event->pos()).y());
+	event->setAccepted(true);
 }
 
 void n2D::addSeries(QLineSeries *series)
