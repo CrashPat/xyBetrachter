@@ -109,17 +109,19 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 //	m_coordX->setPos(m_chart->size().width()/2 - 50, m_chart->size().height());
 	qreal x = m_chart->size().width()-60;
 	qreal y = m_chart->size().height()-20;
+	qreal xPos = m_chart->mapToValue(event->pos()).x();
 
 	m_coordX->setPos(x, y);
-	m_coordX->setText(QString("X:%1").arg(m_chart->mapToValue(event->pos()).x()));
+	m_coordX->setText(QString("X:%1").arg(xPos));
 	int rechtsVersatz = 0;
 	for (int n = m_coordListY.count()-1; n+1 ; --n) {
-		x = rechtsVersatz*70+10;
+		x = rechtsVersatz*80+10; // Textabstand
 		m_coordListY.at(n)->setPos(x, y);
 		if (m_series.at(n)->isVisible()) {
 			++rechtsVersatz;
 			m_coordListY.at(n)->setPen(m_series.at(n)->pen());
-			m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(m_chart->mapToValue(event->pos(), m_series.at(n)).y()));
+			m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg( m_series.at(n)->points().at(xPos).y() )); // yWert ausgeben
+			//m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(m_chart->mapToValue(event->pos(), m_series.at(n)).y())); // Mausposition in Grafik ausgeben
 		}
 		else
 			m_coordListY.at(n)->setText("");
