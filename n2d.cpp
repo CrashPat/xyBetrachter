@@ -148,10 +148,13 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	}
 
 	/// Hilslinien bei Mausposition zeichnen:
-	QPoint pos = event->pos();
-	m_hilfsLinie->setRect(pos.x(),75,0,hoehe-75-30);
-//	m_hilfsLinie->setPos(pos);
-
+	if (istXWertInnerhalb) {
+		QPoint pos = event->pos();
+		m_hilfsLinie->setRect(pos.x(),75,0,hoehe-75-30);
+		m_hilfsLinie->setVisible(true);
+	}
+	else
+		m_hilfsLinie->hide();
 
 
 	QChartView::mouseMoveEvent(event); // muss weiter gereicht werden sonst geht Rubberband nicht
