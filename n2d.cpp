@@ -120,7 +120,13 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 		if (m_series.at(n)->isVisible()) {
 			++rechtsVersatz;
 			m_coordListY.at(n)->setPen(m_series.at(n)->pen());
-			m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg( m_series.at(n)->points().at(xPos).y() )); // yWert ausgeben
+			qreal xPosFirst = m_series.at(n)->points().first().x();
+			qreal xPosLast = m_series.at(n)->points().last().x();
+			if ( (xPosFirst <= xPos) & (xPos <= xPosLast)) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..points().at(xPos)..
+				m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg( m_series.at(n)->points().at(xPos).y() )); // yWert ausgeben
+			else
+				m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg("notDef.")); // yWert ausgeben
+
 			//m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(m_chart->mapToValue(event->pos(), m_series.at(n)).y())); // Mausposition in Grafik ausgeben
 		}
 		else
