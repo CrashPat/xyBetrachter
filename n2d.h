@@ -57,7 +57,7 @@
 
 QT_CHARTS_USE_NAMESPACE
 
-class n2D: public QChartView//QWidget// QDialog
+class n2D: public QChartView //QWidget// QDialog
 {
 	Q_OBJECT
 protected:
@@ -108,6 +108,7 @@ private:
 	QGraphicsSimpleTextItem *m_coordX;
 	QList<QGraphicsSimpleTextItem *> m_coordListY;
 
+	QGraphicsRectItem *m_hilfsLinie;
 };
 
 #endif // N2D_H
