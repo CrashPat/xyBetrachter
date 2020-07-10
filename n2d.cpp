@@ -30,6 +30,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	/*m_chartView->*/setMouseTracking(true);
 	qDebug() << "m_chartView->hasMouseTracking()" << /*m_chartView->*/hasMouseTracking();
 	setMouseTracking(true);
+	this->setCursor(Qt::CrossCursor);
 
 	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
 	//	m_chartView->setDragMode(QGraphicsView::NoDrag);
@@ -95,7 +96,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(xMinMax, SIGNAL(activated()), this, SLOT(setMinMaxXAchse()));
 	QShortcut *theme = new QShortcut(QKeySequence("T"), this);
 	QObject::connect(theme, SIGNAL(activated()), this, SLOT(setTheme()));
-	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
+	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();	
 }
 
 n2D::~n2D()
