@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
 	while (!open_n2D())
 	{
 		QMessageBox msgBox;
-		msgBox.setText("Keine Dateien Gefunden");
+		msgBox.setText("Keine Dateien gefunden.");
 		msgBox.setInformativeText("Wollen Sie es erneut versuchen?");
 		msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Close);
 		msgBox.setDefaultButton(QMessageBox::Retry);
@@ -189,9 +189,9 @@ void MainWindow::hilfeDialog()
 			   "	Pfad der geladenen Binärdateien: \"%1\"\n"
 			   "- [Entf]	Die ausgeblendeten Grafen werden gelöscht.\n"
 			   "- [L] 	y-Achsen werden logarithmisch dargestellt. Bei erneutem betätigen\n"
-			   "	wird wieder linear dargestellt. Fehlerhaft\n"
-			   "- [M] 	x-Achsen wird auf ihre maximale Dartellung gebracht.\n"
+			   "	wird wieder linear dargestellt. Fehlerhaft --> mehrmals betätigen\n"
 			   "- [T] 	Zwischen heller und dunkler Ansicht wechseln.\n"
+			   "- ([M] 	x-Achsen wird auf ihre maximale Darstellung gebracht.) --> geht nicht\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 30.06.2020").arg(m_pfad) );
 }
