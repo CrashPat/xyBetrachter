@@ -26,6 +26,11 @@ HEADERS += \
 	n2d.h \
     mainwindow.h
 
+RC_FILE = icon.rc # für Programmicon
+DISTFILES += \ # für Programmicon
+	xyBetrachterIcon.ico \
+	icon.rc
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
