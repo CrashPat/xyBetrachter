@@ -14,7 +14,7 @@ public:
 	void closeEvent(QCloseEvent *event) override;
 private slots:
 	void n2DwurdeGesschlossen() {close();}
-	void open_n2D();
+	bool open_n2D();
 	void hilfeDialog();
 private:
 	bool findAndPlotAllFiles();

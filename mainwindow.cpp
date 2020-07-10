@@ -32,7 +32,21 @@ MainWindow::MainWindow(QWidget *parent)
 	addSeriesSin();
 	#endif //BEISPIEL_SINUS
 
-	open_n2D();
+	while (!open_n2D())
+	{
+		QMessageBox msgBox;
+		msgBox.setText("Keine Dateien Gefunden");
+		msgBox.setInformativeText("Wollen Sie es erneut versuchen?");
+		msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Close);
+		msgBox.setDefaultButton(QMessageBox::Retry);
+		int ret = msgBox.exec();
+
+		if (ret == QMessageBox::Close)
+		{
+			this->~MainWindow();
+			return;
+		}
+	}
 }
 
 MainWindow::~MainWindow()
@@ -47,7 +61,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	qDebug() << "Bin de Main closeEvent";
 }
 
-void MainWindow::open_n2D()
+bool MainWindow::open_n2D()
 {
 	if (n2d) {
 		n2d->~n2D();
@@ -56,24 +70,36 @@ void MainWindow::open_n2D()
 		qDebug() << "n2d->~n2D();";
 	}
 
-	findAndPlotAllFiles();
+	if (!findAndPlotAllFiles())
+	{
+		return false;
+	}
 	erstelle_n2D();
 	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
 	connect(n2d, SIGNAL(reOpenSignal()), this, SLOT(open_n2D()));
 	connect(n2d, SIGNAL(hilfeSignal()), this, SLOT(hilfeDialog()));
 	//n2d->setRasterXAchse(10); --> geht noch nicht
 	qDebug() << "MainWindow::open_n2D()";
+	return true;
 }
 
 bool MainWindow::findAndPlotAllFiles()
 {
-	QDir dir(m_pfad); // auf Ordner /KohN-1
+	QDir dir(m_pfad); // auf Ordner
 	QStringList filters;
 	filters << "*.bin";
 	dir.setNameFilters(filters);
+	if (!dir.count())
+	{
+		QMessageBox::warning(this, "Warnung", tr("Im Pfad \"%1\" sind keine Binärdateien vorhanden").arg(m_pfad) );
+		return false;
+	}
 	foreach (QString dateiName, dir.entryList())
 	{
-		getDataOneFile(m_pfad + dateiName);
+		if (!getDataOneFile(m_pfad + dateiName))
+		{
+			return false;
+		}
 	}
 
 	return true;

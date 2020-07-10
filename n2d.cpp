@@ -156,7 +156,6 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	else
 		m_hilfsLinie->hide();
 
-
 	QChartView::mouseMoveEvent(event); // muss weiter gereicht werden sonst geht Rubberband nicht
 }
 
