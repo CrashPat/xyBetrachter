@@ -31,6 +31,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	qDebug() << "m_chartView->hasMouseTracking()" << /*m_chartView->*/hasMouseTracking();
 	setMouseTracking(true);
 	this->setCursor(Qt::CrossCursor);
+	this->setTheme();
 
 	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
 	//	m_chartView->setDragMode(QGraphicsView::NoDrag);
@@ -72,6 +73,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QPen pen;
 	pen.setColor(Qt::darkGray);
 	m_hilfsLinie->setPen(pen);
+	m_coordX->setPen(pen);
 
 	connectMarkers();
 
