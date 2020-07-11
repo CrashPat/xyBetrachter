@@ -191,7 +191,9 @@ void MainWindow::hilfeDialog()
 			   "- [L] 	y-Achsen werden logarithmisch dargestellt. Bei erneutem betätigen\n"
 			   "	wird wieder linear dargestellt. Fehlerhaft --> mehrmals betätigen\n"
 			   "- [T] 	Zwischen heller und dunkler Ansicht wechseln.\n"
-			   "- ([M] 	x-Achsen wird auf ihre maximale Darstellung gebracht.) --> geht nicht\n"
+			   "- [M] 	(x-Achsen wird auf ihre maximale Darstellung gebracht.) --> geht nicht\n"
+			   "- [X] 	x-Achse aus/ein-blenden.\n"
+			   "- [Y] 	y-Achsen aus/ein-blenden.\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 30.06.2020").arg(m_pfad) );
 }

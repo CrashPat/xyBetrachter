@@ -47,8 +47,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	//setTheme();
 
 	//![2]
-	m_axisX = new QCategoryAxis;
-	m_axisX->setLabelsPosition(QCategoryAxis::AxisLabelsPositionOnValue);
+//	m_axisX = new QCategoryAxis;
+//	m_axisX->setLabelsPosition(QCategoryAxis::AxisLabelsPositionOnValue);
 	//m_chart->addAxis(m_axisX, Qt::AlignBottom); //MACHT PROBLEME
 //	connect(m_axisX, SIGNAL(rangeChanged(qreal, qreal)), this, SLOT(xAchsenBereich(qreal, qreal))); // für HorizontalRubberBand
 	//![2]
@@ -94,11 +94,15 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(reopenSCut, SIGNAL(activated()), this, SLOT(reOpenSlot()));
 	QShortcut *yLogarithmisch = new QShortcut(QKeySequence("L"), this);
 	QObject::connect(yLogarithmisch, SIGNAL(activated()), this, SLOT(setYLogarithmisch()));
-	QShortcut *xMinMax = new QShortcut(QKeySequence("M"), this);
-	QObject::connect(xMinMax, SIGNAL(activated()), this, SLOT(setMinMaxXAchse()));
 	QShortcut *theme = new QShortcut(QKeySequence("T"), this);
 	QObject::connect(theme, SIGNAL(activated()), this, SLOT(setTheme()));
-	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();	
+	QShortcut *xMinMax = new QShortcut(QKeySequence("M"), this);
+	QObject::connect(xMinMax, SIGNAL(activated()), this, SLOT(setMinMaxXAchse()));
+	QShortcut *xAchse = new QShortcut(QKeySequence("X"), this);
+	QObject::connect(xAchse, SIGNAL(activated()), this, SLOT(setXachseVisebility()));
+	QShortcut *yAchsen = new QShortcut(QKeySequence("Y"), this);
+	QObject::connect(yAchsen, SIGNAL(activated()), this, SLOT(setYachsenVisebility()));
+	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
 }
 
 n2D::~n2D()
@@ -330,7 +334,7 @@ void n2D::handleMarkerClicked()
 void n2D::setMinMaxXAchse()
 {
 	QList<QPointF> p = m_series.at(0)->points();
-	m_axisX->setRange(p.first().rx(), p.last().rx()); // geht leider nicht
+	//m_axisX->setRange(p.first().rx(), p.last().rx()); // geht leider nicht
 	qDebug() << QString("n2D::setMinMaxXAchse(), (%1,%2)").arg(p.first().rx()).arg(p.last().rx());
 }
 
@@ -350,7 +354,21 @@ void n2D::setTheme()
 		pal.setColor(QPalette::WindowText, QRgb(0x404044));
 	}
 	 window()->setPalette(pal);
-	qDebug() << QString("n2D::setTheme(), binDark = %1").arg(m_binDark);
+	 qDebug() << QString("n2D::setTheme(), binDark = %1").arg(m_binDark);
+}
+
+void n2D::setXachseVisebility()
+{
+	m_series.first()->attachedAxes().first()->
+			setVisible( !m_series.first()->attachedAxes().first()->isVisible() );
+}
+
+void n2D::setYachsenVisebility()
+{
+	foreach (QLineSeries *series, m_series) {
+		if (series->isVisible())
+			series->attachedAxes().last()->setVisible( !series->attachedAxes().last()->isVisible() );
+	}
 }
 
 

@@ -73,6 +73,8 @@ public slots:
 	void disconnectMarkers();
 	void setMinMaxXAchse();
 	void setTheme();
+	void setXachseVisebility();
+	void setYachsenVisebility();
 
 	void handleMarkerClicked();
 	void xAchsenBereich(qreal min, qreal max) {qDebug() << "xAchsenBereich(" << min <<"," << max << ")";}
@@ -101,7 +103,7 @@ private:
 //	QChartView *m_chartView;
 //	QGridLayout *m_mainLayout;
 
-	QCategoryAxis *m_axisX;
+//	QCategoryAxis *m_axisX;
 
 	bool m_binDark = false;
 
