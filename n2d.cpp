@@ -13,6 +13,7 @@
 #include <QShortcut>
 #include <QtCharts/QLogValueAxis>
 #include <QLayout>
+#include <QFont>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -25,20 +26,19 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	// Create chart view with the chart
 	m_chart = new QChart();
 	setChart(m_chart);
-	//m_chartView = new ChartViewPat(m_chart);
-	/*m_chartView->*/setRubberBand(QChartView::HorizontalRubberBand); //
-	/*m_chartView->*/setMouseTracking(true);
-	qDebug() << "m_chartView->hasMouseTracking()" << /*m_chartView->*/hasMouseTracking();
+	setRubberBand(QChartView::HorizontalRubberBand); //
+	setMouseTracking(true);
+	qDebug() << "m_chartView->hasMouseTracking()" << hasMouseTracking();
 	setMouseTracking(true);
 	this->setCursor(Qt::CrossCursor);
 	this->setTheme();
 
-	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
-	//m_chartView->setDragMode(QGraphicsView::NoDrag);
+	//setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
+	//setDragMode(QGraphicsView::NoDrag);
 
 	//![2]
 	m_axisX = new QValueAxis;
-//	connect(m_axisX, SIGNAL(rangeChanged(qreal, qreal)), this, SLOT(xAchsenBereich(qreal, qreal))); // für HorizontalRubberBand
+	connect(m_axisX, SIGNAL(rangeChanged(qreal, qreal)), this, SLOT(controlIfaxisXisOutOfRange(qreal, qreal))); // für HorizontalRubberBand
 	//![2]
 
 	// Add few series & Kopie der Werte erstellen
@@ -60,6 +60,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	m_hilfsLinie = new QGraphicsRectItem(10,10,0,100,m_chart);
 	QPen pen;
 	pen.setColor(Qt::darkGray);
+	pen.setWidth(0);
 	m_hilfsLinie->setPen(pen);
 	m_coordX->setPen(pen);
 
@@ -82,7 +83,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(reopenSCut, SIGNAL(activated()), this, SLOT(reOpenSlot()));
 	QShortcut *yLogarithmisch = new QShortcut(QKeySequence("L"), this);
 	QObject::connect(yLogarithmisch, SIGNAL(activated()), this, SLOT(setYLogarithmisch()));
-	QShortcut *theme = new QShortcut(QKeySequence("T"), this);
+	QShortcut *theme = new QShortcut(QKeySequence("D"), this);
 	QObject::connect(theme, SIGNAL(activated()), this, SLOT(setTheme()));
 	QShortcut *xMinMax = new QShortcut(QKeySequence("M"), this);
 	QObject::connect(xMinMax, SIGNAL(activated()), this, SLOT(setMinMaxXAchse()));
@@ -95,7 +96,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 
 n2D::~n2D()
 {
-	//delete m_chartView;
 	//delete m_chart;
 	//delete m_axisX;
 	//delete m_mainLayout;
@@ -118,6 +118,14 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	/// xyWerte als Text unten anzeigen:
 	// x:
 	m_coordX->setPos(breite, hoehe);
+	QFont font;
+//	font.setStretch(QFont::AnyStretch);
+//	font.setStyle(QFont::StyleNormal);
+//	font.setStyleStrategy(QFont::PreferQuality);
+//	font.setWeight(QFont::ExtraLight);
+//	font.setPixelSize(10);
+//	font.setStyleStrategy(QFont::PreferDefault);
+//	m_coordX->setFont(font);
 	if (istXWertInnerhalb) {
 		qreal xAchsenWert = m_series.first()->points().at(xPosMaus).x();
 		m_coordX->setText(QString("X:%1").arg(xAchsenWert));
@@ -319,6 +327,13 @@ void n2D::handleMarkerClicked()
 	 }
 }
 
+void n2D::controlIfaxisXisOutOfRange(qreal min, qreal max)
+{
+	QList<QPointF> p = m_series.first()->points();
+	if ((min < p.first().rx()) | (p.last().rx() <= max))
+		setMinMaxXAchse();
+}
+
 void n2D::setMinMaxXAchse()
 {
 	QList<QPointF> p = m_series.first()->points();
@@ -330,13 +345,13 @@ void n2D::setTheme()
 	toggleBit(m_binDark);
 	QPalette pal = window()->palette();
 	if (m_binDark) {
-		/*m_chartView->*/chart()->setTheme(QChart::QChart::ChartThemeDark);
+		chart()->setTheme(QChart::QChart::ChartThemeDark);
 		pal.setColor(QPalette::Window, QRgb(0x121218));
 		pal.setColor(QPalette::WindowText, QRgb(0xd6d6d6));
 	}
 	else
 	{
-		/*m_chartView->*/chart()->setTheme(QChart::ChartThemeLight);
+		chart()->setTheme(QChart::ChartThemeLight);
 		pal.setColor(QPalette::Window, QRgb(0xf0f0f0));
 		pal.setColor(QPalette::WindowText, QRgb(0x404044));
 	}

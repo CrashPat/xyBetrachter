@@ -71,13 +71,13 @@ public slots:
 	void removeHiddenSeries();
 	void connectMarkers();
 	void disconnectMarkers();
+	void controlIfaxisXisOutOfRange(qreal min, qreal max);
 	void setMinMaxXAchse();
 	void setTheme();
 	void setXachseVisebility();
 	void setYachsenVisebility();
 
 	void handleMarkerClicked();
-	void xAchsenBereich(qreal min, qreal max) {qDebug() << "xAchsenBereich(" << min <<"," << max << ")";}
 
 	void close() {delete this;}
 	void reOpenSlot() {emit reOpenSignal();}
@@ -99,9 +99,6 @@ private:
 	void toggleBit(bool &bit) {bit = !bit;}
 	QChart *m_chart;
 	QList<QLineSeries *> m_series;
-
-//	QChartView *m_chartView;
-//	QGridLayout *m_mainLayout;
 
 	QValueAxis *m_axisX;
 
