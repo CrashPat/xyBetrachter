@@ -194,6 +194,7 @@ void MainWindow::hilfeDialog()
 			   "- [M] 	x-Achsen wird auf ihre maximale Darstellung gebracht.\n"
 			   "- [X] 	x-Achse aus/ein-blenden.\n"
 			   "- [Y] 	y-Achsen aus/ein-blenden.\n"
+			   "- [G] 	Hilfslinien (Grid) aus/ein-blenden.\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 30.06.2020").arg(m_pfad) );
 }

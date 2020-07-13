@@ -76,6 +76,7 @@ public slots:
 	void setTheme();
 	void setXachseVisebility();
 	void setYachsenVisebility();
+	void setGridVisebility();
 
 	void handleMarkerClicked();
 
@@ -103,6 +104,7 @@ private:
 	QValueAxis *m_axisX;
 
 	bool m_binDark = false;
+	bool m_visibleGrid = true;
 
 	QGraphicsSimpleTextItem *m_coordX;
 	QList<QGraphicsSimpleTextItem *> m_coordListY;

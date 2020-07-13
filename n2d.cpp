@@ -60,8 +60,9 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	m_hilfsLinie = new QGraphicsRectItem(10,10,0,100,m_chart);
 	QPen pen;
 	pen.setColor(Qt::darkGray);
-	pen.setWidth(0);
+	pen.setWidthF(0.2);
 	m_hilfsLinie->setPen(pen);
+	pen.setWidthF(0.5);
 	m_coordX->setPen(pen);
 
 	connectMarkers();
@@ -91,6 +92,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(xAchse, SIGNAL(activated()), this, SLOT(setXachseVisebility()));
 	QShortcut *yAchsen = new QShortcut(QKeySequence("Y"), this);
 	QObject::connect(yAchsen, SIGNAL(activated()), this, SLOT(setYachsenVisebility()));
+	QShortcut *gridVisebility = new QShortcut(QKeySequence("G"), this);
+	QObject::connect(gridVisebility, SIGNAL(activated()), this, SLOT(setGridVisebility()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
 }
 
@@ -118,14 +121,6 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	/// xyWerte als Text unten anzeigen:
 	// x:
 	m_coordX->setPos(breite, hoehe);
-	QFont font;
-//	font.setStretch(QFont::AnyStretch);
-//	font.setStyle(QFont::StyleNormal);
-//	font.setStyleStrategy(QFont::PreferQuality);
-//	font.setWeight(QFont::ExtraLight);
-//	font.setPixelSize(10);
-//	font.setStyleStrategy(QFont::PreferDefault);
-//	m_coordX->setFont(font);
 	if (istXWertInnerhalb) {
 		qreal xAchsenWert = m_series.first()->points().at(xPosMaus).x();
 		m_coordX->setText(QString("X:%1").arg(xAchsenWert));
@@ -185,7 +180,6 @@ void n2D::addAxisYlinear(QLineSeries *series)
 	//axisY->setTitleText("Values");
 	//axisY->setLabelFormat("%g");
 	//axisY->setBase(8.0);
-	//axisY->setMinorTickCount(-1); // zusätzliche Hilfslinien
 	m_chart->addAxis(axisY, Qt::AlignLeft);
 	series->attachAxis(m_axisX);
 	series->attachAxis(axisY);
@@ -215,13 +209,14 @@ void n2D::setYLogarithmisch()
 	foreach (QLineSeries *series, m_series) {
 		qDebug() << "series->name() =" << series->name();
 		bool isVisible = series->isVisible();
-		//series->detachAxis(series->attachedAxes().last());
+		//series->attachedAxes().last()->;
 		delete series->attachedAxes().last();
-		//m_chart->removeSeries(series);
 		if (!binLogarithmisch)
 			addAxisYlinear(series);
-		else
+		else {
+//			if (series->attachedAxes(Qt::Horizontal)
 			addAxisYlogarithmisch(series);
+		}
 		series->setVisible(isVisible);
 		series->attachedAxes().last()->setVisible(isVisible);
 	}
@@ -330,7 +325,7 @@ void n2D::handleMarkerClicked()
 void n2D::controlIfaxisXisOutOfRange(qreal min, qreal max)
 {
 	QList<QPointF> p = m_series.first()->points();
-	if ((min < p.first().rx()) | (p.last().rx() <= max))
+	if ((min < p.first().rx()) & (p.last().rx() <= max))
 		setMinMaxXAchse();
 }
 
@@ -372,10 +367,14 @@ void n2D::setYachsenVisebility()
 	}
 }
 
-
-
-
-
-
-
-
+void n2D::setGridVisebility()
+{
+	toggleBit(m_visibleGrid);
+	QList<QAbstractAxis *> achsen = m_chart->axes();
+	foreach (QAbstractAxis *achse, achsen) {
+		if (achse->isVisible()) {// yAchsen
+			achse->setGridLineVisible(m_visibleGrid);
+			achse->setMinorGridLineVisible(-m_visibleGrid);
+		}
+	}
+}
