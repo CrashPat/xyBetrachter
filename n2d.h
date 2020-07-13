@@ -103,7 +103,7 @@ private:
 //	QChartView *m_chartView;
 //	QGridLayout *m_mainLayout;
 
-//	QCategoryAxis *m_axisX;
+	QValueAxis *m_axisX;
 
 	bool m_binDark = false;
 

@@ -34,22 +34,10 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	this->setTheme();
 
 	//m_chartView->setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
-	//	m_chartView->setDragMode(QGraphicsView::NoDrag);
-	//	m_chartView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	//	m_chartView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-	// Create layout for grid and detached legend
-//	m_mainLayout = new QGridLayout();
-
-//	m_mainLayout->addWidget(m_chartView);
-	//m_mainLayout->setSpacing(0);
-//	setLayout(m_mainLayout);
-	//setTheme();
+	//m_chartView->setDragMode(QGraphicsView::NoDrag);
 
 	//![2]
-//	m_axisX = new QCategoryAxis;
-//	m_axisX->setLabelsPosition(QCategoryAxis::AxisLabelsPositionOnValue);
-	//m_chart->addAxis(m_axisX, Qt::AlignBottom); //MACHT PROBLEME
+	m_axisX = new QValueAxis;
 //	connect(m_axisX, SIGNAL(rangeChanged(qreal, qreal)), this, SLOT(xAchsenBereich(qreal, qreal))); // für HorizontalRubberBand
 	//![2]
 
@@ -171,10 +159,6 @@ void n2D::addSeries(QLineSeries *series)
 	 m_series.append(series);
 	 m_chart->addSeries(series);
 
-	 if (m_series.count() == 1) {
-		 m_chart->createDefaultAxes();
-		 m_chart->axisY()->hide();
-	 }
 	 // Dünnen Grafen zeichnen:
 	 QPen pen = series->pen();
 	 pen.setWidth(1);
@@ -187,9 +171,15 @@ void n2D::addSeries(QLineSeries *series)
 void n2D::addAxisYlinear(QLineSeries *series)
 {
 	// Achsen anhängen:
+	if (m_chart->axes(Qt::Horizontal).length() == 0)
+		m_chart->addAxis(m_axisX, Qt::AlignBottom);
 	QValueAxis *axisY = new QValueAxis;
+	//axisY->setTitleText("Values");
+	//axisY->setLabelFormat("%g");
+	//axisY->setBase(8.0);
+	//axisY->setMinorTickCount(-1); // zusätzliche Hilfslinien
 	m_chart->addAxis(axisY, Qt::AlignLeft);
-	//series->attachAxis(m_axisX);
+	series->attachAxis(m_axisX);
 	series->attachAxis(axisY);
 	axisY->setLinePenColor(series->pen().color());
 	axisY->setLabelsColor(series->pen().color());
@@ -198,13 +188,11 @@ void n2D::addAxisYlinear(QLineSeries *series)
 void n2D::addAxisYlogarithmisch(QLineSeries *series)
 {
 	// Achsen anhängen:
+	if (m_chart->axes(Qt::Horizontal).length() == 0)
+		m_chart->addAxis(m_axisX, Qt::AlignBottom);
 	QLogValueAxis *axisY = new QLogValueAxis;
-	//axisY->setTitleText("Values");
-	//axisY->setLabelFormat("%g");
-	//axisY->setBase(8.0);
-	axisY->setMinorTickCount(-1);
+	axisY->setMinorTickCount(-1); // zusätzliche Hilfslinien
 	m_chart->addAxis(axisY, Qt::AlignLeft);
-	//series->attachAxis(m_axisX);
 	series->attachAxis(axisY);
 	axisY->setLinePenColor(series->pen().color());
 	axisY->setLabelsColor(series->pen().color());
@@ -333,9 +321,8 @@ void n2D::handleMarkerClicked()
 
 void n2D::setMinMaxXAchse()
 {
-	QList<QPointF> p = m_series.at(0)->points();
-	//m_axisX->setRange(p.first().rx(), p.last().rx()); // geht leider nicht
-	qDebug() << QString("n2D::setMinMaxXAchse(), (%1,%2)").arg(p.first().rx()).arg(p.last().rx());
+	QList<QPointF> p = m_series.first()->points();
+	m_axisX->setRange(p.first().rx(), p.last().rx());
 }
 
 void n2D::setTheme()
@@ -359,8 +346,7 @@ void n2D::setTheme()
 
 void n2D::setXachseVisebility()
 {
-	m_series.first()->attachedAxes().first()->
-			setVisible( !m_series.first()->attachedAxes().first()->isVisible() );
+	m_axisX->setVisible(!m_axisX->isVisible());
 }
 
 void n2D::setYachsenVisebility()
