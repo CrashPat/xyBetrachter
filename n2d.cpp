@@ -85,7 +85,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QShortcut *reopenSCut = new QShortcut(QKeySequence("R"), this);
 	QObject::connect(reopenSCut, SIGNAL(activated()), this, SLOT(reOpenSlot()));
 	QShortcut *yLogarithmisch = new QShortcut(QKeySequence("L"), this);
-	QObject::connect(yLogarithmisch, SIGNAL(activated()), this, SLOT(setYLogarithmisch()));
+	QObject::connect(yLogarithmisch, SIGNAL(activated()), this, SLOT(setYLinearOrLogarithmisch()));
 	QShortcut *theme = new QShortcut(QKeySequence("T"), this);
 	QObject::connect(theme, SIGNAL(activated()), this, SLOT(setTheme()));
 	QShortcut *xMinMax = new QShortcut(QKeySequence("M"), this);
@@ -211,14 +211,14 @@ void n2D::addAxisYlogarithmisch(QLineSeries *series)
 	if (m_chart->axes(Qt::Horizontal).length() == 0)
 		m_chart->addAxis(m_axisX, Qt::AlignBottom);
 	QLogValueAxis *axisY = new QLogValueAxis;
-	axisY->setMinorTickCount(-1); // zusätzliche Hilfslinien
+	//axisY->setMinorTickCount(-1); // zusätzliche Hilfslinien
 	m_chart->addAxis(axisY, Qt::AlignLeft);
 	series->attachAxis(axisY);
 	axisY->setLinePenColor(series->pen().color());
 	axisY->setLabelsColor(series->pen().color());
 }
 
-void n2D::setYLogarithmisch()
+void n2D::setYLinearOrLogarithmisch()
 {
 	static bool binLogarithmisch = false;
 	toggleBit(binLogarithmisch);
@@ -235,8 +235,8 @@ void n2D::setYLogarithmisch()
 //			if (series->attachedAxes(Qt::Horizontal)
 			addAxisYlogarithmisch(series);
 		}
-		series->setVisible(isVisible);
-		series->attachedAxes().last()->setVisible(isVisible);
+//		series->setVisible(isVisible);
+//		series->attachedAxes().last()->setVisible(isVisible);
 	}
 	qDebug() << "todo n2D::setYLogarithmisch(): geht bei nur einem Grafen nicht.";
 	qDebug() << "todo n2D::setYLogarithmisch(): negativer Logarithmus geht nicht, deshalb alle Grafen mit negative y-Wert weiterhin linear anzeigen.";

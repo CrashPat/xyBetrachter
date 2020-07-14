@@ -85,7 +85,7 @@ public slots:
 	void close() {delete this;}
 	void reOpenSlot() {emit reOpenSignal();}
 	void hilfeSlot() {emit hilfeSignal();}
-	void setYLogarithmisch();
+	void setYLinearOrLogarithmisch();
 
 signals:
 	void fensterGeschlossen();
