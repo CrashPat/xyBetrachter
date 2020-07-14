@@ -223,7 +223,7 @@ void n2D::setYLogarithmisch()
 	// Remove attachedAxes
 
 	foreach (QLineSeries *series, m_series) {
-		qDebug() << "series->name() =" << series->name();
+		//qDebug() << "series->name() =" << series->name();
 		bool isVisible = series->isVisible();
 		//series->attachedAxes().last()->;
 		delete series->attachedAxes().last();
@@ -236,7 +236,8 @@ void n2D::setYLogarithmisch()
 		series->setVisible(isVisible);
 		series->attachedAxes().last()->setVisible(isVisible);
 	}
-	qDebug() << "setYLogarithmisch(), binLogarithmisch = " << binLogarithmisch;
+	qDebug() << "todo n2D::setYLogarithmisch(): geht bei nur einem Grafen nicht.";
+	qDebug() << "todo n2D::setYLogarithmisch(): negativer Logarithmus geht nicht, deshalb alle Grafen mit negative y-Wert weiterhin linear anzeigen.";
 }
 
 void n2D::removeHiddenSeries()
@@ -367,7 +368,7 @@ void n2D::setTheme()
 		pal.setColor(QPalette::WindowText, QRgb(0x404044));
 	}
 	 window()->setPalette(pal);
-	 qDebug() << QString("n2D::setTheme(), binDark = %1").arg(m_binDark);
+	 //qDebug() << QString("n2D::setTheme(), binDark = %1").arg(m_binDark);
 }
 
 void n2D::setXachseVisebility()
@@ -393,5 +394,13 @@ void n2D::setGridVisebility()
 			achse->setMinorGridLineVisible(-m_visibleGrid);
 		}
 	}
-	qDebug() << "n2D::setGridVisebility()";
+	//qDebug() << "n2D::setGridVisebility()";
+}
+
+void n2D::setAllLegendsVisebility()
+{
+	const auto markers = m_chart->legend()->markers();
+	foreach (QLegendMarker* marker, m_chart->legend()->markers()) {
+		marker->clicked();
+	}
 }
