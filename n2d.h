@@ -109,7 +109,8 @@ private:
 	QGraphicsSimpleTextItem *m_coordX;
 	QList<QGraphicsSimpleTextItem *> m_coordListY;
 
-	QGraphicsRectItem *m_hilfsLinie;
+	QGraphicsRectItem *m_xHilfsLinie;
+	QGraphicsRectItem *m_yHilfsLinie;
 };
 
 #endif // N2D_H

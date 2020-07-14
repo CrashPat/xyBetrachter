@@ -57,11 +57,13 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		m_coordListY.append(new QGraphicsSimpleTextItem(m_chart));
 	}
 
-	m_hilfsLinie = new QGraphicsRectItem(10,10,0,100,m_chart);
+	m_xHilfsLinie = new QGraphicsRectItem(10,10,0,100,m_chart);
+	m_yHilfsLinie = new QGraphicsRectItem(10,10,100,0,m_chart);
 	QPen pen;
 	pen.setColor(Qt::darkGray);
 	pen.setWidthF(0.2);
-	m_hilfsLinie->setPen(pen);
+	m_xHilfsLinie->setPen(pen);
+	m_yHilfsLinie->setPen(pen);
 	pen.setWidthF(0.5);
 	m_coordX->setPen(pen);
 
@@ -113,10 +115,14 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	qreal xPosMaus = m_chart->mapToValue(event->pos()).x();
 	qreal xPosFirst = m_series.first()->points().first().x();
 	qreal xPosLast = m_series.first()->points().last().x();
+	qreal yPosMaus = /*m_chart->mapToValue*/(event->pos()).y();
 
 	bool istXWertInnerhalb = false;
 	if ( (xPosFirst <= xPosMaus) & (xPosMaus <= xPosLast)) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..points().at(xPosMaus)..
 		istXWertInnerhalb = true;
+	bool istYWertInnerhalb = false; //(hoehe-75-30)
+	if ( ( 75 <= yPosMaus) & (yPosMaus <= (hoehe-30))) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..points().at(xPosMaus)..
+		istYWertInnerhalb = true;
 
 	/// xyWerte als Text unten anzeigen:
 	// x:
@@ -146,13 +152,17 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	}
 
 	/// Hilslinien bei Mausposition zeichnen:
-	if (istXWertInnerhalb) {
+	if (istXWertInnerhalb & istYWertInnerhalb) {
 		QPoint pos = event->pos();
-		m_hilfsLinie->setRect(pos.x(),75,0,hoehe-75-30);
-		m_hilfsLinie->setVisible(true);
+		m_xHilfsLinie->setRect(pos.x(),75,0, hoehe-75-30);
+		m_xHilfsLinie->setVisible(true);
+		m_yHilfsLinie->setRect(30,pos.y(),   breite-17,0);
+		m_yHilfsLinie->setVisible(true);
 	}
-	else
-		m_hilfsLinie->hide();
+	else {
+		m_xHilfsLinie->hide();
+		m_yHilfsLinie->hide();
+	}
 
 	QChartView::mouseMoveEvent(event); // muss weiter gereicht werden sonst geht Rubberband nicht
 }
