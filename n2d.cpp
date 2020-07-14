@@ -208,18 +208,30 @@ void n2D::addAxisYlinear(QLineSeries *series)
 
 void n2D::addAxisYlogarithmisch(QLineSeries *series)
 {
-	// Achsen anhängen:
-	if (m_chart->axes(Qt::Horizontal).length() == 0) {
-		m_chart->addAxis(m_axisX, Qt::AlignBottom);
+	// Abfragen ob logarithmisch überhaubpt möglich:
+	QVector<QPointF> werte = series->pointsVector();
+	Q_ASSERT(werte.size() > 0);
+	float yMin = std::numeric_limits<float>::max();
+	foreach (QPointF p, werte) {
+		yMin = qMin((double)yMin, p.y());
 	}
-	QLogValueAxis *axisY = new QLogValueAxis;
-	//axisY->setMinorTickCount(-1); // zusätzliche Hilfslinien
-	m_chart->addAxis(axisY, Qt::AlignLeft);
-	series->attachAxis(m_axisX);
-	series->attachAxis(axisY);
-	axisY->setLinePenColor(series->pen().color());
-	axisY->setLabelsColor(series->pen().color());
-	//axisY->setMinorGridLineVisible(true); --> geht irgendwie nicht
+
+	if (yMin <= 0) // logarithmisch nicht möglich?
+		addAxisYlinear(series);
+	else { // logarithmisch
+		// Achsen anhängen:
+		if (m_chart->axes(Qt::Horizontal).length() == 0) {
+			m_chart->addAxis(m_axisX, Qt::AlignBottom);
+		}
+		QLogValueAxis *axisY = new QLogValueAxis;
+		//axisY->setMinorTickCount(-1); // zusätzliche Hilfslinien
+		m_chart->addAxis(axisY, Qt::AlignLeft);
+		series->attachAxis(m_axisX);
+		series->attachAxis(axisY);
+		axisY->setLinePenColor(series->pen().color());
+		axisY->setLabelsColor(series->pen().color());
+		//axisY->setMinorGridLineVisible(true); --> geht irgendwie nicht
+	}
 }
 
 void n2D::setYLinearOrLogarithmisch()
