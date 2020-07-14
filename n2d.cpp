@@ -192,8 +192,9 @@ void n2D::addSeries(QLineSeries *series)
 void n2D::addAxisYlinear(QLineSeries *series)
 {
 	// Achsen anhängen:
-	if (m_chart->axes(Qt::Horizontal).length() == 0)
+	if (m_chart->axes(Qt::Horizontal).length() == 0) {
 		m_chart->addAxis(m_axisX, Qt::AlignBottom);
+	}
 	QValueAxis *axisY = new QValueAxis;
 	//axisY->setTitleText("Values");
 	//axisY->setLabelFormat("%g");
@@ -208,36 +209,41 @@ void n2D::addAxisYlinear(QLineSeries *series)
 void n2D::addAxisYlogarithmisch(QLineSeries *series)
 {
 	// Achsen anhängen:
-	if (m_chart->axes(Qt::Horizontal).length() == 0)
+	if (m_chart->axes(Qt::Horizontal).length() == 0) {
 		m_chart->addAxis(m_axisX, Qt::AlignBottom);
+	}
 	QLogValueAxis *axisY = new QLogValueAxis;
 	//axisY->setMinorTickCount(-1); // zusätzliche Hilfslinien
 	m_chart->addAxis(axisY, Qt::AlignLeft);
+	series->attachAxis(m_axisX);
 	series->attachAxis(axisY);
 	axisY->setLinePenColor(series->pen().color());
 	axisY->setLabelsColor(series->pen().color());
+	//axisY->setMinorGridLineVisible(true); --> geht irgendwie nicht
 }
 
 void n2D::setYLinearOrLogarithmisch()
 {
-	static bool binLogarithmisch = false;
-	toggleBit(binLogarithmisch);
+	toggleBit(m_binLogarithmisch);
 	// Remove attachedAxes
 
+	//m_chart->axes(Qt::Vertical).detach(); // alle y-Achsten löschen
 	foreach (QLineSeries *series, m_series) {
 		//qDebug() << "series->name() =" << series->name();
 		bool isVisible = series->isVisible();
-		//series->attachedAxes().last()->;
-		delete series->attachedAxes().last();
-		if (!binLogarithmisch)
-			addAxisYlinear(series);
-		else {
-//			if (series->attachedAxes(Qt::Horizontal)
+		delete series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
+		if (m_binLogarithmisch)
 			addAxisYlogarithmisch(series);
-		}
-//		series->setVisible(isVisible);
-//		series->attachedAxes().last()->setVisible(isVisible);
+		else
+			addAxisYlinear(series);
+		series->setVisible(isVisible);
+		series->attachedAxes().last()->setVisible(isVisible);
+		series->attachedAxes().last()->setGridLineVisible(m_visibleGrid);
+		series->pointsReplaced(); // Grafik aktualisieren
 	}
+	repaint();
+	qDebug() << "m_series.length() =" << m_series.length();
+	qDebug() << "m_chart->axes().length() =" << m_chart->axes().length();
 	qDebug() << "todo n2D::setYLogarithmisch(): geht bei nur einem Grafen nicht.";
 	qDebug() << "todo n2D::setYLogarithmisch(): negativer Logarithmus geht nicht, deshalb alle Grafen mit negative y-Wert weiterhin linear anzeigen.";
 }
@@ -370,7 +376,7 @@ void n2D::setTheme()
 		pal.setColor(QPalette::WindowText, QRgb(0x404044));
 	}
 	 window()->setPalette(pal);
-	 //qDebug() << QString("n2D::setTheme(), binDark = %1").arg(m_binDark);
+	 //qDebug() << QString("n2D::setTheme(), binDark = %1").arg(binDark);
 }
 
 void n2D::setXachseVisebility()
@@ -393,7 +399,6 @@ void n2D::setGridVisebility()
 	foreach (QAbstractAxis *achse, achsen) {
 		if (achse->isVisible()) {// yAchsen
 			achse->setGridLineVisible(m_visibleGrid);
-			achse->setMinorGridLineVisible(-m_visibleGrid);
 		}
 	}
 	//qDebug() << "n2D::setGridVisebility()";

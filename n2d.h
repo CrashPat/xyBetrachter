@@ -102,9 +102,8 @@ private:
 	void toggleBit(bool &bit) {bit = !bit;}
 	QChart *m_chart;
 	QList<QLineSeries *> m_series;
-
 	QValueAxis *m_axisX;
-
+	bool m_binLogarithmisch = false;
 	bool m_binDark = false;
 	bool m_visibleGrid = true;
 
