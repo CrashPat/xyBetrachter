@@ -190,11 +190,13 @@ void MainWindow::hilfeDialog()
 			   "- [Entf]	Die ausgeblendeten Grafen werden gelöscht.\n"
 			   "- [L] 	y-Achsen werden logarithmisch dargestellt. Bei erneutem betätigen\n"
 			   "	wird wieder linear dargestellt.\n"
-			   "- [D] 	Zwischen heller und dunkler Ansicht wechseln.\n"
+			   "- [T] 	Zwischen heller und dunkler Ansicht (Theme) wechseln.\n"
 			   "- [M] 	x-Achsen wird auf ihre maximale Darstellung gebracht.\n"
 			   "- [X] 	x-Achse aus/ein-blenden.\n"
 			   "- [Y] 	y-Achsen aus/ein-blenden.\n"
-			   "- [G] 	Hilfslinien (Grid) aus/ein-blenden.\n"
+			   "- [H] 	Hilfslinien (Grid) aus/ein-blenden.\n"
+			   "- [G] 	Aus/ein-blenden aller Legenden und die zugehörige Grafiken.\n"
+			   "- [P] 	Printscreen wird als PNG unter dem obigen genannten Pfad erzeugt.\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 30.06.2020").arg(m_pfad) );
 }

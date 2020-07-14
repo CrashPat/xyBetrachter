@@ -86,7 +86,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(reopenSCut, SIGNAL(activated()), this, SLOT(reOpenSlot()));
 	QShortcut *yLogarithmisch = new QShortcut(QKeySequence("L"), this);
 	QObject::connect(yLogarithmisch, SIGNAL(activated()), this, SLOT(setYLogarithmisch()));
-	QShortcut *theme = new QShortcut(QKeySequence("D"), this);
+	QShortcut *theme = new QShortcut(QKeySequence("T"), this);
 	QObject::connect(theme, SIGNAL(activated()), this, SLOT(setTheme()));
 	QShortcut *xMinMax = new QShortcut(QKeySequence("M"), this);
 	QObject::connect(xMinMax, SIGNAL(activated()), this, SLOT(setMinMaxXAchse()));
@@ -94,9 +94,15 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(xAchse, SIGNAL(activated()), this, SLOT(setXachseVisebility()));
 	QShortcut *yAchsen = new QShortcut(QKeySequence("Y"), this);
 	QObject::connect(yAchsen, SIGNAL(activated()), this, SLOT(setYachsenVisebility()));
-	QShortcut *gridVisebility = new QShortcut(QKeySequence("G"), this);
+	QShortcut *gridVisebility = new QShortcut(QKeySequence("H"), this);
 	QObject::connect(gridVisebility, SIGNAL(activated()), this, SLOT(setGridVisebility()));
+	QShortcut *allLegendsVisebility = new QShortcut(QKeySequence("G"), this);
+	QObject::connect(allLegendsVisebility, SIGNAL(activated()), this, SLOT(setAllLegendsVisebility()));
+	QShortcut *printScreen = new QShortcut(QKeySequence("P"), this);
+	QObject::connect(printScreen, SIGNAL(activated()), this, SLOT(makePrintScreen()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
+
+	this->setGridVisebility();
 }
 
 n2D::~n2D()
@@ -387,4 +393,5 @@ void n2D::setGridVisebility()
 			achse->setMinorGridLineVisible(-m_visibleGrid);
 		}
 	}
+	qDebug() << "n2D::setGridVisebility()";
 }

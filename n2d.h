@@ -77,6 +77,8 @@ public slots:
 	void setXachseVisebility();
 	void setYachsenVisebility();
 	void setGridVisebility();
+	void setAllLegendsVisebility() {qDebug() << "setAllLegendsVisebility() noch nicht implementiert.";}
+	void makePrintScreen() {qDebug() << "makePrintScreen() noch nicht implementiert.";}
 
 	void handleMarkerClicked();
 
