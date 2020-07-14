@@ -100,6 +100,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(allLegendsVisebility, SIGNAL(activated()), this, SLOT(setAllLegendsVisebility()));
 	QShortcut *printScreen = new QShortcut(QKeySequence("P"), this);
 	QObject::connect(printScreen, SIGNAL(activated()), this, SLOT(makePrintScreen()));
+	QShortcut *fullScreen = new QShortcut(QKeySequence("F"), this);
+	QObject::connect(fullScreen, SIGNAL(activated()), this, SLOT(showMaximized()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
 
 	this->setGridVisebility();

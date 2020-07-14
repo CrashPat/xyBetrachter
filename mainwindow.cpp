@@ -197,6 +197,7 @@ void MainWindow::hilfeDialog()
 			   "- [H] 	Hilfslinien (Grid) aus/ein-blenden.\n"
 			   "- [G] 	Aus/ein-blenden aller Legenden und die zugehörige Grafiken.\n"
 			   "- [P] 	Printscreen wird als PNG unter dem obigen genannten Pfad erzeugt.\n"
+			   "- [F] 	Fullscreen\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 30.06.2020").arg(m_pfad) );
 }
