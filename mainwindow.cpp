@@ -198,7 +198,7 @@ void MainWindow::hilfeDialog()
 			   "- [G] 	Alle Legeden der Graphen aus/ein-blenden.\n"
 			   "- [P] 	Printscreen wird als PNG unter dem obigen genannten Pfad erzeugt.\n"
 			   "- [F] 	Fullscreen\n"
-			   "- [D] 	Dottet: Graphen aus/ein-schalten\n"
+			   "- [D] 	Dottet: Toggeln zwischen Linear/Scattert-Darstellung\n"
 			   "\n"
-			   "					patrik.roth@gmx.de, 30.06.2020").arg(m_pfad) );
+			   "					patrik.roth@gmx.de, 16.07.2020").arg(m_pfad) );
 }

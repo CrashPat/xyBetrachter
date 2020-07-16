@@ -111,6 +111,7 @@ private:
 	bool m_binDark = false;
 	bool m_visibleGrid = true;
 	bool m_visibleAxisY = true;
+	bool m_visibleDots = false;
 
 	QGraphicsSimpleTextItem *m_coordX;
 	QList<QGraphicsSimpleTextItem *> m_coordListY;

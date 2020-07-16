@@ -466,5 +466,14 @@ void n2D::setAllLegendsVisebility()
 
 void n2D::setDottedGraphs()
 {
+	toggleBit(m_visibleDots);
+	for (int i = 0; i < m_series.length(); ++i) {
+		bool eineOderBeideSerienSichtbar
+				= m_series.at(i)->isVisible() |	m_scatSer.at(i)->isVisible();
+		m_series.at(i)->setVisible( eineOderBeideSerienSichtbar & !m_visibleDots );
+		m_scatSer.at(i)->setVisible( eineOderBeideSerienSichtbar & m_visibleDots );
+		if (m_visibleDots)
+			m_scatSer.at(i)->setName(m_series.at(i)->name());
+	}
 	qDebug() << "setDottedGraphs()";
 }
