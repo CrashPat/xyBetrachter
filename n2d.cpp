@@ -29,7 +29,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	setRubberBand(QChartView::HorizontalRubberBand); //
 	setMouseTracking(true);
 	qDebug() << "m_chartView->hasMouseTracking()" << hasMouseTracking();
-	setMouseTracking(true);
 	this->setCursor(Qt::CrossCursor);
 	this->setTheme();
 
@@ -281,7 +280,8 @@ void n2D::removeHiddenSeries()
 {
 	// Remove last series from chart
 	for (int i = 0; i < m_series.length(); ++i) {
-		if ( ! (m_series.at(i)->isVisible() | m_scatSer.at(i)->isVisible()) )
+//		if ( ! (m_series.at(i)->isVisible() | m_scatSer.at(i)->isVisible()) )
+		if ( ! m_series.at(i)->isVisible() )
 		{
 			delete m_series.at(i)->attachedAxes().last();
 			m_chart->removeSeries(m_series.at(i));
