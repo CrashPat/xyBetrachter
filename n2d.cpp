@@ -333,7 +333,8 @@ void n2D::handleMarkerClicked()
 	//![5]
 			  // Toggle visibility of series
 			  marker->series()->setVisible(!marker->series()->isVisible());
-			  marker->series()->attachedAxes().last()->setVisible(marker->series()->isVisible()); // y-Achse Ein/Aus blenden
+			  //marker->series()->attachedAxes().last()->setVisible(marker->series()->isVisible()); // y-Achse Ein/Aus blenden
+			  setYachsenVisebilityForMarker(); // y-Achse Ein/Aus blenden
 
 			  // Turn legend marker back to visible, since hiding series also hides the marker
 			  // and we don't want it to happen now.
@@ -415,14 +416,22 @@ void n2D::setXachseVisebility()
 
 void n2D::setYachsenVisebility()
 {
-	foreach (QLineSeries *series, m_series) {
-		if (series->isVisible())
-			series->attachedAxes().last()->setVisible( !series->attachedAxes().last()->isVisible() );
+	toggleBit(m_visibleAxisY);
+	for (int i = 0; i < m_series.length(); ++i) {
+		if (m_series.at(i)->isVisible() | m_series.at(i)->isVisible())
+			m_series.at(i)->attachedAxes().last()->setVisible( m_visibleAxisY );
 	}
-	foreach (QScatterSeries *series, m_scatSer) {
-		if (series->isVisible())
-			series->attachedAxes().last()->setVisible( true );
-//		series->attachedAxes().last()->setVisible( !series->attachedAxes().last()->isVisible() );
+}
+
+void n2D::setYachsenVisebilityForMarker()
+{
+	if (m_visibleAxisY)
+	{
+		for (int i = 0; i < m_series.length(); ++i) {
+			m_series.at(i)->attachedAxes().last()
+					->setVisible( m_series.at(i)->isVisible() |
+								  m_scatSer.at(i)->isVisible() );
+		}
 	}
 }
 
@@ -435,7 +444,6 @@ void n2D::setGridVisebility()
 			achse->setGridLineVisible(m_visibleGrid);
 		}
 	}
-	//qDebug() << "n2D::setGridVisebility()";
 }
 
 void n2D::setAllLegendsVisebility()

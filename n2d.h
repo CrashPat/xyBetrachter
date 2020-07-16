@@ -77,6 +77,7 @@ public slots:
 	void setTheme();
 	void setXachseVisebility();
 	void setYachsenVisebility();
+	void setYachsenVisebilityForMarker();
 	void setGridVisebility();
 	void setAllLegendsVisebility();
 	void makePrintScreen() {qDebug() << "makePrintScreen() noch nicht implementiert.";}
@@ -109,6 +110,7 @@ private:
 	bool m_binLogarithmisch = false;
 	bool m_binDark = false;
 	bool m_visibleGrid = true;
+	bool m_visibleAxisY = true;
 
 	QGraphicsSimpleTextItem *m_coordX;
 	QList<QGraphicsSimpleTextItem *> m_coordListY;
