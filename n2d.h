@@ -79,12 +79,10 @@ public slots:
 	void setYachsenVisebility();
 	void setYachsenVisebilityForMarker();
 	void setGridVisebility();
-	void setAllLegendsVisebility();
 	void makePrintScreen() {qDebug() << "makePrintScreen() noch nicht implementiert.";}
 	void setDottedGraphs();
 
-
-	void handleMarkerClicked();
+	void handleMarkerHovered(bool);
 
 	void close() {delete this;}
 	void reOpenSlot() {emit reOpenSignal();}

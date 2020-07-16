@@ -98,10 +98,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(xAchse, SIGNAL(activated()), this, SLOT(setXachseVisebility()));
 	QShortcut *yAchsen = new QShortcut(QKeySequence("Y"), this);
 	QObject::connect(yAchsen, SIGNAL(activated()), this, SLOT(setYachsenVisebility()));
-	QShortcut *gridVisebility = new QShortcut(QKeySequence("H"), this);
+	QShortcut *gridVisebility = new QShortcut(QKeySequence("G"), this);
 	QObject::connect(gridVisebility, SIGNAL(activated()), this, SLOT(setGridVisebility()));
-	QShortcut *allLegendsVisebility = new QShortcut(QKeySequence("G"), this);
-	QObject::connect(allLegendsVisebility, SIGNAL(activated()), this, SLOT(setAllLegendsVisebility()));
 	QShortcut *printScreen = new QShortcut(QKeySequence("P"), this);
 	QObject::connect(printScreen, SIGNAL(activated()), this, SLOT(makePrintScreen()));
 	QShortcut *fullScreen = new QShortcut(QKeySequence("F"), this);
@@ -207,6 +205,8 @@ void n2D::addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer)
 	// Achsen anhängen:
 	if (m_chart->axes(Qt::Horizontal).length() == 0) {
 		m_chart->addAxis(m_axisX, Qt::AlignBottom);
+	}
+	if (series->attachedAxes().length() == 0) {
 		series->attachAxis(m_axisX);
 		scatSer->attachAxis(m_axisX);
 	}
@@ -237,9 +237,12 @@ void n2D::addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer)
 		// Achsen anhängen:
 		if (m_chart->axes(Qt::Horizontal).length() == 0) {
 			m_chart->addAxis(m_axisX, Qt::AlignBottom);
+		}
+		if (series->attachedAxes().length() == 0) {
 			series->attachAxis(m_axisX);
 			scatSer->attachAxis(m_axisX);
 		}
+
 		QLogValueAxis *axisY = new QLogValueAxis;
 		//axisY->setMinorTickCount(-1); // zusätzliche Hilfslinien
 		m_chart->addAxis(axisY, Qt::AlignLeft);
@@ -261,7 +264,6 @@ void n2D::setYLinearOrLogarithmisch()
 	for (int i = 0; i < m_series.length(); ++i) {
 		//qDebug() << "series->name() =" << series->name();
 		bool isVisibleAxisY = m_series.at(i)->attachedAxes().last()->isVisible();
-		qDebug() << "setYLinearOrLogarithmisch: isVisibleAxisY =" << isVisibleAxisY;
 		delete m_series.at(i)->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
 
 		if (m_binLogarithmisch)
@@ -312,79 +314,84 @@ void n2D::removeHiddenSeries()
 
 void n2D::connectMarkers()
 {
-	 // Connect all markers to handler
-	 const auto markers = m_chart->legend()->markers();
-	 for (QLegendMarker *marker : markers) {
-		  // Disconnect possible existing connection to avoid multiple connections
-		  QObject::disconnect(marker, &QLegendMarker::clicked,
-									 this, &n2D::handleMarkerClicked);
-		  QObject::connect(marker, &QLegendMarker::clicked, this, &n2D::handleMarkerClicked);
-	 }
+	// Connect all markers to handler
+	const auto markers = m_chart->legend()->markers();
+	for (QLegendMarker *marker : markers) {
+		// Disconnect possible existing connection to avoid multiple connections
+		// --> void handleMarkerClicked();
+		//		  QObject::disconnect(marker, &QLegendMarker::clicked,
+		//									 this, &n2D::handleMarkerClicked);
+		//		  QObject::connect(marker, &QLegendMarker::clicked, this, &n2D::handleMarkerClicked);
+		QObject::disconnect(marker, SIGNAL(hovered(bool)), this, SLOT(handleMarkerHovered(bool)));
+		QObject::connect(marker, SIGNAL(hovered(bool)), this, SLOT(handleMarkerHovered(bool)));
+	}
 }
 
 void n2D::disconnectMarkers()
 {
 	 const auto markers = m_chart->legend()->markers();
 	 for (QLegendMarker *marker : markers) {
-		  QObject::disconnect(marker, &QLegendMarker::clicked,
-									 this, &n2D::handleMarkerClicked);
+		 QObject::disconnect(marker, SIGNAL(hovered(bool)), this, SLOT(handleMarkerHovered(bool)));
 	 }
 }
 
-void n2D::handleMarkerClicked()
+void n2D::handleMarkerHovered(bool darueber)
 {
-	 QLegendMarker* marker = qobject_cast<QLegendMarker*> (sender());
-	 Q_ASSERT(marker);
+	if (!darueber)
+		return;
+	QLegendMarker* marker = qobject_cast<QLegendMarker*> (sender());
+	Q_ASSERT(marker);
 
-	 switch (marker->type())
-	 {
-		  case QLegendMarker::LegendMarkerTypeXY:
-		  {
-	//![5]
-			  // Toggle visibility of series
-			  marker->series()->setVisible(!marker->series()->isVisible());
-			  //marker->series()->attachedAxes().last()->setVisible(marker->series()->isVisible()); // y-Achse Ein/Aus blenden
-			  setYachsenVisebilityForMarker(); // y-Achse Ein/Aus blenden
+	switch (marker->type())
+	{
+		 case QLegendMarker::LegendMarkerTypeXY:
+		 {
+   //![5]
+			 // Toggle visibility of series
+//			marker->series()->setVisible(!marker->series()->isVisible());
+			marker->series()->setVisible(!marker->series()->isVisible());
+			 //marker->series()->attachedAxes().last()->setVisible(marker->series()->isVisible()); // y-Achse Ein/Aus blenden
+			 setYachsenVisebilityForMarker(); // y-Achse Ein/Aus blenden
 
-			  // Turn legend marker back to visible, since hiding series also hides the marker
-			  // and we don't want it to happen now.
-			  marker->setVisible(true);
-	//![5]
+			 // Turn legend marker back to visible, since hiding series also hides the marker
+			 // and we don't want it to happen now.
+			 marker->setVisible(true);
+   //![5]
 
-	//![6]
-			  // Dim the marker, if series is not visible
-			  qreal alpha = 1.0;
+   //![6]
+			 // Dim the marker, if series is not visible
+			 qreal alpha = 1.0;
 
-			  if (!marker->series()->isVisible())
-					alpha = 0.5;
+			 if (!marker->series()->isVisible())
+				   alpha = 0.5;
 
-			  QColor color;
-			  QBrush brush = marker->labelBrush();
-			  color = brush.color();
-			  color.setAlphaF(alpha);
-			  brush.setColor(color);
-			  marker->setLabelBrush(brush);
+			 QColor color;
+			 QBrush brush = marker->labelBrush();
+			 color = brush.color();
+			 color.setAlphaF(alpha);
+			 brush.setColor(color);
+			 marker->setLabelBrush(brush);
 
-			  brush = marker->brush();
-			  color = brush.color();
-			  color.setAlphaF(alpha);
-			  brush.setColor(color);
-			  marker->setBrush(brush);
+			 brush = marker->brush();
+			 color = brush.color();
+			 color.setAlphaF(alpha);
+			 brush.setColor(color);
+			 marker->setBrush(brush);
 
-			  QPen pen = marker->pen();
-			  color = pen.color();
-			  color.setAlphaF(alpha);
-			  pen.setColor(color);
-			  marker->setPen(pen);
-	//![6]
-			  break;
-		  }
-	 default:
-		  {
-			  qDebug() << "Unknown marker type";
-			  break;
-		  }
-	 }
+			 QPen pen = marker->pen();
+			 color = pen.color();
+			 color.setAlphaF(alpha);
+			 pen.setColor(color);
+			 marker->setPen(pen);
+   //![6]
+			 break;
+		 }
+	default:
+		 {
+			 qDebug() << "Unknown marker type";
+			 break;
+		 }
+	}
 }
 
 void n2D::controlIfaxisXisOutOfRange(qreal min, qreal max)
@@ -454,14 +461,6 @@ void n2D::setGridVisebility()
 		if (achse->isVisible()) {// yAchsen
 			achse->setGridLineVisible(m_visibleGrid);
 		}
-	}
-}
-
-void n2D::setAllLegendsVisebility()
-{
-	const auto markers = m_chart->legend()->markers();
-	foreach (QLegendMarker* marker, m_chart->legend()->markers()) {
-		marker->clicked();
 	}
 }
 

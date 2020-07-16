@@ -146,12 +146,13 @@ void MainWindow::erstelle_n2D()
 {
 	n2d = new n2D(n2DSeries);
 
-	//QSize screenSize = QApplication::desktop()->screen()->size();
-	QSize screenSize = QGuiApplication::screens().first()->availableVirtualSize(); //Desktopsize ohne Taskleiste
-	n2d->setMinimumWidth(screenSize.width() / 4); // Breite
-	n2d->setMinimumHeight(screenSize.height() / 4); // Höhe
-	n2d->resize(QSize(screenSize.width()/1.3, screenSize.height()/1.3)); // Breite, Höhe
-	n2d->move(QPoint(0,0));
+////	QSize screenSize = QApplication::desktop()->screen()->size();
+//	QSize screenSize = QGuiApplication::screens().first()->availableVirtualSize(); //Desktopsize ohne Taskleiste
+//	n2d->setMinimumWidth(screenSize.width() / 4); // Breite
+//	n2d->setMinimumHeight(screenSize.height() / 4); // Höhe
+//	n2d->resize(QSize(screenSize.width()/1.3, screenSize.height()/1.3)); // Breite, Höhe
+//	n2d->move(QPoint(0,0));
+	n2d->showMaximized();
 	n2d->show();
 }
 
@@ -194,8 +195,7 @@ void MainWindow::hilfeDialog()
 			   "- [M] 	x-Achsen wird auf ihre maximale Darstellung gebracht.\n"
 			   "- [X] 	x-Achse aus/ein-blenden.\n"
 			   "- [Y] 	y-Achsen aus/ein-blenden.\n"
-			   "- [H] 	Hilfslinien (Grid) aus/ein-blenden.\n"
-			   "- [G] 	Alle Legeden der Graphen aus/ein-blenden.\n"
+			   "- [G] 	Hilfslinien (Grid) aus/ein-blenden.\n"
 			   "- [P] 	Printscreen wird als PNG unter dem obigen genannten Pfad erzeugt.\n"
 			   "- [F] 	Fullscreen\n"
 			   "- [D] 	Dottet: Toggeln zwischen Linear/Scattert-Darstellung\n"
