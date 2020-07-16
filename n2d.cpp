@@ -57,7 +57,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		scatSer->setUseOpenGL(true);
 		n++;
 		series->setName(QString("%2 (%1)").arg(n).arg(ls->name()));
-		scatSer->setName(QString("%2 (%1)").arg(n).arg(ls->name()));
+		scatSer->setName(QString("(%1)").arg(n));
 		addSeries(series, scatSer);
 		m_coordListY.append(new QGraphicsSimpleTextItem(m_chart));
 	}
@@ -153,7 +153,7 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	for (int n = m_coordListY.count()-1; n+1 ; --n) {
 		int versatz = rechtsVersatz*80+10; // Textabstand
 		m_coordListY.at(n)->setPos(versatz, hoehe);
-		if (m_series.at(n)->isVisible()) {
+		if (m_series.at(n)->isVisible() | m_scatSer.at(n)->isVisible()) {
 			++rechtsVersatz;
 			m_coordListY.at(n)->setPen(m_series.at(n)->pen());
 			if (istXWertInnerhalb) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..points().at(xPos)..
@@ -186,8 +186,8 @@ void n2D::addSeries(QLineSeries *series, QScatterSeries *scatSer)
 {
 	m_series.append(series);
 	m_scatSer.append(scatSer);
+	m_chart->addSeries(scatSer); // Extra Reihenfolge vertauscht damit Legende passen angezeigt wird
 	m_chart->addSeries(series);
-	m_chart->addSeries(scatSer);
 
 	// Dünnen Grafen zeichnen:
 	QPen pen = series->pen();
@@ -280,19 +280,38 @@ void n2D::setYLinearOrLogarithmisch()
 void n2D::removeHiddenSeries()
 {
 	// Remove last series from chart
-	foreach (QLineSeries *series, m_series) {
-		if (!series->isVisible())
+	for (int i = 0; i < m_series.length(); ++i) {
+		if ( ! (m_series.at(i)->isVisible() | m_scatSer.at(i)->isVisible()) )
 		{
-			delete series->attachedAxes().last();
-			m_chart->removeSeries(series);
-			m_series.removeOne(series);
+			delete m_series.at(i)->attachedAxes().last();
+			m_chart->removeSeries(m_series.at(i));
+			m_chart->removeSeries(m_scatSer.at(i));
+			m_series.removeOne(m_series.at(i));
+			m_scatSer.removeOne(m_scatSer.at(i));
 			m_coordListY.last()->setText("");
 			m_coordListY.removeLast();
 		}
 	}
+//	foreach (QLineSeries *series, m_series) {
+//		if (!series->isVisible())
+//		{
+//			delete series->attachedAxes().last();
+//			m_chart->removeSeries(series);
+//			m_series.removeOne(series);
+//			m_coordListY.last()->setText("");
+//			m_coordListY.removeLast();
+//		}
+//	}
 	// richtig durchnummerrieren:
 	int n = 1;
 	foreach (QLineSeries *series, m_series) {
+		QString name = series->name();
+		int pos = name.lastIndexOf(QChar('('));
+		name = name.left(pos);
+		series->setName(QString("%1 (%2)").arg(name).arg(n++));
+	}
+	n = 1;
+	foreach (QScatterSeries *series, m_scatSer) {
 		QString name = series->name();
 		int pos = name.lastIndexOf(QChar('('));
 		name = name.left(pos);
@@ -406,7 +425,6 @@ void n2D::setTheme()
 		pal.setColor(QPalette::WindowText, QRgb(0x404044));
 	}
 	 window()->setPalette(pal);
-	 //qDebug() << QString("n2D::setTheme(), binDark = %1").arg(binDark);
 }
 
 void n2D::setXachseVisebility()
