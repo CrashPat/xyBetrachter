@@ -292,16 +292,7 @@ void n2D::removeHiddenSeries()
 			m_coordListY.removeLast();
 		}
 	}
-//	foreach (QLineSeries *series, m_series) {
-//		if (!series->isVisible())
-//		{
-//			delete series->attachedAxes().last();
-//			m_chart->removeSeries(series);
-//			m_series.removeOne(series);
-//			m_coordListY.last()->setText("");
-//			m_coordListY.removeLast();
-//		}
-//	}
+
 	// richtig durchnummerrieren:
 	int n = 1;
 	foreach (QLineSeries *series, m_series) {
@@ -436,8 +427,10 @@ void n2D::setYachsenVisebility()
 {
 	toggleBit(m_visibleAxisY);
 	for (int i = 0; i < m_series.length(); ++i) {
-		if (m_series.at(i)->isVisible() | m_series.at(i)->isVisible())
-			m_series.at(i)->attachedAxes().last()->setVisible( m_visibleAxisY );
+		if (!m_visibleAxisY)
+			m_series.at(i)->attachedAxes().last()->setVisible( false );
+		else if (m_series.at(i)->isVisible() | m_series.at(i)->isVisible())
+			m_series.at(i)->attachedAxes().last()->setVisible( true );
 	}
 }
 
