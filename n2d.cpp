@@ -14,6 +14,7 @@
 #include <QtCharts/QLogValueAxis>
 #include <QLayout>
 #include <QFont>
+#include <QScatterSeries>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -102,6 +103,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(printScreen, SIGNAL(activated()), this, SLOT(makePrintScreen()));
 	QShortcut *fullScreen = new QShortcut(QKeySequence("F"), this);
 	QObject::connect(fullScreen, SIGNAL(activated()), this, SLOT(showMaximized()));
+	QShortcut *dottedGraphs = new QShortcut(QKeySequence("D"), this);
+	QObject::connect(dottedGraphs, SIGNAL(activated()), this, SLOT(setDottedGraphs()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
 
 	this->setGridVisebility();
@@ -253,7 +256,6 @@ void n2D::setYLinearOrLogarithmisch()
 		series->attachedAxes().last()->setGridLineVisible(m_visibleGrid);
 		series->pointsReplaced(); // Grafik aktualisieren
 	}
-	repaint();
 	qDebug() << "m_series.length() =" << m_series.length();
 	qDebug() << "m_chart->axes().length() =" << m_chart->axes().length();
 	qDebug() << "todo n2D::setYLogarithmisch(): geht bei nur einem Grafen nicht.";
@@ -422,4 +424,52 @@ void n2D::setAllLegendsVisebility()
 	foreach (QLegendMarker* marker, m_chart->legend()->markers()) {
 		marker->clicked();
 	}
+}
+
+void n2D::setDottedGraphs()
+{
+//	chart()->chartType(); // ChartView.SeriesTypeScatter
+//	m_series.end().
+	foreach (QLineSeries *series, m_series) {
+
+		// Serie kopieren da sonst die Original Serie abstürzt
+		QList<QPointF> vpf = series->points(); // !!! erzeugt eine reale Kopie nur der Datenpunkte !!!
+		QScatterSeries *scatterSeries = new QScatterSeries();
+		scatterSeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+		scatterSeries->setMarkerSize(3);
+		scatterSeries->append(vpf);
+		scatterSeries->setUseOpenGL(true);
+		chart()->addSeries(scatterSeries);
+//		series->setVisible(true);
+
+		//chart()->removeSeries(series);
+
+//		var myAxisX = chartView.axisX(lineSeries);
+//		var myAxisY = chartView.axisY(lineSeries);
+//		var scatter = chartView.createSeries(m_chart.SeriesTypeScatter, "scatter series", myAxisX, myAxisY);
+
+//		// Dünnen Grafen zeichnen:
+//		QPen pen = series->pen();
+//		pen.setWidth(5);
+//		//pen.setStyle(Qt::DashDotDotLine); --> geht nicht
+//		series->setPen(pen);
+//		qDebug() << "series->type() =" << series->type();
+
+		//qDebug() << "series->name() =" << series->name();
+//		bool isVisible = series->isVisible();
+//		delete series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
+//		series->chart()->chartType();
+//		if (m_binLogarithmisch)
+//			addAxisYlogarithmisch(series);
+//		else
+//			addAxisYlinear(series);
+//		series->setVisible(isVisible);
+//		series->attachedAxes().last()->setVisible(isVisible);
+//		series->attachedAxes().last()->setGridLineVisible(m_visibleGrid);
+//		series->pointsReplaced(); // Grafik aktualisieren
+//		chart()->series().first()->type();
+
+		series->pointsReplaced(); // Grafik aktualisieren
+	}
+	qDebug() << "setDottedGraphs()";
 }

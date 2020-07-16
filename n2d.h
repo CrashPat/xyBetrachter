@@ -79,6 +79,8 @@ public slots:
 	void setGridVisebility();
 	void setAllLegendsVisebility();
 	void makePrintScreen() {qDebug() << "makePrintScreen() noch nicht implementiert.";}
+	void setDottedGraphs();
+
 
 	void handleMarkerClicked();
 
