@@ -207,15 +207,15 @@ void n2D::addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer)
 	// Achsen anhängen:
 	if (m_chart->axes(Qt::Horizontal).length() == 0) {
 		m_chart->addAxis(m_axisX, Qt::AlignBottom);
+		series->attachAxis(m_axisX);
+		scatSer->attachAxis(m_axisX);
 	}
 	QValueAxis *axisY = new QValueAxis;
 	//axisY->setTitleText("Values");
 	//axisY->setLabelFormat("%g");
 	//axisY->setBase(8.0);
 	m_chart->addAxis(axisY, Qt::AlignLeft);
-	series->attachAxis(m_axisX);
 	series->attachAxis(axisY);
-	scatSer->attachAxis(m_axisX);
 	scatSer->attachAxis(axisY);
 	axisY->setLinePenColor(series->pen().color());
 	axisY->setLabelsColor(series->pen().color());
@@ -237,13 +237,13 @@ void n2D::addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer)
 		// Achsen anhängen:
 		if (m_chart->axes(Qt::Horizontal).length() == 0) {
 			m_chart->addAxis(m_axisX, Qt::AlignBottom);
+			series->attachAxis(m_axisX);
+			scatSer->attachAxis(m_axisX);
 		}
 		QLogValueAxis *axisY = new QLogValueAxis;
 		//axisY->setMinorTickCount(-1); // zusätzliche Hilfslinien
 		m_chart->addAxis(axisY, Qt::AlignLeft);
-		series->attachAxis(m_axisX);
 		series->attachAxis(axisY);
-		scatSer->attachAxis(m_axisX);
 		scatSer->attachAxis(axisY);
 		scatSer->setColor(series->pen().color());
 		axisY->setLinePenColor(series->pen().color());
@@ -260,7 +260,8 @@ void n2D::setYLinearOrLogarithmisch()
 	//m_chart->axes(Qt::Vertical).detach(); // alle y-Achsten löschen
 	for (int i = 0; i < m_series.length(); ++i) {
 		//qDebug() << "series->name() =" << series->name();
-		bool isVisible = m_series.at(i)->isVisible();
+		bool isVisibleAxisY = m_series.at(i)->attachedAxes().last()->isVisible();
+		qDebug() << "setYLinearOrLogarithmisch: isVisibleAxisY =" << isVisibleAxisY;
 		delete m_series.at(i)->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
 
 		if (m_binLogarithmisch)
@@ -268,9 +269,7 @@ void n2D::setYLinearOrLogarithmisch()
 		else
 			addAxisYlinear(m_series.at(i), m_scatSer.at(i));
 
-		m_series.at(i)->setVisible(isVisible);
-		m_scatSer.at(i)->setVisible(isVisible);
-		m_series.at(i)->attachedAxes().last()->setVisible(isVisible);
+		m_series.at(i)->attachedAxes().last()->setVisible(isVisibleAxisY & m_visibleAxisY);
 		m_series.at(i)->attachedAxes().last()->setGridLineVisible(m_visibleGrid);
 		m_series.at(i)->pointsReplaced(); // Grafik aktualisieren
 		m_scatSer.at(i)->pointsReplaced(); // Grafik aktualisieren
