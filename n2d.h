@@ -62,8 +62,11 @@ class n2D: public QChartView //QWidget// QDialog
 {
 	Q_OBJECT
 protected:
-	void closeEvent(QCloseEvent *event) override {emit fensterGeschlossen();}
+	void closeEvent(QCloseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;
+//	bool eventFilter(QObject *obj, QEvent *event) override;
+	void keyPressEvent(QKeyEvent *event) override; // damit über die Nummerntasten die Marken gesteuert werden
+
 public:
 	explicit n2D(QList<QLineSeries *> listLineSeries);
 	~n2D();

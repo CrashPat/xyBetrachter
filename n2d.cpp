@@ -119,6 +119,11 @@ n2D::~n2D()
 	qDebug() << "~n2D(): Anzahl Instanzen" << --countInstances;
 }
 
+void n2D::closeEvent(QCloseEvent *event)
+{
+	emit fensterGeschlossen();
+}
+
 void n2D::mouseMoveEvent(QMouseEvent *event)
 {
 	qreal breite = m_chart->size().width()-60;
@@ -475,5 +480,18 @@ void n2D::setDottedGraphs()
 		if (m_visibleDots)
 			m_scatSer.at(i)->setName(m_series.at(i)->name()+"D");
 	}
-	qDebug() << "setDottedGraphs()";
+}
+
+void n2D::keyPressEvent(QKeyEvent *event)
+{
+	int taste = event->key();
+	if((Qt::Key_1 <= taste) & (taste <= Qt::Key_9))
+	{
+		int nr = taste - Qt::Key_0 - 1;
+		if (nr < m_series.length()) {
+			const auto markers = m_chart->legend()->markers();
+			markers.at(2*nr)->hovered(true);
+			markers.at(2*nr+1)->hovered(true);
+		}
+	}
 }

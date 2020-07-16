@@ -177,8 +177,7 @@ void MainWindow::hilfeDialog()
 {
 		QMessageBox::information(n2d, "Hilfe",
 		  tr(  "Grafik:\n"
-			   "- Clicken auf die Legende kann die zugehörige Grafik ein bzw. ausgeblendet\n"
-			   "	werden.\n"
+			   "- Mit Maus über Legende fahren für ein/ausblenden.\n"
 			   "- Betätigen und halten der linken Maustaste kann in der Grafik der \n"
 			   "	gewünschte x-Achsenbereich ausgewählt werden.\n"
 			   "- Betätigen der rechten Maustaste wird der x-Achsenbereich vergrößert.\n"
@@ -199,6 +198,7 @@ void MainWindow::hilfeDialog()
 			   "- [P] 	Printscreen wird als PNG unter dem obigen genannten Pfad erzeugt.\n"
 			   "- [F] 	Fullscreen\n"
 			   "- [D] 	Dottet: Toggeln zwischen Linear/Scattert-Darstellung\n"
+			   "- [1..9] 	Entsprechende Legenden ein/ausblenden\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 16.07.2020").arg(m_pfad) );
 }
