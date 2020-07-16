@@ -14,7 +14,6 @@
 #include <QtCharts/QLogValueAxis>
 #include <QLayout>
 #include <QFont>
-#include <QScatterSeries>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -46,15 +45,20 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	m_coordX = new QGraphicsSimpleTextItem(m_chart);
 	m_coordX->setPos(m_chart->size().width()/2, m_chart->size().height());
 
-	int n = 1;
+	int n = 0;
 	foreach (QLineSeries *ls, listLineSeries) {
 		// Serie kopieren da sonst die Original Serie abstürzt
 		QList<QPointF> vpf = ls->points(); // !!! erzeugt eine reale Kopie nur der Datenpunkte !!!
-		QLineSeries *series = new QLineSeries();
+		QLineSeries    *series = new QLineSeries();
+		QScatterSeries *scatSer = new QScatterSeries();
 		series->append(vpf);
+		scatSer->append(vpf);
 		series->setUseOpenGL(true);
-		series->setName(QString("%2 (%1)").arg(n++).arg(ls->name()));
-		addSeries(series);
+		scatSer->setUseOpenGL(true);
+		n++;
+		series->setName(QString("%2 (%1)").arg(n).arg(ls->name()));
+		scatSer->setName(QString("%2 (%1)").arg(n).arg(ls->name()));
+		addSeries(series, scatSer);
 		m_coordListY.append(new QGraphicsSimpleTextItem(m_chart));
 	}
 
@@ -178,21 +182,27 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	QChartView::mouseMoveEvent(event); // muss weiter gereicht werden sonst geht Rubberband nicht
 }
 
-void n2D::addSeries(QLineSeries *series)
+void n2D::addSeries(QLineSeries *series, QScatterSeries *scatSer)
 {
-	 m_series.append(series);
-	 m_chart->addSeries(series);
+	m_series.append(series);
+	m_scatSer.append(scatSer);
+	m_chart->addSeries(series);
+	m_chart->addSeries(scatSer);
 
-	 // Dünnen Grafen zeichnen:
-	 QPen pen = series->pen();
-	 pen.setWidth(1);
-	 series->setPen(pen);
+	// Dünnen Grafen zeichnen:
+	QPen pen = series->pen();
+	pen.setWidth(1);
+	series->setPen(pen);
 
-	 addAxisYlinear(series);
-	 //addAxisYlogarithmisch(series);
+	scatSer->setMarkerSize(3);
+	scatSer->setColor(pen.color());
+	//scatSer->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+
+	addAxisYlinear(series, scatSer);
+	//addAxisYlogarithmisch(series);
 }
 
-void n2D::addAxisYlinear(QLineSeries *series)
+void n2D::addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer)
 {
 	// Achsen anhängen:
 	if (m_chart->axes(Qt::Horizontal).length() == 0) {
@@ -205,11 +215,13 @@ void n2D::addAxisYlinear(QLineSeries *series)
 	m_chart->addAxis(axisY, Qt::AlignLeft);
 	series->attachAxis(m_axisX);
 	series->attachAxis(axisY);
+	scatSer->attachAxis(m_axisX);
+	scatSer->attachAxis(axisY);
 	axisY->setLinePenColor(series->pen().color());
 	axisY->setLabelsColor(series->pen().color());
 }
 
-void n2D::addAxisYlogarithmisch(QLineSeries *series)
+void n2D::addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer)
 {
 	// Abfragen ob logarithmisch überhaubpt möglich:
 	QVector<QPointF> werte = series->pointsVector();
@@ -220,7 +232,7 @@ void n2D::addAxisYlogarithmisch(QLineSeries *series)
 	}
 
 	if (yMin <= 0) // logarithmisch nicht möglich?
-		addAxisYlinear(series);
+		addAxisYlinear(series, scatSer);
 	else { // logarithmisch
 		// Achsen anhängen:
 		if (m_chart->axes(Qt::Horizontal).length() == 0) {
@@ -231,6 +243,9 @@ void n2D::addAxisYlogarithmisch(QLineSeries *series)
 		m_chart->addAxis(axisY, Qt::AlignLeft);
 		series->attachAxis(m_axisX);
 		series->attachAxis(axisY);
+		scatSer->attachAxis(m_axisX);
+		scatSer->attachAxis(axisY);
+		scatSer->setColor(series->pen().color());
 		axisY->setLinePenColor(series->pen().color());
 		axisY->setLabelsColor(series->pen().color());
 		//axisY->setMinorGridLineVisible(true); --> geht irgendwie nicht
@@ -243,23 +258,23 @@ void n2D::setYLinearOrLogarithmisch()
 	// Remove attachedAxes
 
 	//m_chart->axes(Qt::Vertical).detach(); // alle y-Achsten löschen
-	foreach (QLineSeries *series, m_series) {
+	for (int i = 0; i < m_series.length(); ++i) {
 		//qDebug() << "series->name() =" << series->name();
-		bool isVisible = series->isVisible();
-		delete series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
+		bool isVisible = m_series.at(i)->isVisible();
+		delete m_series.at(i)->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
+
 		if (m_binLogarithmisch)
-			addAxisYlogarithmisch(series);
+			addAxisYlogarithmisch(m_series.at(i), m_scatSer.at(i));
 		else
-			addAxisYlinear(series);
-		series->setVisible(isVisible);
-		series->attachedAxes().last()->setVisible(isVisible);
-		series->attachedAxes().last()->setGridLineVisible(m_visibleGrid);
-		series->pointsReplaced(); // Grafik aktualisieren
+			addAxisYlinear(m_series.at(i), m_scatSer.at(i));
+
+		m_series.at(i)->setVisible(isVisible);
+		m_scatSer.at(i)->setVisible(isVisible);
+		m_series.at(i)->attachedAxes().last()->setVisible(isVisible);
+		m_series.at(i)->attachedAxes().last()->setGridLineVisible(m_visibleGrid);
+		m_series.at(i)->pointsReplaced(); // Grafik aktualisieren
+		m_scatSer.at(i)->pointsReplaced(); // Grafik aktualisieren
 	}
-	qDebug() << "m_series.length() =" << m_series.length();
-	qDebug() << "m_chart->axes().length() =" << m_chart->axes().length();
-	qDebug() << "todo n2D::setYLogarithmisch(): geht bei nur einem Grafen nicht.";
-	qDebug() << "todo n2D::setYLogarithmisch(): negativer Logarithmus geht nicht, deshalb alle Grafen mit negative y-Wert weiterhin linear anzeigen.";
 }
 
 void n2D::removeHiddenSeries()
@@ -404,6 +419,11 @@ void n2D::setYachsenVisebility()
 		if (series->isVisible())
 			series->attachedAxes().last()->setVisible( !series->attachedAxes().last()->isVisible() );
 	}
+	foreach (QScatterSeries *series, m_scatSer) {
+		if (series->isVisible())
+			series->attachedAxes().last()->setVisible( true );
+//		series->attachedAxes().last()->setVisible( !series->attachedAxes().last()->isVisible() );
+	}
 }
 
 void n2D::setGridVisebility()
@@ -428,48 +448,5 @@ void n2D::setAllLegendsVisebility()
 
 void n2D::setDottedGraphs()
 {
-//	chart()->chartType(); // ChartView.SeriesTypeScatter
-//	m_series.end().
-	foreach (QLineSeries *series, m_series) {
-
-		// Serie kopieren da sonst die Original Serie abstürzt
-		QList<QPointF> vpf = series->points(); // !!! erzeugt eine reale Kopie nur der Datenpunkte !!!
-		QScatterSeries *scatterSeries = new QScatterSeries();
-		scatterSeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-		scatterSeries->setMarkerSize(3);
-		scatterSeries->append(vpf);
-		scatterSeries->setUseOpenGL(true);
-		chart()->addSeries(scatterSeries);
-//		series->setVisible(true);
-
-		//chart()->removeSeries(series);
-
-//		var myAxisX = chartView.axisX(lineSeries);
-//		var myAxisY = chartView.axisY(lineSeries);
-//		var scatter = chartView.createSeries(m_chart.SeriesTypeScatter, "scatter series", myAxisX, myAxisY);
-
-//		// Dünnen Grafen zeichnen:
-//		QPen pen = series->pen();
-//		pen.setWidth(5);
-//		//pen.setStyle(Qt::DashDotDotLine); --> geht nicht
-//		series->setPen(pen);
-//		qDebug() << "series->type() =" << series->type();
-
-		//qDebug() << "series->name() =" << series->name();
-//		bool isVisible = series->isVisible();
-//		delete series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
-//		series->chart()->chartType();
-//		if (m_binLogarithmisch)
-//			addAxisYlogarithmisch(series);
-//		else
-//			addAxisYlinear(series);
-//		series->setVisible(isVisible);
-//		series->attachedAxes().last()->setVisible(isVisible);
-//		series->attachedAxes().last()->setGridLineVisible(m_visibleGrid);
-//		series->pointsReplaced(); // Grafik aktualisieren
-//		chart()->series().first()->type();
-
-		series->pointsReplaced(); // Grafik aktualisieren
-	}
 	qDebug() << "setDottedGraphs()";
 }

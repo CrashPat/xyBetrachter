@@ -54,6 +54,7 @@
 #include <QtCharts/QCategoryAxis>
 #include <QtCore/QDebug>
 #include <QMouseEvent>
+#include <QScatterSeries>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -95,15 +96,15 @@ signals:
 	void hilfeSignal();
 
 private:
-	void addSeries(QLineSeries *series);
-	void addAxisYlinear(QLineSeries *series);
-	void addAxisYlogarithmisch(QLineSeries *series);
-//	void setRasterXAchse(float rasterX);
+	void addSeries(QLineSeries *series, QScatterSeries *scatSer);
+	void addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer);
+	void addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer);
 
 	static int countInstances;
 	void toggleBit(bool &bit) {bit = !bit;}
 	QChart *m_chart;
 	QList<QLineSeries *> m_series;
+	QList<QScatterSeries *> m_scatSer;
 	QValueAxis *m_axisX;
 	bool m_binLogarithmisch = false;
 	bool m_binDark = false;
