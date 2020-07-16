@@ -192,6 +192,7 @@ void n2D::addSeries(QLineSeries *series, QScatterSeries *scatSer)
 	// Dünnen Grafen zeichnen:
 	QPen pen = series->pen();
 	pen.setWidth(1);
+	pen.setColor(m_farbPalette.at(m_series.length() % m_farbPalette.length()));
 	series->setPen(pen);
 
 	scatSer->setMarkerSize(3);
@@ -473,7 +474,7 @@ void n2D::setDottedGraphs()
 		m_series.at(i)->setVisible( eineOderBeideSerienSichtbar & !m_visibleDots );
 		m_scatSer.at(i)->setVisible( eineOderBeideSerienSichtbar & m_visibleDots );
 		if (m_visibleDots)
-			m_scatSer.at(i)->setName(m_series.at(i)->name());
+			m_scatSer.at(i)->setName(m_series.at(i)->name()+"D");
 	}
 	qDebug() << "setDottedGraphs()";
 }

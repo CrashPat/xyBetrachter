@@ -112,6 +112,7 @@ private:
 	bool m_visibleGrid = true;
 	bool m_visibleAxisY = true;
 	bool m_visibleDots = false;
+	QList<QColor> m_farbPalette = {Qt::gray, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::magenta, Qt::cyan};
 
 	QGraphicsSimpleTextItem *m_coordX;
 	QList<QGraphicsSimpleTextItem *> m_coordListY;
