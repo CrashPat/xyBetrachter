@@ -55,6 +55,7 @@
 #include <QtCore/QDebug>
 #include <QMouseEvent>
 #include <QScatterSeries>
+#include <QVector4D>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -114,6 +115,8 @@ private:
 	bool m_visibleAxisY = true;
 	bool m_visibleDots = false;
 	QList<QColor> m_farbPalette = {Qt::gray, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::magenta, Qt::cyan};
+//	QList<QColor> m_farbPalette = {4288268883, 4280328159, 4285358037, 4294354469, 4290730302, 4282156199, 4281904491, 4286283660, 4293625879};
+							 // = {0xff99ca53F, 0xff209fdfF, 0xff6d5fd5F, 0xfff6a625F, 0xffbf593eF, 0xff38ad6bF, 0xff7b7f8cF, 0xff3c84a7F}; das gleich nur in Hex
 
 	QGraphicsSimpleTextItem *m_coordX;
 	QList<QGraphicsSimpleTextItem *> m_coordListY;

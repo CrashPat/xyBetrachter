@@ -428,6 +428,12 @@ void n2D::setTheme()
 		pal.setColor(QPalette::WindowText, QRgb(0x404044));
 	}
 	 window()->setPalette(pal);
+
+//	 // Autogenerierte Farben ausgeben:
+//	 for (int i = 0; i < m_series.length(); ++i) {
+//		 qDebug() << m_series.at(i)->pen().color().rgb()
+//				  << m_scatSer.at(i)->color().rgb();
+//	 }
 }
 
 void n2D::setXachseVisebility()
