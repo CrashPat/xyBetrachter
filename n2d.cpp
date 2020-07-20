@@ -26,11 +26,11 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	// Create chart view with the chart
 	m_chart = new QChart();
 	setChart(m_chart);
-	setRubberBand(QChartView::HorizontalRubberBand); //
+	setRubberBand(QChartView::HorizontalRubberBand); // RectangleRubberBand
 	setMouseTracking(true);
 	qDebug() << "m_chartView->hasMouseTracking()" << hasMouseTracking();
-	this->setCursor(Qt::CrossCursor);
-	this->setTheme();
+	setCursor(Qt::CrossCursor);
+	setTheme();
 
 	//setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
 	//setDragMode(QGraphicsView::NoDrag);
@@ -38,6 +38,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	//![2]
 	m_axisX = new QValueAxis;
 	connect(m_axisX, SIGNAL(rangeChanged(qreal, qreal)), this, SLOT(controlIfaxisXisOutOfRange(qreal, qreal))); // für HorizontalRubberBand
+//	qreal a,b;
+//	m_axisX->rangeChanged(a,b);
 	//![2]
 
 	// Add few series & Kopie der Werte erstellen
@@ -74,12 +76,15 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	connectMarkers();
 
 	// Set the title and show legend
-	setWindowTitle(tr("xyBetrachter: n x 2D               [F1] = Hilfe"));
+	m_windowTitle = "xyBetrachter: n x 2D               [F1] = Hilfe";
+	setWindowTitle(m_windowTitle);
 	//m_chart->setTitle("Legendmarker example (click on legend)");
 	m_chart->legend()->setVisible(true);
 	//m_chart->legend()->setAlignment(Qt::AlignRight);
 
 	// Shortcuts:
+	QShortcut *rubberbandUmschaltung = new QShortcut(QKeySequence("Z"), this);
+	QObject::connect(rubberbandUmschaltung, SIGNAL(activated()), this, SLOT(setRubberband()));
 	QShortcut *hilfe = new QShortcut(QKeySequence("F1"), this);
 	QObject::connect(hilfe, SIGNAL(activated()), this, SLOT(hilfeSlot()));
 	QShortcut *delLastSeries = new QShortcut(QKeySequence(Qt::Key_Delete), this);
@@ -282,6 +287,19 @@ void n2D::setYLinearOrLogarithmisch()
 		m_series.at(i)->attachedAxes().last()->setGridLineVisible(m_visibleGrid);
 		m_series.at(i)->pointsReplaced(); // Grafik aktualisieren
 		m_scatSer.at(i)->pointsReplaced(); // Grafik aktualisieren
+	}
+}
+
+void n2D::setRubberband()
+{
+	toggleBit(m_isRubberbandHorizontal);
+	if (m_isRubberbandHorizontal) {
+		setRubberBand(QChartView::HorizontalRubberBand); // x-Achse
+		setWindowTitle(m_windowTitle);
+	}
+	else {
+		setRubberBand(QChartView::VerticalRubberBand); // y-Achse
+		setWindowTitle("[y-AchsenZoom] " + m_windowTitle);
 	}
 }
 
@@ -502,4 +520,20 @@ void n2D::keyPressEvent(QKeyEvent *event)
 			markers.at(2*nr+1)->hovered(true);
 		}
 	}
+}
+
+void n2D::wheelEvent(QWheelEvent *event)
+{ // https://stackoverflow.com/questions/48623595/scale-x-axis-of-qchartview-using-mouse-wheel
+	chart()->zoomReset();
+
+	m_FactorZoom *= event->angleDelta().y() > 0 ? 0.5 : 2;
+
+	QRectF rect = chart()->plotArea();
+	QPointF c = chart()->plotArea().center();
+	//rect.setWidth(m_FactorZoom*rect.width()); // x-Achse
+	rect.setHeight(m_FactorZoom*rect.width()); // y-Achse
+	rect.moveCenter(c);
+	chart()->zoomIn(rect);
+
+	QChartView::wheelEvent(event);
 }
