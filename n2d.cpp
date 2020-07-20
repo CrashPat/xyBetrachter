@@ -104,6 +104,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(printScreen, SIGNAL(activated()), this, SLOT(makePrintScreen()));
 	QShortcut *fullScreen = new QShortcut(QKeySequence("F"), this);
 	QObject::connect(fullScreen, SIGNAL(activated()), this, SLOT(showMaximized()));
+	QShortcut *miniScreen = new QShortcut(QKeySequence(Qt::Key_Escape), this);
+	QObject::connect(miniScreen, SIGNAL(activated()), this, SLOT(showMinimized()));
 	QShortcut *dottedGraphs = new QShortcut(QKeySequence("D"), this);
 	QObject::connect(dottedGraphs, SIGNAL(activated()), this, SLOT(setDottedGraphs()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
