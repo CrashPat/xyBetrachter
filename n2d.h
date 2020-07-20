@@ -80,6 +80,7 @@ public slots:
 	void disconnectMarkers();
 	void controlIfaxisXisOutOfRange(qreal min, qreal max);
 	void setMinMaxXAchse();
+	void setMinMaxYAchsen();
 	void setTheme();
 	void setXachseVisebility();
 	void setYachsenVisebility();
@@ -105,6 +106,8 @@ private:
 	void addSeries(QLineSeries *series, QScatterSeries *scatSer);
 	void addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer);
 	void addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer);
+	void trackLineLabel(int mouseX);
+	float getYminORmax(QLineSeries *series, bool getMin = true);
 
 	static int countInstances;
 	void toggleBit(bool &bit) {bit = !bit;}

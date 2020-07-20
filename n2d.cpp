@@ -99,6 +99,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(theme, SIGNAL(activated()), this, SLOT(setTheme()));
 	QShortcut *xMinMax = new QShortcut(QKeySequence("M"), this);
 	QObject::connect(xMinMax, SIGNAL(activated()), this, SLOT(setMinMaxXAchse()));
+	QShortcut *yMinMax = new QShortcut(QKeySequence("N"), this);
+	QObject::connect(yMinMax, SIGNAL(activated()), this, SLOT(setMinMaxYAchsen()));
 	QShortcut *xAchse = new QShortcut(QKeySequence("X"), this);
 	QObject::connect(xAchse, SIGNAL(activated()), this, SLOT(setXachseVisebility()));
 	QShortcut *yAchsen = new QShortcut(QKeySequence("Y"), this);
@@ -188,6 +190,9 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 		m_yHilfsLinie->hide();
 	}
 
+	///trackLineLabel
+	trackLineLabel(/*m_chart., */xPosMaus);
+
 	QChartView::mouseMoveEvent(event); // muss weiter gereicht werden sonst geht Rubberband nicht
 }
 
@@ -233,15 +238,29 @@ void n2D::addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer)
 	axisY->setLabelsColor(series->pen().color());
 }
 
+float n2D::getYminORmax(QLineSeries *series, bool getMin)
+{
+	QVector<QPointF> werte = series->pointsVector();
+	Q_ASSERT(werte.size() > 0);
+	float yMinOrMax;
+	if (getMin)
+		yMinOrMax = std::numeric_limits<float>::max(); //MIN
+	else
+		yMinOrMax = std::numeric_limits<float>::min(); //MAX
+
+	foreach (QPointF p, werte) {
+		if (getMin)
+			yMinOrMax = qMin((double)yMinOrMax, p.y());
+		else
+			yMinOrMax = qMax((double)yMinOrMax, p.y());
+	}
+	return yMinOrMax;
+}
+
 void n2D::addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer)
 {
 	// Abfragen ob logarithmisch überhaubpt möglich:
-	QVector<QPointF> werte = series->pointsVector();
-	Q_ASSERT(werte.size() > 0);
-	float yMin = std::numeric_limits<float>::max();
-	foreach (QPointF p, werte) {
-		yMin = qMin((double)yMin, p.y());
-	}
+	float yMin = getYminORmax(series);
 
 	if (yMin <= 0) // logarithmisch nicht möglich?
 		addAxisYlinear(series, scatSer);
@@ -432,6 +451,17 @@ void n2D::setMinMaxXAchse()
 	m_axisX->setRange(p.first().rx(), p.last().rx());
 }
 
+void n2D::setMinMaxYAchsen()
+{
+	foreach (QLineSeries *series, m_series) {
+		QAbstractAxis *yAxe = series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
+		yAxe->setRange(getYminORmax(series,true), getYminORmax(series,false));
+		//series->pointsReplaced();
+		qDebug() << "min, max =" << getYminORmax(series,true) << getYminORmax(series,false);
+	}
+	qDebug() <<"n2D::setMinMaxYAchsen()";
+}
+
 void n2D::setTheme()
 {
 	toggleBit(m_binDark);
@@ -536,4 +566,77 @@ void n2D::wheelEvent(QWheelEvent *event)
 	chart()->zoomIn(rect);
 
 	QChartView::wheelEvent(event);
+}
+
+//
+// Draw the track line with data point labels
+//
+void n2D::trackLineLabel(/*XYChart *c,*/ int mouseX)
+{
+	qDebug() << "n2D::trackLineLabel(XYChart *c, int mouseX), noch nicht fertig implementiert";
+//    // Clear the current dynamic layer and get the DrawArea object to draw on it.
+//    DrawArea *d = c->initDynamicLayer();
+
+//    // The plot area object
+//    PlotArea *plotArea = c->getPlotArea();
+
+//    // Get the data x-value that is nearest to the mouse, and find its pixel coordinate.
+//    double xValue = c->getNearestXValue(mouseX);
+//    int xCoor = c->getXCoor(xValue);
+//    if (xCoor < plotArea->getLeftX())
+//        return;
+
+//    // Draw a vertical track line at the x-position
+//    d->vline(plotArea->getTopY(), plotArea->getBottomY(), xCoor, 0x888888);
+
+//    // Draw a label on the x-axis to show the track line position.
+//    ostringstream xlabel;
+//    xlabel << "<*font,bgColor=000000*> " << c->xAxis()->getFormattedLabel(xValue, "hh:nn:ss.ff")
+//        << " <*/font*>";
+//    TTFText *t = d->text(xlabel.str().c_str(), "arialbd.ttf", 10);
+
+//    // Restrict the x-pixel position of the label to make sure it stays inside the chart image.
+//    int xLabelPos = max(0, min(xCoor - t->getWidth() / 2, c->getWidth() - t->getWidth()));
+//    t->draw(xLabelPos, plotArea->getBottomY() + 6, 0xffffff);
+//    t->destroy();
+
+//    // Iterate through all layers to draw the data labels
+//    for (int i = 0; i < c->getLayerCount(); ++i) {
+//        Layer *layer = c->getLayerByZ(i);
+
+//        // The data array index of the x-value
+//        int xIndex = layer->getXIndexOf(xValue);
+
+//        // Iterate through all the data sets in the layer
+//        for (int j = 0; j < layer->getDataSetCount(); ++j)
+//        {
+//            DataSet *dataSet = layer->getDataSetByZ(j);
+//            const char *dataSetName = dataSet->getDataName();
+
+//            // Get the color, name and position of the data label
+//            int color = dataSet->getDataColor();
+//            int yCoor = c->getYCoor(dataSet->getPosition(xIndex), dataSet->getUseYAxis());
+
+//            // Draw a track dot with a label next to it for visible data points in the plot area
+//            if ((yCoor >= plotArea->getTopY()) && (yCoor <= plotArea->getBottomY()) && (color !=
+//                Chart::Transparent) && dataSetName && *dataSetName)
+//            {
+//                d->circle(xCoor, yCoor, 4, 4, color, color);
+
+//                ostringstream label;
+//                label << "<*font,bgColor=" << hex << color << "*> "
+//                    << c->formatValue(dataSet->getValue(xIndex), "{value|P4}") << " <*font*>";
+//                t = d->text(label.str().c_str(), "arialbd.ttf", 10);
+
+//                // Draw the label on the right side of the dot if the mouse is on the left side the
+//                // chart, and vice versa. This ensures the label will not go outside the chart image.
+//                if (xCoor <= (plotArea->getLeftX() + plotArea->getRightX()) / 2)
+//                    t->draw(xCoor + 6, yCoor, 0xffffff, Chart::Left);
+//                else
+//                    t->draw(xCoor - 6, yCoor, 0xffffff, Chart::Right);
+
+//                t->destroy();
+//            }
+//        }
+	//    }
 }
