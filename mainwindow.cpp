@@ -92,21 +92,6 @@ void MainWindow::open_n2D()
 		}
 	} while (!dateienGefunden);
 
-//	if (!m_useBeispieldaten)
-//	{
-//		if (n2d) {
-//			n2d->~n2D();
-//			while (!n2DSeries.isEmpty())
-//				 delete n2DSeries.takeFirst();
-//			qDebug() << "n2d->~n2D();";
-//		}
-
-//		if (!findAndPlotAllFiles())
-//		{
-//			return false;
-//		}
-//	}
-
 	erstelle_n2D();
 	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
 	connect(n2d, SIGNAL(reOpenSignal()), this, SLOT(open_n2D()));
