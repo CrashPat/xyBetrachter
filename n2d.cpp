@@ -144,10 +144,10 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	QChartView::mouseMoveEvent(event); // muss weiter gereicht werden sonst geht Rubberband nicht
 }
 
-void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
+void n2D::setKreuzMitXYWerten(QPointF position, QString richtung)
 {
 	/// schauen ob geschoben wird und wenn ja wie und wohin
-	static QPoint altePosition;
+	static QPointF altePosition;
 
 	if (richtung == "keine") {
 //		qDebug() << "position" << position;
@@ -163,7 +163,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		int i;
 		for (i = 0; i < vecExact.length(); ++i) // aktuelle Position finden
 		{
-			if (vecExact.at(i).x() > m_chart->mapToValue(altePosition).x()) {
+			if (vecExact.at(i).x() >= m_chart->mapToValue(altePosition).x()) {
 				break;
 			}
 		}
@@ -176,7 +176,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 				position = altePosition;
 		}
 		else { // rechts
-			if ( (i+1) < vecExact.length()) {
+			if ( (i+1) < vecExact.length() ) {
 				position.setX(m_chart->mapToPosition(vecExact.at(i+1)).x());
 			}
 			else
@@ -184,6 +184,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		}
 
 		position.setY(altePosition.y());
+		qDebug() << richtung << position; // << vecExact.at(i);
 	}
 	else {
 		qDebug() << QString("setKreuzMitXYWerten(position, richtung=\"%1\") "
@@ -191,7 +192,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		return;
 	}
 	altePosition = position;
-	qDebug() << richtung << position;
+
 
 
 	/// Abarbeiten:
@@ -256,7 +257,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 }
 
 
-QVector<QPointF> n2D::getAllExactValuesFromSeriesAtPositionX(int xPositionValue)
+QVector<QPointF> n2D::getAllExactValuesFromSeriesAtPositionX(qreal xPositionValue)
 {
 	QVector<QPointF> vecExact;
 	foreach (QLineSeries *series, m_series) {
@@ -616,12 +617,12 @@ void n2D::setDottedGraphs()
 
 void n2D::moveLeftKreuz()
 {
-	setKreuzMitXYWerten(QPoint(0,0), "links");
+	setKreuzMitXYWerten(QPointF(0,0), "links");
 }
 
 void n2D::moveRightKreuz()
 {
-	setKreuzMitXYWerten(QPoint(0,0), "rechts");
+	setKreuzMitXYWerten(QPointF(0,0), "rechts");
 }
 
 void n2D::keyPressEvent(QKeyEvent *event)
