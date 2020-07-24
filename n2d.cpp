@@ -140,23 +140,24 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	qreal hoehe = m_chart->size().height()-20;
 
 	qreal xPosMausValue = m_chart->mapToValue(event->pos()).x();
-	qreal xPosFirstValue = m_series.first()->points().first().x();
-	qreal xPosLastValue = m_series.first()->points().last().x();
+	qreal xPosFirstValue = m_series.first()->pointsVector().first().x();
+	qreal xPosLastValue = m_series.first()->pointsVector().last().x();
 	qreal yPosMaus = /*m_chart->mapToValue*/(event->pos()).y();
 
+	QVector<QPointF> vecExactSeriesValueAtPos = getAllExactValuesFromSeriesAtPositionX(xPosMausValue);
+
 	bool istXWertInnerhalb = false;
-	if ( (xPosFirstValue <= xPosMausValue) & (xPosMausValue <= xPosLastValue)) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..points().at(xPosMaus)..
+	if ( (xPosFirstValue <= xPosMausValue) & (xPosMausValue <= xPosLastValue)) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..pointsVector().at(xPosMaus)..
 		istXWertInnerhalb = true;
 	bool istYWertInnerhalb = false; //(hoehe-75-30)
-	if ( ( 75 <= yPosMaus) & (yPosMaus <= (hoehe-30))) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..points().at(xPosMaus)..
+	if ( ( 75 <= yPosMaus) & (yPosMaus <= (hoehe-30))) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..pointsVector().at(xPosMaus)..
 		istYWertInnerhalb = true;
 
 	/// xyWerte als Text unten anzeigen:
 	// x:
 	m_coordX->setPos(breite, hoehe);
 	if (istXWertInnerhalb) {
-		qreal xAchsenWert = m_series.first()->points().at(xPosMausValue).x();
-		m_coordX->setText(QString("X:%1").arg(xAchsenWert));
+		m_coordX->setText(QString("X:%1").arg(vecExactSeriesValueAtPos.first().x()));
 	}
 	else
 		m_coordX->setText(QString("X:%1").arg("ausser."));
@@ -169,8 +170,8 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 		if (m_series.at(n)->isVisible() | m_scatSer.at(n)->isVisible()) {
 			++rechtsVersatz;
 			m_coordListY.at(n)->setPen(m_series.at(n)->pen());
-			if (istXWertInnerhalb) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..points().at(xPos)..
-				m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg( m_series.at(n)->points().at(xPosMausValue).y() )); // yWert ausgeben
+			if (istXWertInnerhalb) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..pointsVector().at(xPos)..
+				m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg( vecExactSeriesValueAtPos.at(n).y() )); // yWert ausgeben
 			else
 				m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg("ausserhalb")); // yWert ausgeben
 			//m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(m_chart->mapToValue(event->pos(), m_series.at(n)).y())); // Mausposition in Grafik ausgeben
@@ -181,9 +182,7 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 
 	/// Hilslinien bei Mausposition zeichnen:
 	if (istXWertInnerhalb & istYWertInnerhalb) {
-		QVector<QPointF> vecExactValues = getAllExactValuesFromSeriesAtPositionX(xPosMausValue);
-//		qDebug() << "vecExactValues" << vecExactValues;
-		qreal xPosMausAtValue = m_chart->mapToPosition(vecExactValues.first()).x();
+		qreal xPosMausAtValue = m_chart->mapToPosition(vecExactSeriesValueAtPos.first()).x();
 		m_xHilfsLinie->setRect(xPosMausAtValue, 75, 0, hoehe-75-30);
 		m_xHilfsLinie->setVisible(true);
 		m_yHilfsLinie->setRect(30, yPosMaus, breite-17 ,0); //yPosMaus
@@ -201,7 +200,7 @@ QVector<QPointF> n2D::getAllExactValuesFromSeriesAtPositionX(int xPositionValue)
 {
 	QVector<QPointF> vecExact;
 	foreach (QLineSeries *series, m_series) {
-		foreach (QPointF pExakt, series->points()) {
+		foreach (QPointF pExakt, series->pointsVector()) {
 			if (pExakt.x() >= xPositionValue) {
 				vecExact.append(pExakt);
 				break;
@@ -458,14 +457,14 @@ void n2D::handleMarkerHovered(bool darueber)
 
 void n2D::controlIfaxisXisOutOfRange(qreal min, qreal max)
 {
-	QList<QPointF> p = m_series.first()->points();
+	QVector<QPointF> p = m_series.first()->pointsVector();
 	if ((min < p.first().rx()) & (p.last().rx() <= max))
 		setMinMaxXAchse();
 }
 
 void n2D::setMinMaxXAchse()
 {
-	QList<QPointF> p = m_series.first()->points();
+	QVector<QPointF> p = m_series.first()->pointsVector();
 	m_axisX->setRange(p.first().rx(), p.last().rx());
 }
 
