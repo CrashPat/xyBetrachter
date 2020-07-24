@@ -14,7 +14,7 @@ public:
 	void closeEvent(QCloseEvent *event) override;
 private slots:
 	void n2DwurdeGesschlossen() {close();}
-	bool open_n2D();
+	void open_n2D();
 	void hilfeDialog();
 private:
 	bool findAndPlotAllFiles();
@@ -25,6 +25,5 @@ private:
 	QList<QLineSeries *> n2DSeries;
 	QList<QString> n2DnameList;
 	const QString m_pfad = ("C:/Users/Patrik Roth/Downloads/");
-	bool m_useBeispieldaten = false;
 };
 #endif // MAINWINDOW_H

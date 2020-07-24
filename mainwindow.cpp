@@ -11,47 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	qDebug() << "MainWindow()";
 
-	while (!open_n2D())
-	{
-		QMessageBox msgBox;
-		msgBox.setText("Keine Dateien gefunden.");
-		msgBox.setInformativeText("Wollen Sie es erneut versuchen\n"
-								  "oder Daten generieren [Open]?");
-		msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Open | QMessageBox::Close);
-		msgBox.setDefaultButton(QMessageBox::Retry);
-		int ret = msgBox.exec();
-
-		if (ret == QMessageBox::Close)
-		{
-			this->~MainWindow();
-			return;
-		}
-		else if (ret == QMessageBox::Open)
-		{
-			//#define BEISPIEL_DATEN
-			#ifdef BEISPIEL_DATEN
-			// Beispiel für Daten 1
-			for (int n = 0; n < 3; ++n) {
-				QLineSeries* series = new QLineSeries();
-				series->append(1, 20+n);
-				series->append(2, 21+n);
-				series->append(3, 22+n);
-				n2DSeries.append(series); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
-				n2DnameList.append(QString().number(n));
-			}
-			#endif //BEISPIEL_DATEN
-
-			#define BEISPIEL_SINUS
-			#ifdef BEISPIEL_SINUS
-			//Beispiel für Daten 2
-			addSeriesSin();
-			addSeriesSin();
-			addSeriesSin();
-			#endif //BEISPIEL_SINUS
-
-			m_useBeispieldaten = true;
-		}
-	}
+	open_n2D();
+	return;
 }
 
 MainWindow::~MainWindow()
@@ -66,22 +27,85 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	qDebug() << "Bin de Main closeEvent";
 }
 
-bool MainWindow::open_n2D()
+void MainWindow::open_n2D()
 {
-	if (!m_useBeispieldaten)
-	{
-		if (n2d) {
-			n2d->~n2D();
-			while (!n2DSeries.isEmpty())
-				 delete n2DSeries.takeFirst();
-			qDebug() << "n2d->~n2D();";
-		}
-
-		if (!findAndPlotAllFiles())
+	bool dateienGefunden;
+	bool useBeispieldaten = false;
+	do {
+		if (!useBeispieldaten)
 		{
-			return false;
+			if (n2d) {
+				n2d->~n2D();
+				while (!n2DSeries.isEmpty())
+					 delete n2DSeries.takeFirst();
+				qDebug() << "n2d->~n2D();";
+			}
+
+			dateienGefunden = findAndPlotAllFiles();
+
+			if (!dateienGefunden)
+			{
+				QMessageBox msgBox;
+				msgBox.setText("Keine Dateien gefunden.");
+				msgBox.setInformativeText("Wollen Sie es erneut versuchen\n"
+										  "oder Daten generieren [Open]?");
+				msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Open | QMessageBox::Close);
+				msgBox.setDefaultButton(QMessageBox::Retry);
+				int ret = msgBox.exec();
+
+				if (ret == QMessageBox::Close)
+				{
+					this->~MainWindow();
+					return;
+				}
+				else if (ret == QMessageBox::Open)
+				{
+					//#define BEISPIEL_DATEN
+					#ifdef BEISPIEL_DATEN
+					// Beispiel für Daten 1
+					for (int n = 0; n < 3; ++n) {
+						QLineSeries* series = new QLineSeries();
+						series->append(1, 20+n);
+						series->append(2, 21+n);
+						series->append(3, 22+n);
+						n2DSeries.append(series); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
+						n2DnameList.append(QString().number(n));
+					}
+					#endif //BEISPIEL_DATEN
+
+					#define BEISPIEL_SINUS
+					#ifdef BEISPIEL_SINUS
+					//Beispiel für Daten 2
+					addSeriesSin();
+					addSeriesSin();
+					addSeriesSin();
+					#endif //BEISPIEL_SINUS
+
+					useBeispieldaten = true;
+				}
+			}
 		}
-	}
+		else
+		{
+			useBeispieldaten = false;
+			dateienGefunden = true;
+		}
+	} while (!dateienGefunden);
+
+//	if (!m_useBeispieldaten)
+//	{
+//		if (n2d) {
+//			n2d->~n2D();
+//			while (!n2DSeries.isEmpty())
+//				 delete n2DSeries.takeFirst();
+//			qDebug() << "n2d->~n2D();";
+//		}
+
+//		if (!findAndPlotAllFiles())
+//		{
+//			return false;
+//		}
+//	}
 
 	erstelle_n2D();
 	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
@@ -89,7 +113,6 @@ bool MainWindow::open_n2D()
 	connect(n2d, SIGNAL(hilfeSignal()), this, SLOT(hilfeDialog()));
 	//n2d->setRasterXAchse(10); --> geht noch nicht
 	qDebug() << "MainWindow::open_n2D()";
-	return true;
 }
 
 bool MainWindow::findAndPlotAllFiles()
