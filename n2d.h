@@ -106,8 +106,8 @@ private:
 	void addSeries(QLineSeries *series, QScatterSeries *scatSer);
 	void addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer);
 	void addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer);
-	void trackLineLabel(int mouseX);
-	float getYminORmax(QLineSeries *series, bool getMin = true);
+	float getYmax(QLineSeries *series);
+	float getYmin(QLineSeries *series);
 
 	static int countInstances;
 	void toggleBit(bool &bit) {bit = !bit;}
