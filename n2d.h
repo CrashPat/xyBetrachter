@@ -104,6 +104,7 @@ signals:
 
 private:
 	void addSeries(QLineSeries *series, QScatterSeries *scatSer);
+	QVector<QPointF> getAllExactValuesFromSeriesAtPositionX(int xPositionValue);
 	void addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer);
 	void addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer);
 	float getYmax(QLineSeries *series);
