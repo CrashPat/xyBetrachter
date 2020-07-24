@@ -109,6 +109,7 @@ private:
 	void addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer);
 	float getYmax(QLineSeries *series);
 	float getYmin(QLineSeries *series);
+	void setKreuzMitXYWerten(QPoint postion);
 
 	static int countInstances;
 	void toggleBit(bool &bit) {bit = !bit;}

@@ -136,13 +136,19 @@ void n2D::closeEvent(QCloseEvent *event)
 
 void n2D::mouseMoveEvent(QMouseEvent *event)
 {
+	setKreuzMitXYWerten(event->pos());
+	QChartView::mouseMoveEvent(event); // muss weiter gereicht werden sonst geht Rubberband nicht
+}
+
+void n2D::setKreuzMitXYWerten(QPoint postion)
+{
 	qreal breite = m_chart->size().width()-60;
 	qreal hoehe = m_chart->size().height()-20;
 
-	qreal xPosMausValue = m_chart->mapToValue(event->pos()).x();
+	qreal xPosMausValue = m_chart->mapToValue(postion).x();
 	qreal xPosFirstValue = m_series.first()->pointsVector().first().x();
 	qreal xPosLastValue = m_series.first()->pointsVector().last().x();
-	qreal yPosMaus = /*m_chart->mapToValue*/(event->pos()).y();
+	qreal yPosMaus = /*m_chart->mapToValue*/(postion).y();
 
 	QVector<QPointF> vecExactSeriesValueAtPos = getAllExactValuesFromSeriesAtPositionX(xPosMausValue);
 
@@ -174,7 +180,7 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 				m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg( vecExactSeriesValueAtPos.at(n).y() )); // yWert ausgeben
 			else
 				m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg("ausserhalb")); // yWert ausgeben
-			//m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(m_chart->mapToValue(event->pos(), m_series.at(n)).y())); // Mausposition in Grafik ausgeben
+			//m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(m_chart->mapToValue(postion, m_series.at(n)).y())); // Mausposition in Grafik ausgeben
 		}
 		else
 			m_coordListY.at(n)->setText("");
@@ -192,9 +198,8 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 		m_xHilfsLinie->hide();
 		m_yHilfsLinie->hide();
 	}
-
-	QChartView::mouseMoveEvent(event); // muss weiter gereicht werden sonst geht Rubberband nicht
 }
+
 
 QVector<QPointF> n2D::getAllExactValuesFromSeriesAtPositionX(int xPositionValue)
 {
