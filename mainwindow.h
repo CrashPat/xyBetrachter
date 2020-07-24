@@ -25,5 +25,6 @@ private:
 	QList<QLineSeries *> n2DSeries;
 	QList<QString> n2DnameList;
 	const QString m_pfad = ("C:/Users/Patrik Roth/Downloads/");
+	bool m_useBeispieldaten = false;
 };
 #endif // MAINWINDOW_H

@@ -240,7 +240,7 @@ float n2D::getYmax(QLineSeries *series)
 {
 	QVector<QPointF> werte = series->pointsVector();
 	Q_ASSERT(werte.size() > 0);
-	float yMax;
+	float yMax = werte.first().y();
 	foreach (QPointF p, werte) {
 		yMax = qMax((double)yMax, p.y());
 	}
@@ -251,7 +251,7 @@ float n2D::getYmin(QLineSeries *series)
 {
 	QVector<QPointF> werte = series->pointsVector();
 	Q_ASSERT(werte.size() > 0);
-	float yMin;
+	float yMin = werte.first().y();
 	foreach (QPointF p, werte) {
 		yMin = qMin((double)yMin, p.y());
 	}
@@ -263,7 +263,7 @@ void n2D::addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer)
 	// Abfragen ob logarithmisch überhaubpt möglich:
 	float yMin = getYmin(series);
 
-	if (yMin <= 0) // logarithmisch nicht möglich?
+	if (yMin < 0) // logarithmisch nicht möglich?
 		addAxisYlinear(series, scatSer);
 	else { // logarithmisch
 		// Achsen anhängen:

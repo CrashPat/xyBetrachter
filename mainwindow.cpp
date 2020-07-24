@@ -11,33 +11,13 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	qDebug() << "MainWindow()";
 
-	//#define BEISPIEL_DATEN
-	#ifdef BEISPIEL_DATEN
-	// Beispiel für Daten 1
-	for (int n = 0; n < 3; ++n) {
-		QLineSeries* series = new QLineSeries();
-		series->append(1, 20+n);
-		series->append(2, 21+n);
-		series->append(3, 22+n);
-		n2DSeries.append(series); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
-		n2DnameList.append(QString().number(n));
-	}
-	#endif //BEISPIEL_DATEN
-
-	//#define BEISPIEL_SINUS
-	#ifdef BEISPIEL_SINUS
-	//Beispiel für Daten 2
-	addSeriesSin();
-	addSeriesSin();
-	addSeriesSin();
-	#endif //BEISPIEL_SINUS
-
 	while (!open_n2D())
 	{
 		QMessageBox msgBox;
 		msgBox.setText("Keine Dateien gefunden.");
-		msgBox.setInformativeText("Wollen Sie es erneut versuchen?");
-		msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Close);
+		msgBox.setInformativeText("Wollen Sie es erneut versuchen\n"
+								  "oder Daten generieren [Open]?");
+		msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Open | QMessageBox::Close);
 		msgBox.setDefaultButton(QMessageBox::Retry);
 		int ret = msgBox.exec();
 
@@ -45,6 +25,31 @@ MainWindow::MainWindow(QWidget *parent)
 		{
 			this->~MainWindow();
 			return;
+		}
+		else if (ret == QMessageBox::Open)
+		{
+			//#define BEISPIEL_DATEN
+			#ifdef BEISPIEL_DATEN
+			// Beispiel für Daten 1
+			for (int n = 0; n < 3; ++n) {
+				QLineSeries* series = new QLineSeries();
+				series->append(1, 20+n);
+				series->append(2, 21+n);
+				series->append(3, 22+n);
+				n2DSeries.append(series); // --> verursacht Absturz da es wohl zum löschen von den QLineSeries kommt??
+				n2DnameList.append(QString().number(n));
+			}
+			#endif //BEISPIEL_DATEN
+
+			#define BEISPIEL_SINUS
+			#ifdef BEISPIEL_SINUS
+			//Beispiel für Daten 2
+			addSeriesSin();
+			addSeriesSin();
+			addSeriesSin();
+			#endif //BEISPIEL_SINUS
+
+			m_useBeispieldaten = true;
 		}
 	}
 }
@@ -63,17 +68,21 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 bool MainWindow::open_n2D()
 {
-	if (n2d) {
-		n2d->~n2D();
-		while (!n2DSeries.isEmpty())
-			 delete n2DSeries.takeFirst();
-		qDebug() << "n2d->~n2D();";
+	if (!m_useBeispieldaten)
+	{
+		if (n2d) {
+			n2d->~n2D();
+			while (!n2DSeries.isEmpty())
+				 delete n2DSeries.takeFirst();
+			qDebug() << "n2d->~n2D();";
+		}
+
+		if (!findAndPlotAllFiles())
+		{
+			return false;
+		}
 	}
 
-	if (!findAndPlotAllFiles())
-	{
-		return false;
-	}
 	erstelle_n2D();
 	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
 	connect(n2d, SIGNAL(reOpenSignal()), this, SLOT(open_n2D()));
@@ -167,7 +176,10 @@ void MainWindow::addSeriesSin()
 	int offset = n2DSeries.count();
 	for (int i = 0; i < 360; i++) {
 		qreal x = offset * 20 + i;
-		data.append(QPointF(i, qSin(qDegreesToRadians(x))));
+		if (offset == 1) // --> dient nur um Logarithmus benutzen zu können
+			data.append(QPointF(i, qAbs(qSin(qDegreesToRadians(x)))));
+		else
+			data.append(QPointF(i, qSin(qDegreesToRadians(x))));
 	}
 
 	series->append(data);
