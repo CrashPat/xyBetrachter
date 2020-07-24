@@ -116,6 +116,10 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(miniScreen, SIGNAL(activated()), this, SLOT(showMinimized()));
 	QShortcut *dottedGraphs = new QShortcut(QKeySequence("D"), this);
 	QObject::connect(dottedGraphs, SIGNAL(activated()), this, SLOT(setDottedGraphs()));
+	QShortcut *linksVerschiebenVonKreuz = new QShortcut(QKeySequence(Qt::Key_Left), this);
+	QObject::connect(linksVerschiebenVonKreuz, SIGNAL(activated()), this, SLOT(moveLeftKreuz()));
+	QShortcut *rechtsVerschiebenVonKreuz = new QShortcut(QKeySequence(Qt::Key_Right), this);
+	QObject::connect(rechtsVerschiebenVonKreuz, SIGNAL(activated()), this, SLOT(moveRightKreuz()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
 
 	this->setGridVisebility();
@@ -140,15 +144,64 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	QChartView::mouseMoveEvent(event); // muss weiter gereicht werden sonst geht Rubberband nicht
 }
 
-void n2D::setKreuzMitXYWerten(QPoint postion)
+void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 {
+	/// schauen ob geschoben wird
+	static QPoint altePosition;
+
+	if (richtung == "keine") {
+		;
+	}
+	else if ((richtung == "links") |
+			 (richtung == "rechts"))
+	{
+		QVector<QPointF> vecExact = m_series.first()->pointsVector();
+		//qDebug() << vecExact;
+		//qDebug() << "mapToValue" << m_chart->mapToValue(position).x();
+		int i;
+		for (i = 0; i < vecExact.length(); ++i)
+		{
+			if (vecExact.at(i).x() >= altePosition.x()) {
+			//if (vecExact.at(i).x() >= m_chart->mapToValue(position).x()) {
+				break;
+			}
+		}
+
+		if (richtung == "links") {
+			if (0 <= (i-1)) {
+				position.setX(vecExact.at(i-1).toPoint().x());
+			}
+			else
+				position = altePosition;
+		}
+		else { // rechts
+			if ( (i+1) < vecExact.length()) {
+				position.setX(vecExact.at(i+1).x());
+			}
+			else
+				position = altePosition;
+		}
+		position.setY(altePosition.y());
+		qDebug() << "i =" << i;
+	}
+	else {
+		qDebug() << QString("setKreuzMitXYWerten(position, richtung=\"%1\") "
+							"diese Richtung existiert nicht!").arg(richtung);
+		return;
+	}
+
+	qDebug() << QString("richtung = %1, position = ").arg(richtung) << position;
+	altePosition = position;
+
+
+	/// Abarbeiten:
 	qreal breite = m_chart->size().width()-60;
 	qreal hoehe = m_chart->size().height()-20;
 
-	qreal xPosMausValue = m_chart->mapToValue(postion).x();
+	qreal xPosMausValue = m_chart->mapToValue(position).x();
 	qreal xPosFirstValue = m_series.first()->pointsVector().first().x();
 	qreal xPosLastValue = m_series.first()->pointsVector().last().x();
-	qreal yPosMaus = /*m_chart->mapToValue*/(postion).y();
+	qreal yPosMaus = /*m_chart->mapToValue*/(position).y();
 
 	QVector<QPointF> vecExactSeriesValueAtPos = getAllExactValuesFromSeriesAtPositionX(xPosMausValue);
 
@@ -186,7 +239,7 @@ void n2D::setKreuzMitXYWerten(QPoint postion)
 			m_coordListY.at(n)->setText("");
 	}
 
-	/// Hilslinien bei Mausposition zeichnen:
+	/// Kreuz bei Mausposition zeichnen:
 	if (istXWertInnerhalb & istYWertInnerhalb) {
 		qreal xPosMausAtValue = m_chart->mapToPosition(vecExactSeriesValueAtPos.first()).x();
 		m_xHilfsLinie->setRect(xPosMausAtValue, 75, 0, hoehe-75-30);
@@ -557,6 +610,16 @@ void n2D::setDottedGraphs()
 		if (m_visibleDots)
 			m_scatSer.at(i)->setName(m_series.at(i)->name()+"D");
 	}
+}
+
+void n2D::moveLeftKreuz()
+{
+	setKreuzMitXYWerten(QPoint(0,0), "links");
+}
+
+void n2D::moveRightKreuz()
+{
+	setKreuzMitXYWerten(QPoint(0,0), "rechts");
 }
 
 void n2D::keyPressEvent(QKeyEvent *event)

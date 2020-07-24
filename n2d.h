@@ -88,6 +88,8 @@ public slots:
 	void setGridVisebility();
 	void makePrintScreen() {qDebug() << "makePrintScreen() noch nicht implementiert.";}
 	void setDottedGraphs();
+	void moveLeftKreuz();
+	void moveRightKreuz();
 
 	void handleMarkerHovered(bool);
 
@@ -109,7 +111,7 @@ private:
 	void addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer);
 	float getYmax(QLineSeries *series);
 	float getYmin(QLineSeries *series);
-	void setKreuzMitXYWerten(QPoint postion);
+	void setKreuzMitXYWerten(QPoint position, QString richtung = "keine");
 
 	static int countInstances;
 	void toggleBit(bool &bit) {bit = !bit;}

@@ -223,6 +223,8 @@ void MainWindow::hilfeDialog()
 			   "- [Esc] 	Fenster ausblenden\n"
 			   "- [D] 	Dottet: Toggeln zwischen Linear/Scattert-Darstellung\n"
 			   "- [1..9] 	Entsprechende Legenden ein/ausblenden\n"
+			   "- [->] 	Kreuz nach rechts um einen Datenpunkt verschieben [rechte Pfeiltaste]\n"
+			   "- [<-] 	Kreuz nach links um einen Datenpunkt verschieben [linke Pfeiltaste]\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 16.07.2020").arg(m_pfad) );
 }
