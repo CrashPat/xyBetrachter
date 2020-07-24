@@ -146,10 +146,13 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 
 void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 {
-	/// schauen ob geschoben wird
+	/// schauen ob geschoben wird und wenn ja wie und wohin
 	static QPoint altePosition;
 
 	if (richtung == "keine") {
+//		qDebug() << "position" << position;
+//		qDebug() << "mapToValue" << m_chart->mapToValue(position); /*<< " vecExact.at(i) = " << m_series.first()->pointsVector();*/
+//		qDebug() << "mapToPosition" << m_chart->mapToPosition(m_chart->mapToValue(position));
 		;
 	}
 	else if ((richtung == "links") |
@@ -157,41 +160,38 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	{
 		QVector<QPointF> vecExact = m_series.first()->pointsVector();
 		//qDebug() << vecExact;
-		//qDebug() << "mapToValue" << m_chart->mapToValue(position).x();
 		int i;
-		for (i = 0; i < vecExact.length(); ++i)
+		for (i = 0; i < vecExact.length(); ++i) // aktuelle Position finden
 		{
-			if (vecExact.at(i).x() >= altePosition.x()) {
-			//if (vecExact.at(i).x() >= m_chart->mapToValue(position).x()) {
+			if (vecExact.at(i).x() > m_chart->mapToValue(altePosition).x()) {
 				break;
 			}
 		}
 
 		if (richtung == "links") {
 			if (0 <= (i-1)) {
-				position.setX(vecExact.at(i-1).toPoint().x());
+				position.setX(m_chart->mapToPosition(vecExact.at(i-1)).x());
 			}
 			else
 				position = altePosition;
 		}
 		else { // rechts
 			if ( (i+1) < vecExact.length()) {
-				position.setX(vecExact.at(i+1).x());
+				position.setX(m_chart->mapToPosition(vecExact.at(i+1)).x());
 			}
 			else
 				position = altePosition;
 		}
+
 		position.setY(altePosition.y());
-		qDebug() << "i =" << i;
 	}
 	else {
 		qDebug() << QString("setKreuzMitXYWerten(position, richtung=\"%1\") "
 							"diese Richtung existiert nicht!").arg(richtung);
 		return;
 	}
-
-	qDebug() << QString("richtung = %1, position = ").arg(richtung) << position;
 	altePosition = position;
+	qDebug() << richtung << position;
 
 
 	/// Abarbeiten:
@@ -208,6 +208,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	bool istXWertInnerhalb = false;
 	if ( (xPosFirstValue <= xPosMausValue) & (xPosMausValue <= xPosLastValue)) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..pointsVector().at(xPosMaus)..
 		istXWertInnerhalb = true;
+
 	bool istYWertInnerhalb = false; //(hoehe-75-30)
 	if ( ( 75 <= yPosMaus) & (yPosMaus <= (hoehe-30))) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..pointsVector().at(xPosMaus)..
 		istYWertInnerhalb = true;
@@ -231,6 +232,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 			m_coordListY.at(n)->setPen(m_series.at(n)->pen());
 			if (istXWertInnerhalb) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..pointsVector().at(xPos)..
 				m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg( vecExactSeriesValueAtPos.at(n).y() )); // yWert ausgeben
+				//m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg( m_series.at(n)->points().at(xPosMausValue).y() )); // yWert ausgeben
 			else
 				m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg("ausserhalb")); // yWert ausgeben
 			//m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(m_chart->mapToValue(postion, m_series.at(n)).y())); // Mausposition in Grafik ausgeben
