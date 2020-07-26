@@ -218,7 +218,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 			++rechtsVersatz;
 			m_coordListY.at(n)->setPen(m_series.at(n)->pen());
 			m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(
-				m_series.at(n)->pointsVector().at(index).y() )); // yWert ausgeben
+				m_series.at(n)->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
 		}
 		else
 			m_coordListY.at(n)->setText("");
@@ -230,8 +230,8 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	m_xHilfsLinie->setVisible(true);
 	m_yHilfsLinie->setRect(30, yPosMaus, breite-17 ,0);
 	m_yHilfsLinie->setVisible(true);
-//	m_xHilfsLinie->hide();
-//	m_yHilfsLinie->hide();
+	//m_xHilfsLinie->hide();
+	//m_yHilfsLinie->hide();
 }
 
 void n2D::addSeries(QLineSeries *series, QScatterSeries *scatSer)
