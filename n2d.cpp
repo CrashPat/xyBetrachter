@@ -203,22 +203,22 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	/// xyWerte als Text unten anzeigen:
 	// x:
 	m_coordX->setPos(breite, hoehe);
-	if (true) {
-		m_coordX->setText(QString("X:%1").arg(vecExact.at(index).x()));
-	}
-	else
-		m_coordX->setText(QString("X:%1").arg("ausser."));
+	m_coordX->setText(QString("X:%1").arg(vecExact.at(index).x()));
 
 	// y:
 	int rechtsVersatz = 0;
 	for (int n = m_coordListY.count()-1; n+1 ; --n) {
 		int versatz = rechtsVersatz*80+10; // Textabstand
-		m_coordListY.at(n)->setPos(versatz, hoehe);
-		if (m_series.at(n)->isVisible() | m_scatSer.at(n)->isVisible()) {
+//		m_coordListY.at(n)->setPos(versatz, hoehe);
+		QLineSeries *serie = m_series.at(n);
+		QPointF wert = serie->pointsVector().at(index);
+		QPointF wertePos = m_chart->mapToPosition(wert, serie);
+		m_coordListY.at(n)->setPos(wertePos);
+		if (serie->isVisible() | m_scatSer.at(n)->isVisible()) {
 			++rechtsVersatz;
-			m_coordListY.at(n)->setPen(m_series.at(n)->pen());
+			m_coordListY.at(n)->setPen(serie->pen());
 			m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(
-				m_series.at(n)->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
 		}
 		else
 			m_coordListY.at(n)->setText("");
