@@ -130,7 +130,9 @@ private:
 							 // = {0xff99ca53F, 0xff209fdfF, 0xff6d5fd5F, 0xfff6a625F, 0xffbf593eF, 0xff38ad6bF, 0xff7b7f8cF, 0xff3c84a7F}; das gleich nur in Hex
 
 	QGraphicsSimpleTextItem *m_coordX;
+	QGraphicsSimpleTextItem *m_coordXatGraf;
 	QList<QGraphicsSimpleTextItem *> m_coordListY;
+	QList<QGraphicsSimpleTextItem *> m_coordListYatGraf;
 
 	QGraphicsRectItem *m_xHilfsLinie;
 	QGraphicsRectItem *m_yHilfsLinie;

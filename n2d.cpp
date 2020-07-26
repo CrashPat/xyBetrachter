@@ -46,6 +46,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	// Add few series & Kopie der Werte erstellen
 	m_coordX = new QGraphicsSimpleTextItem(m_chart);
 	m_coordX->setPos(m_chart->size().width()/2, m_chart->size().height());
+	m_coordXatGraf = new QGraphicsSimpleTextItem(m_chart);
+	m_coordXatGraf->setVisible(false);
 
 	int n = 0;
 	foreach (QLineSeries *ls, listLineSeries) {
@@ -62,17 +64,19 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		scatSer->setName(QString("(%1)").arg(n));
 		addSeries(series, scatSer);
 		m_coordListY.append(new QGraphicsSimpleTextItem(m_chart));
+		m_coordListYatGraf.append(new QGraphicsSimpleTextItem(m_chart));
 	}
 
 	m_xHilfsLinie = new QGraphicsRectItem(10,10,0,100,m_chart);
 	m_yHilfsLinie = new QGraphicsRectItem(10,10,100,0,m_chart);
 	QPen pen;
-	pen.setColor(Qt::darkGray);
+	pen.setColor(Qt::gray); //darkGray
 	pen.setWidthF(0.2);
 	m_xHilfsLinie->setPen(pen);
 	m_yHilfsLinie->setPen(pen);
 	pen.setWidthF(0.5);
 	m_coordX->setPen(pen);
+	m_coordXatGraf->setPen(pen);
 
 	connectMarkers();
 
@@ -198,34 +202,46 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 
 	/// Vorbereitung Zeichenpositionen:
 	qreal breite = m_chart->size().width()-60;
-	qreal hoehe = m_chart->size().height()-20;
+	qreal hoehe = m_chart->size().height()-15;
 
 	/// xyWerte als Text unten anzeigen:
 	// x:
 	m_coordX->setPos(breite, hoehe);
 	m_coordX->setText(QString("X:%1").arg(vecExact.at(index).x()));
+	//m_coordXatGraf->setPos(breite, hoehe); // --> wird beim Kreuz gemacht
+	m_coordXatGraf->setText(QString("%1").arg(vecExact.at(index).x()));
 
 	// y:
 	int rechtsVersatz = 0;
 	for (int n = m_coordListY.count()-1; n+1 ; --n) {
 		int versatz = rechtsVersatz*80+10; // Textabstand
-//		m_coordListY.at(n)->setPos(versatz, hoehe);
+		m_coordListY.at(n)->setPos(versatz, hoehe);
+
 		QLineSeries *serie = m_series.at(n);
 		QPointF wert = serie->pointsVector().at(index);
 		QPointF wertePos = m_chart->mapToPosition(wert, serie);
-		m_coordListY.at(n)->setPos(wertePos);
+		wertePos.setY(wertePos.y() - 12);
+		m_coordListYatGraf.at(n)->setPos(wertePos);
+
 		if (serie->isVisible() | m_scatSer.at(n)->isVisible()) {
 			++rechtsVersatz;
 			m_coordListY.at(n)->setPen(serie->pen());
 			m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(
 				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+			m_coordListYatGraf.at(n)->setPen(serie->pen());
+			m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
+				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
 		}
-		else
+		else {
 			m_coordListY.at(n)->setText("");
+			m_coordListYatGraf.at(n)->setText("");
+		}
 	}
 
 	/// Kreuz bei Mausposition zeichnen:
 	qreal xPosMausAtValue = m_chart->mapToPosition(vecExact.at(index)).x();
+	m_coordXatGraf->setPos(xPosMausAtValue, hoehe-13);
+	m_coordXatGraf->setVisible(true);
 	m_xHilfsLinie->setRect(xPosMausAtValue, 75, 0, hoehe-75-30);
 	m_xHilfsLinie->setVisible(true);
 	m_yHilfsLinie->setRect(30, yPosMaus, breite-17 ,0);
@@ -377,6 +393,8 @@ void n2D::removeHiddenSeries()
 			m_scatSer.removeOne(m_scatSer.at(i));
 			m_coordListY.last()->setText("");
 			m_coordListY.removeLast();
+			m_coordListYatGraf.last()->setText("");
+			m_coordListYatGraf.removeLast();
 		}
 	}
 
