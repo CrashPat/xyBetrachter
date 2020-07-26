@@ -146,10 +146,20 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 
 void n2D::setKreuzMitXYWerten(QPointF position, QString richtung)
 {
-	/// schauen ob geschoben wird und wenn ja wie und wohin
-	static QPointF altePosition;
+	/// [1] schauen ob geschoben wird und wenn ja wie und wohin
+	static QPointF altePosition = QPointF(0,0);
+	static uint index = 0;
+	QVector<QPointF> vecExact = m_series.first()->pointsVector();
+	uint indexLen = vecExact.length();
 
 	if (richtung == "keine") {
+		// nur Index von Kreuz finden
+		for (index = 0; index < indexLen; ++index) // aktuelle Position finden
+		{
+			if (vecExact.at(index).x() >= m_chart->mapToValue(altePosition).x()) {
+				break; // gefundener Index
+			}
+		}
 //		qDebug() << "position" << position;
 //		qDebug() << "mapToValue" << m_chart->mapToValue(position); /*<< " vecExact.at(i) = " << m_series.first()->pointsVector();*/
 //		qDebug() << "mapToPosition" << m_chart->mapToPosition(m_chart->mapToValue(position));
@@ -158,33 +168,25 @@ void n2D::setKreuzMitXYWerten(QPointF position, QString richtung)
 	else if ((richtung == "links") |
 			 (richtung == "rechts"))
 	{
-		QVector<QPointF> vecExact = m_series.first()->pointsVector();
-		//qDebug() << vecExact;
-		int i;
-		for (i = 0; i < vecExact.length(); ++i) // aktuelle Position finden
-		{
-			if (vecExact.at(i).x() >= m_chart->mapToValue(altePosition).x()) {
-				break;
-			}
-		}
+		// Index über oder unterlauf abfangen:
+		if ( (indexLen - 2) < index )
+			index = indexLen - 2;
+		else
+			position = altePosition;
 
+		// Position Finden:
 		if (richtung == "links") {
-			if (0 <= (i-1)) {
-				position.setX(m_chart->mapToPosition(vecExact.at(i-1)).x());
-			}
-			else
-				position = altePosition;
+			if (0 < index)
+				index--;
+			position.setX(m_chart->mapToPosition(vecExact.at(index)).x());
 		}
 		else { // rechts
-			if ( (i+1) < vecExact.length() ) {
-				position.setX(m_chart->mapToPosition(vecExact.at(i+1)).x());
-			}
-			else
-				position = altePosition;
+			index++;
+			position.setX(m_chart->mapToPosition(vecExact.at(index)).x());
 		}
 
 		position.setY(altePosition.y());
-		qDebug() << richtung << position; // << vecExact.at(i);
+		//qDebug() << richtung << position; // << vecExact.at(i);
 	}
 	else {
 		qDebug() << QString("setKreuzMitXYWerten(position, richtung=\"%1\") "
@@ -192,6 +194,8 @@ void n2D::setKreuzMitXYWerten(QPointF position, QString richtung)
 		return;
 	}
 	altePosition = position;
+	qDebug() << "indexLen" << indexLen << ", index" << index;
+	/// [1] end
 
 
 
