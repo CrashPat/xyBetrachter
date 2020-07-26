@@ -106,12 +106,11 @@ signals:
 
 private:
 	void addSeries(QLineSeries *series, QScatterSeries *scatSer);
-	QVector<QPointF> getAllExactValuesFromSeriesAtPositionX(qreal xPositionValue);
 	void addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer);
 	void addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer);
 	float getYmax(QLineSeries *series);
 	float getYmin(QLineSeries *series);
-	void setKreuzMitXYWerten(QPointF position, QString richtung = "keine");
+	void setKreuzMitXYWerten(QPoint position, QString richtung = "keine");
 
 	static int countInstances;
 	void toggleBit(bool &bit) {bit = !bit;}

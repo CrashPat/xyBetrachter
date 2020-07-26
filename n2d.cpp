@@ -144,85 +144,67 @@ void n2D::mouseMoveEvent(QMouseEvent *event)
 	QChartView::mouseMoveEvent(event); // muss weiter gereicht werden sonst geht Rubberband nicht
 }
 
-void n2D::setKreuzMitXYWerten(QPointF position, QString richtung)
+void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 {
 	/// [1] schauen ob geschoben wird und wenn ja wie und wohin
-	static QPointF altePosition = QPointF(0,0);
+	static int yPosMaus = 0;
 	static uint index = 0;
 	QVector<QPointF> vecExact = m_series.first()->pointsVector();
 	uint indexLen = vecExact.length();
 
 	if (richtung == "keine") {
 		// nur Index von Kreuz finden
+		yPosMaus = position.y();
 		for (index = 0; index < indexLen; ++index) // aktuelle Position finden
 		{
-			if (vecExact.at(index).x() >= m_chart->mapToValue(altePosition).x()) {
+			if (vecExact.at(index).x() >= m_chart->mapToValue(position).x()) {
 				break; // gefundener Index
 			}
 		}
+		// Index Überlauf abfangen:
+		if ( (indexLen - 1) < index )
+			index = indexLen - 1;
 //		qDebug() << "position" << position;
 //		qDebug() << "mapToValue" << m_chart->mapToValue(position); /*<< " vecExact.at(i) = " << m_series.first()->pointsVector();*/
 //		qDebug() << "mapToPosition" << m_chart->mapToPosition(m_chart->mapToValue(position));
-		;
 	}
 	else if ((richtung == "links") |
 			 (richtung == "rechts"))
 	{
-		// Index über oder unterlauf abfangen:
-		if ( (indexLen - 2) < index )
+		// Index Überlauf abfangen:
+		if (richtung == "links") // Damit auch vorletzter Index ausgegeben wird
+			;
+		else if ( (indexLen - 2) < index )
 			index = indexLen - 2;
-		else
-			position = altePosition;
 
-		// Position Finden:
+		// Index für links/rechts inkrementieren:
 		if (richtung == "links") {
 			if (0 < index)
 				index--;
-			position.setX(m_chart->mapToPosition(vecExact.at(index)).x());
 		}
 		else { // rechts
 			index++;
-			position.setX(m_chart->mapToPosition(vecExact.at(index)).x());
 		}
-
-		position.setY(altePosition.y());
-		//qDebug() << richtung << position; // << vecExact.at(i);
 	}
 	else {
 		qDebug() << QString("setKreuzMitXYWerten(position, richtung=\"%1\") "
 							"diese Richtung existiert nicht!").arg(richtung);
 		return;
 	}
-	altePosition = position;
 	qDebug() << "indexLen" << indexLen << ", index" << index;
 	/// [1] end
 
 
 
-	/// Abarbeiten:
+	/// Vorbereitung Zeichenpositionen:
 	qreal breite = m_chart->size().width()-60;
 	qreal hoehe = m_chart->size().height()-20;
-
-	qreal xPosMausValue = m_chart->mapToValue(position).x();
-	qreal xPosFirstValue = m_series.first()->pointsVector().first().x();
-	qreal xPosLastValue = m_series.first()->pointsVector().last().x();
-	qreal yPosMaus = /*m_chart->mapToValue*/(position).y();
-
-	QVector<QPointF> vecExactSeriesValueAtPos = getAllExactValuesFromSeriesAtPositionX(xPosMausValue);
-
-	bool istXWertInnerhalb = false;
-	if ( (xPosFirstValue <= xPosMausValue) & (xPosMausValue <= xPosLastValue)) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..pointsVector().at(xPosMaus)..
-		istXWertInnerhalb = true;
-
-	bool istYWertInnerhalb = false; //(hoehe-75-30)
-	if ( ( 75 <= yPosMaus) & (yPosMaus <= (hoehe-30))) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..pointsVector().at(xPosMaus)..
-		istYWertInnerhalb = true;
 
 	/// xyWerte als Text unten anzeigen:
 	// x:
 	m_coordX->setPos(breite, hoehe);
-	if (istXWertInnerhalb) {
-		m_coordX->setText(QString("X:%1").arg(vecExactSeriesValueAtPos.first().x()));
+	if (true) {
+		m_coordX->setText(QString("X:%1").arg(vecExact.at(index).x()));
 	}
 	else
 		m_coordX->setText(QString("X:%1").arg("ausser."));
@@ -235,44 +217,21 @@ void n2D::setKreuzMitXYWerten(QPointF position, QString richtung)
 		if (m_series.at(n)->isVisible() | m_scatSer.at(n)->isVisible()) {
 			++rechtsVersatz;
 			m_coordListY.at(n)->setPen(m_series.at(n)->pen());
-			if (istXWertInnerhalb) // Schauen ob die Werte auch im Bereich liegen, sont gibts Arrayüberlauf bei ..pointsVector().at(xPos)..
-				m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg( vecExactSeriesValueAtPos.at(n).y() )); // yWert ausgeben
-				//m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg( m_series.at(n)->points().at(xPosMausValue).y() )); // yWert ausgeben
-			else
-				m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg("ausserhalb")); // yWert ausgeben
-			//m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(m_chart->mapToValue(postion, m_series.at(n)).y())); // Mausposition in Grafik ausgeben
+			m_coordListY.at(n)->setText(QString("%1:%2").arg(n+1).arg(
+				m_series.at(n)->pointsVector().at(index).y() )); // yWert ausgeben
 		}
 		else
 			m_coordListY.at(n)->setText("");
 	}
 
 	/// Kreuz bei Mausposition zeichnen:
-	if (istXWertInnerhalb & istYWertInnerhalb) {
-		qreal xPosMausAtValue = m_chart->mapToPosition(vecExactSeriesValueAtPos.first()).x();
-		m_xHilfsLinie->setRect(xPosMausAtValue, 75, 0, hoehe-75-30);
-		m_xHilfsLinie->setVisible(true);
-		m_yHilfsLinie->setRect(30, yPosMaus, breite-17 ,0); //yPosMaus
-		m_yHilfsLinie->setVisible(true);
-	}
-	else {
-		m_xHilfsLinie->hide();
-		m_yHilfsLinie->hide();
-	}
-}
-
-
-QVector<QPointF> n2D::getAllExactValuesFromSeriesAtPositionX(qreal xPositionValue)
-{
-	QVector<QPointF> vecExact;
-	foreach (QLineSeries *series, m_series) {
-		foreach (QPointF pExakt, series->pointsVector()) {
-			if (pExakt.x() >= xPositionValue) {
-				vecExact.append(pExakt);
-				break;
-			}
-		}
-	}
-	return vecExact;
+	qreal xPosMausAtValue = m_chart->mapToPosition(vecExact.at(index)).x();
+	m_xHilfsLinie->setRect(xPosMausAtValue, 75, 0, hoehe-75-30);
+	m_xHilfsLinie->setVisible(true);
+	m_yHilfsLinie->setRect(30, yPosMaus, breite-17 ,0);
+	m_yHilfsLinie->setVisible(true);
+//	m_xHilfsLinie->hide();
+//	m_yHilfsLinie->hide();
 }
 
 void n2D::addSeries(QLineSeries *series, QScatterSeries *scatSer)
@@ -621,12 +580,12 @@ void n2D::setDottedGraphs()
 
 void n2D::moveLeftKreuz()
 {
-	setKreuzMitXYWerten(QPointF(0,0), "links");
+	setKreuzMitXYWerten(QPoint(0,0), "links");
 }
 
 void n2D::moveRightKreuz()
 {
-	setKreuzMitXYWerten(QPointF(0,0), "rechts");
+	setKreuzMitXYWerten(QPoint(0,0), "rechts");
 }
 
 void n2D::keyPressEvent(QKeyEvent *event)
