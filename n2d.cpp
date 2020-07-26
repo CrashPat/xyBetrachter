@@ -449,9 +449,7 @@ void n2D::handleMarkerHovered(bool darueber)
 		 {
    //![5]
 			 // Toggle visibility of series
-//			marker->series()->setVisible(!marker->series()->isVisible());
-			marker->series()->setVisible(!marker->series()->isVisible());
-			 //marker->series()->attachedAxes().last()->setVisible(marker->series()->isVisible()); // y-Achse Ein/Aus blenden
+			 marker->series()->setVisible(!marker->series()->isVisible());
 			 setYachsenVisebilityForMarker(); // y-Achse Ein/Aus blenden
 
 			 // Turn legend marker back to visible, since hiding series also hides the marker
@@ -593,13 +591,36 @@ void n2D::setWerteVisebilityAufKreuz()
 void n2D::setDottedGraphs()
 {
 	toggleBit(m_visibleDots);
+	if (m_visibleDotsFirstUse)
+		m_visibleDotsFirstUse = false;
+
 	for (int i = 0; i < m_series.length(); ++i) {
-		bool eineOderBeideSerienSichtbar
-				= m_series.at(i)->isVisible() |	m_scatSer.at(i)->isVisible();
-		m_series.at(i)->setVisible( eineOderBeideSerienSichtbar & !m_visibleDots );
-		m_scatSer.at(i)->setVisible( eineOderBeideSerienSichtbar & m_visibleDots );
+		m_series.at(i)->setVisible(  m_visibleDots ); //muss gemacht werden wegen Legende richtig ein/aus blenden
+		m_scatSer.at(i)->setVisible(!m_visibleDots );//muss gemacht werden wegen Legende richtig ein/aus blenden
+		m_series.at(i)->setVisible( !m_visibleDots );
+		m_scatSer.at(i)->setVisible( m_visibleDots );
 		if (m_visibleDots)
-			m_scatSer.at(i)->setName(m_series.at(i)->name()+"D");
+			m_scatSer.at(i)->setName(m_series.at(i)->name()/*+"D"*/);
+	}
+}
+
+void n2D::keyPressEvent(QKeyEvent *event)
+{
+	int taste = event->key();
+	if((Qt::Key_1 <= taste) & (taste <= Qt::Key_9))
+	{
+		int nr = taste - Qt::Key_0 - 1;
+		if (nr < m_series.length()) {
+			const auto markers = m_chart->legend()->markers();
+			if (m_visibleDotsFirstUse) {
+				markers.at(2*nr)->hovered(true);
+				markers.at(2*nr+1)->hovered(true);
+			}
+			else if (m_visibleDots)
+				markers.at(2*nr)->hovered(true);
+			else
+				markers.at(2*nr+1)->hovered(true);
+		}
 	}
 }
 
@@ -611,20 +632,6 @@ void n2D::moveLeftKreuz()
 void n2D::moveRightKreuz()
 {
 	setKreuzMitXYWerten(QPoint(0,0), "rechts");
-}
-
-void n2D::keyPressEvent(QKeyEvent *event)
-{
-	int taste = event->key();
-	if((Qt::Key_1 <= taste) & (taste <= Qt::Key_9))
-	{
-		int nr = taste - Qt::Key_0 - 1;
-		if (nr < m_series.length()) {
-			const auto markers = m_chart->legend()->markers();
-			markers.at(2*nr)->hovered(true);
-			markers.at(2*nr+1)->hovered(true);
-		}
-	}
 }
 
 void n2D::wheelEvent(QWheelEvent *event)
