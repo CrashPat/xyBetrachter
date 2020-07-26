@@ -225,6 +225,7 @@ void MainWindow::hilfeDialog()
 			   "- [1..9] 	Entsprechende Legenden ein/ausblenden\n"
 			   "- [->] 	Kreuz nach rechts um einen Datenpunkt verschieben [rechte Pfeiltaste]\n"
 			   "- [<-] 	Kreuz nach links um einen Datenpunkt verschieben [linke Pfeiltaste]\n"
+			   "- [W] 	Werte auf Kreuz aus/ein-blenden.\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 16.07.2020").arg(m_pfad) );
 }

@@ -47,7 +47,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	m_coordX = new QGraphicsSimpleTextItem(m_chart);
 	m_coordX->setPos(m_chart->size().width()/2, m_chart->size().height());
 	m_coordXatGraf = new QGraphicsSimpleTextItem(m_chart);
-	m_coordXatGraf->setVisible(false);
 
 	int n = 0;
 	foreach (QLineSeries *ls, listLineSeries) {
@@ -124,6 +123,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(linksVerschiebenVonKreuz, SIGNAL(activated()), this, SLOT(moveLeftKreuz()));
 	QShortcut *rechtsVerschiebenVonKreuz = new QShortcut(QKeySequence(Qt::Key_Right), this);
 	QObject::connect(rechtsVerschiebenVonKreuz, SIGNAL(activated()), this, SLOT(moveRightKreuz()));
+	QShortcut *werteVisebilityAufKreuz = new QShortcut(QKeySequence("W"), this);
+	QObject::connect(werteVisebilityAufKreuz, SIGNAL(activated()), this, SLOT(setWerteVisebilityAufKreuz()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
 
 	this->setGridVisebility();
@@ -195,10 +196,8 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 							"diese Richtung existiert nicht!").arg(richtung);
 		return;
 	}
-	qDebug() << "indexLen" << indexLen << ", index" << index;
+	//qDebug() << "indexLen" << indexLen << ", index" << index;
 	/// [1] end
-
-
 
 	/// Vorbereitung Zeichenpositionen:
 	qreal breite = m_chart->size().width()-60;
@@ -209,7 +208,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	m_coordX->setPos(breite, hoehe);
 	m_coordX->setText(QString("X:%1").arg(vecExact.at(index).x()));
 	//m_coordXatGraf->setPos(breite, hoehe); // --> wird beim Kreuz gemacht
-	m_coordXatGraf->setText(QString("%1").arg(vecExact.at(index).x()));
+	m_coordXatGraf->setText(QString("|%1").arg(vecExact.at(index).x()));
 
 	// y:
 	int rechtsVersatz = 0;
@@ -241,7 +240,6 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	/// Kreuz bei Mausposition zeichnen:
 	qreal xPosMausAtValue = m_chart->mapToPosition(vecExact.at(index)).x();
 	m_coordXatGraf->setPos(xPosMausAtValue, hoehe-13);
-	m_coordXatGraf->setVisible(true);
 	m_xHilfsLinie->setRect(xPosMausAtValue, 75, 0, hoehe-75-30);
 	m_xHilfsLinie->setVisible(true);
 	m_yHilfsLinie->setRect(30, yPosMaus, breite-17 ,0);
@@ -580,6 +578,15 @@ void n2D::setGridVisebility()
 		if (achse->isVisible()) {// yAchsen
 			achse->setGridLineVisible(m_visibleGrid);
 		}
+	}
+}
+
+void n2D::setWerteVisebilityAufKreuz()
+{
+	toggleBit(m_visibleWerteAufKreuz);
+	m_coordXatGraf->setVisible(m_visibleWerteAufKreuz);
+	foreach (QGraphicsSimpleTextItem *yGrafText, m_coordListYatGraf) {
+		yGrafText->setVisible(m_visibleWerteAufKreuz);
 	}
 }
 

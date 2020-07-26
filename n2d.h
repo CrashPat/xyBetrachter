@@ -90,6 +90,7 @@ public slots:
 	void setDottedGraphs();
 	void moveLeftKreuz();
 	void moveRightKreuz();
+	void setWerteVisebilityAufKreuz();
 
 	void handleMarkerHovered(bool);
 
@@ -123,6 +124,7 @@ private:
 	bool m_visibleGrid = true;
 	bool m_visibleAxisY = true;
 	bool m_visibleDots = false;
+	bool m_visibleWerteAufKreuz = true;
 	bool m_isRubberbandHorizontal = true;
 	QString m_windowTitle;
 	QList<QColor> m_farbPalette = {Qt::gray, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::magenta, Qt::cyan};
