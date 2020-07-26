@@ -551,7 +551,7 @@ void n2D::setYachsenVisebility()
 	for (int i = 0; i < m_series.length(); ++i) {
 		if (!m_visibleAxisY)
 			m_series.at(i)->attachedAxes().last()->setVisible( false );
-		else if (m_series.at(i)->isVisible() | m_series.at(i)->isVisible())
+		else if (m_series.at(i)->isVisible() | m_scatSer.at(i)->isVisible())
 			m_series.at(i)->attachedAxes().last()->setVisible( true );
 	}
 }
@@ -561,9 +561,16 @@ void n2D::setYachsenVisebilityForMarker()
 	if (m_visibleAxisY)
 	{
 		for (int i = 0; i < m_series.length(); ++i) {
-			m_series.at(i)->attachedAxes().last()
+			if (m_visibleDotsFirstUse)
+				m_series.at(i)->attachedAxes().last()
 					->setVisible( m_series.at(i)->isVisible() |
 								  m_scatSer.at(i)->isVisible() );
+			else if (m_visibleDots)
+				m_series.at(i)->attachedAxes().last()
+					->setVisible( m_scatSer.at(i)->isVisible() );
+			else
+				m_series.at(i)->attachedAxes().last()
+					->setVisible( m_series.at(i)->isVisible() );
 		}
 	}
 }
@@ -591,16 +598,26 @@ void n2D::setWerteVisebilityAufKreuz()
 void n2D::setDottedGraphs()
 {
 	toggleBit(m_visibleDots);
-	if (m_visibleDotsFirstUse)
-		m_visibleDotsFirstUse = false;
+	m_visibleDotsFirstUse = false;
 
+	const auto markers = m_chart->legend()->markers();
 	for (int i = 0; i < m_series.length(); ++i) {
-		m_series.at(i)->setVisible(  m_visibleDots ); //muss gemacht werden wegen Legende richtig ein/aus blenden
-		m_scatSer.at(i)->setVisible(!m_visibleDots );//muss gemacht werden wegen Legende richtig ein/aus blenden
+		//muss gemacht werden wegen Legende richtig ein/aus blenden:
+		m_series.at(i)->setVisible(  m_visibleDots );
+		m_scatSer.at(i)->setVisible(!m_visibleDots );
 		m_series.at(i)->setVisible( !m_visibleDots );
 		m_scatSer.at(i)->setVisible( m_visibleDots );
+
+		// Text anpassen:
 		if (m_visibleDots)
 			m_scatSer.at(i)->setName(m_series.at(i)->name()/*+"D"*/);
+
+		// Sichtbarkeit richtig setzen:
+		if ((markers.at(2*i+1)->brush().color().alphaF() < 1) & !m_visibleDots)
+			markers.at(2*i+1)->hovered(true); //Line
+		if ((markers.at(2*i)->brush().color().alphaF() < 1) & m_visibleDots)
+			markers.at(2*i)->hovered(true); //Scatter
+		setYachsenVisebilityForMarker(); // Damit yAxen richtig dargestellt werden
 	}
 }
 
