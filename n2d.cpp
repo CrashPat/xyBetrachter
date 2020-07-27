@@ -64,7 +64,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		addSeries(series, scatSer);
 		m_coordListYatUnten.append(new QGraphicsSimpleTextItem(m_chart));
 		m_coordListYatGraf.append(new QGraphicsSimpleTextItem(m_chart));
-		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(10,10+2+2*n, 20,0, m_chart)); //Strichbreite wird hier festgelegt
+		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(0, 12, 10,0, m_chart)); //Position und Strichbreite wird hier festgelegt
 		m_coordListStricheAtYAxes.last()->setPen(series->pen());
 	}
 
@@ -224,7 +224,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		wertePos.setY(wertePos.y() - 12);
 		m_coordListYatGraf.at(n)->setPos(wertePos);
 		m_series.at(n)->attachedAxes().last();
-		m_coordListStricheAtYAxes.at(n)->setPos(0, wertePos.y());
+		m_coordListStricheAtYAxes.at(n)->setPos(n*4, wertePos.y());
 
 		if (serie->isVisible() | m_scatSer.at(n)->isVisible()) {
 			++rechtsVersatz;
