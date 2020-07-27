@@ -44,8 +44,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	//![2]
 
 	// Add few series & Kopie der Werte erstellen
-	m_coordXatLinksUnten = new QGraphicsSimpleTextItem(m_chart);
-	m_coordXatLinksUnten->setPos(m_chart->size().width()/2, m_chart->size().height());
+	m_coordXatUnten = new QGraphicsSimpleTextItem(m_chart);
+	m_coordXatUnten->setPos(m_chart->size().width()/2, m_chart->size().height());
 	m_coordXatGraf = new QGraphicsSimpleTextItem(m_chart);
 
 	int n = 0;
@@ -62,8 +62,10 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		series->setName(QString("%2 (%1)").arg(n).arg(ls->name()));
 		scatSer->setName(QString("(%1)").arg(n));
 		addSeries(series, scatSer);
-		m_coordListYatRechtsUnten.append(new QGraphicsSimpleTextItem(m_chart));
+		m_coordListYatUnten.append(new QGraphicsSimpleTextItem(m_chart));
 		m_coordListYatGraf.append(new QGraphicsSimpleTextItem(m_chart));
+		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(10,10+2+2*n, 20,0, m_chart)); //Strichbreite wird hier festgelegt
+		m_coordListStricheAtYAxes.last()->setPen(series->pen());
 	}
 
 	m_xHilfsLinie = new QGraphicsRectItem(10,10,0,100,m_chart);
@@ -74,7 +76,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	m_xHilfsLinie->setPen(pen);
 	m_yHilfsLinie->setPen(pen);
 	pen.setWidthF(0.5);
-	m_coordXatLinksUnten->setPen(pen);
+	m_coordXatUnten->setPen(pen);
 	m_coordXatGraf->setPen(pen);
 
 	connectMarkers();
@@ -205,35 +207,39 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 
 	/// xyWerte als Text unten anzeigen:
 	// x:
-	m_coordXatLinksUnten->setPos(breite, hoehe);
-	m_coordXatLinksUnten->setText(QString("X:%1").arg(vecExact.at(index).x()));
+	m_coordXatUnten->setPos(breite, hoehe);
+	m_coordXatUnten->setText(QString("X:%1").arg(vecExact.at(index).x()));
 	//m_coordXatGraf->setPos(breite, hoehe); // --> wird beim Kreuz gemacht
 	m_coordXatGraf->setText(QString("|%1").arg(vecExact.at(index).x()));
 
 	// y:
 	int rechtsVersatz = 0;
-	for (int n = m_coordListYatRechtsUnten.count()-1; n+1 ; --n) {
+	for (int n = m_coordListYatUnten.count()-1; n+1 ; --n) {
 		int versatz = rechtsVersatz*80+10; // Textabstand
-		m_coordListYatRechtsUnten.at(n)->setPos(versatz, hoehe);
+		m_coordListYatUnten.at(n)->setPos(versatz, hoehe);
 
 		QLineSeries *serie = m_series.at(n);
 		QPointF wert = serie->pointsVector().at(index);
 		QPointF wertePos = m_chart->mapToPosition(wert, serie);
 		wertePos.setY(wertePos.y() - 12);
 		m_coordListYatGraf.at(n)->setPos(wertePos);
+		m_series.at(n)->attachedAxes().last();
+		m_coordListStricheAtYAxes.at(n)->setPos(0, wertePos.y());
 
 		if (serie->isVisible() | m_scatSer.at(n)->isVisible()) {
 			++rechtsVersatz;
-			m_coordListYatRechtsUnten.at(n)->setPen(serie->pen());
-			m_coordListYatRechtsUnten.at(n)->setText(QString("%1:%2").arg(n+1).arg(
+			m_coordListYatUnten.at(n)->setPen(serie->pen());
+			m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n+1).arg(
 				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
 			m_coordListYatGraf.at(n)->setPen(serie->pen());
 			m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
 				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+			m_coordListStricheAtYAxes.at(n)->setVisible(true);
 		}
 		else {
-			m_coordListYatRechtsUnten.at(n)->setText("");
+			m_coordListYatUnten.at(n)->setText("");
 			m_coordListYatGraf.at(n)->setText("");
+			m_coordListStricheAtYAxes.at(n)->setVisible(false);
 		}
 	}
 
@@ -389,10 +395,12 @@ void n2D::removeHiddenSeries()
 			m_chart->removeSeries(m_scatSer.at(i));
 			m_series.removeOne(m_series.at(i));
 			m_scatSer.removeOne(m_scatSer.at(i));
-			m_coordListYatRechtsUnten.last()->setText("");
-			m_coordListYatRechtsUnten.removeLast();
+			m_coordListYatUnten.last()->setText("");
+			m_coordListYatUnten.removeLast();
 			m_coordListYatGraf.last()->setText("");
 			m_coordListYatGraf.removeLast();
+			m_coordListStricheAtYAxes.last()->setVisible(false);
+			m_coordListStricheAtYAxes.removeLast();
 		}
 	}
 
@@ -589,7 +597,7 @@ void n2D::setGridVisebility()
 void n2D::setWerteVisebilityAufKreuz()
 {
 	toggleBit(m_visibleWerteAufKreuz);
-	m_coordXatGraf->setVisible(m_visibleWerteAufKreuz);
+	//m_coordXatGraf->setVisible(m_visibleWerteAufKreuz);
 	foreach (QGraphicsSimpleTextItem *yGrafText, m_coordListYatGraf) {
 		yGrafText->setVisible(m_visibleWerteAufKreuz);
 	}
