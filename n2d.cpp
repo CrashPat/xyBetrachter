@@ -30,7 +30,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	setRubberBand(QChartView::HorizontalRubberBand); // RectangleRubberBand
 	setMouseTracking(true);
 	qDebug() << "m_chartView->hasMouseTracking()" << hasMouseTracking();
-	setCursor(Qt::CrossCursor);
+	setCursor(Qt::CrossCursor); //Qt::BitmapCursor
 	setTheme();
 
 	//setRenderHint(QPainter::Antialiasing); //--> macht die Grafik sehr langsam
@@ -376,10 +376,12 @@ void n2D::setRubberband()
 	if (m_isRubberbandHorizontal) {
 		setRubberBand(QChartView::HorizontalRubberBand); // x-Achse
 		setWindowTitle(m_windowTitle);
+		setCursor(Qt::CrossCursor);
 	}
 	else {
 		setRubberBand(QChartView::VerticalRubberBand); // y-Achse
 		setWindowTitle("[y-AchsenZoom] " + m_windowTitle);
+		setCursor(Qt::SizeVerCursor);
 	}
 }
 
