@@ -92,6 +92,7 @@ public slots:
 	void moveRightKreuz();
 	void setWerteVisebilityAufKreuz();
 	void setOrtLegende();
+	void setLegendenVisebility();
 
 	void handleMarkerHovered(bool);
 
@@ -127,6 +128,7 @@ private:
 	bool m_visibleDots = false;
 	bool m_visibleDotsFirstUse = true;
 	bool m_visibleWerteAufKreuz = true;
+	bool m_visibleLegenden = true;
 	bool m_isRubberbandHorizontal = true;
 	int m_ortLegende = 1;
 	QString m_windowTitle;

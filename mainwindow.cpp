@@ -105,6 +105,7 @@ bool MainWindow::findAndPlotAllFiles()
 	QDir dir(m_pfad); // auf Ordner
 	QStringList filters;
 	filters << "*.bin";
+	filters << "*.sbin";
 	dir.setNameFilters(filters);
 	if (!dir.count())
 	{
@@ -227,6 +228,7 @@ void MainWindow::hilfeDialog()
 			   "- [<-] 	Kreuz nach links um einen Datenpunkt verschieben [linke Pfeiltaste]\n"
 			   "- [W] 	Werte auf Kreuz aus/ein-blenden.\n"
 			   "- [O] 	Ort der Legende oben/rechts/ausblenden umschalten\n"
+			   "- [A] 	Alle Legenden ein/ausblenden\n"
 			   "\n"
 			   "					patrik.roth@gmx.de, 28.07.2020").arg(m_pfad) );
 }

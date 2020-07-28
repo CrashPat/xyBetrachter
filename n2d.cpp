@@ -59,8 +59,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		series->setUseOpenGL(true);
 		scatSer->setUseOpenGL(true);
 		n++;
-		series->setName(QString("%2 (%1)").arg(n).arg(ls->name()));
-		scatSer->setName(QString("(%1)").arg(n));
+		series->setName(QString("%1) %2").arg(n).arg(ls->name()));
+		scatSer->setName(QString("%1)").arg(n));
 		addSeries(series, scatSer);
 		m_coordListYatUnten.append(new QGraphicsSimpleTextItem(m_chart));
 		m_coordListYatGraf.append(new QGraphicsSimpleTextItem(m_chart));
@@ -129,6 +129,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(werteVisebilityAufKreuz, SIGNAL(activated()), this, SLOT(setWerteVisebilityAufKreuz()));
 	QShortcut *ortLegende = new QShortcut(QKeySequence("O"), this);
 	QObject::connect(ortLegende, SIGNAL(activated()), this, SLOT(setOrtLegende()));
+	QShortcut *legendenVisebility = new QShortcut(QKeySequence("A"), this);
+	QObject::connect(legendenVisebility, SIGNAL(activated()), this, SLOT(setLegendenVisebility()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
 
 	this->setGridVisebility();
@@ -472,27 +474,27 @@ void n2D::handleMarkerHovered(bool darueber)
 
    //![6]
 			 // Dim the marker, if series is not visible
-			 qreal alpha = 1.0;
+			 qreal alpha = 255;
 
 			 if (!marker->series()->isVisible())
-				   alpha = 0.5;
+				   alpha = 128;
 
 			 QColor color;
 			 QBrush brush = marker->labelBrush();
 			 color = brush.color();
-			 color.setAlphaF(alpha);
+			 color.setAlpha(alpha);
 			 brush.setColor(color);
 			 marker->setLabelBrush(brush);
 
 			 brush = marker->brush();
 			 color = brush.color();
-			 color.setAlphaF(alpha);
+			 color.setAlpha(alpha);
 			 brush.setColor(color);
 			 marker->setBrush(brush);
 
 			 QPen pen = marker->pen();
 			 color = pen.color();
-			 color.setAlphaF(alpha);
+			 color.setAlpha(alpha);
 			 pen.setColor(color);
 			 marker->setPen(pen);
    //![6]
@@ -627,6 +629,26 @@ void n2D::setOrtLegende()
 	}
 }
 
+void n2D::setLegendenVisebility()
+{
+	toggleBit(m_visibleLegenden);
+	int alpha;
+	if (m_visibleLegenden)
+		alpha = 128; // = ausgeblendet
+	else
+		alpha = 255; // = eingeblendet
+
+	const auto markers = m_chart->legend()->markers();
+	qDebug() << "markers.at(2*i)->brush().color().alpha()" << markers.at(0)->brush().color().alpha();
+	for (int i = 0; i < m_series.length(); ++i) {
+		// Sichtbarkeit richtig setzen:
+		if ((markers.at(2*i+1)->brush().color().alpha() == alpha) & (!m_visibleDots | m_visibleDotsFirstUse))
+			markers.at(2*i+1)->hovered(true); //Line
+		if ((markers.at(2*i)->brush().color().alpha() == alpha) & (m_visibleDots | m_visibleDotsFirstUse))
+			markers.at(2*i)->hovered(true); //Scatter
+	}
+}
+
 void n2D::setDottedGraphs()
 {
 	toggleBit(m_visibleDots);
@@ -645,9 +667,10 @@ void n2D::setDottedGraphs()
 			m_scatSer.at(i)->setName(m_series.at(i)->name()/*+"D"*/);
 
 		// Sichtbarkeit richtig setzen:
-		if ((markers.at(2*i+1)->brush().color().alphaF() < 1) & !m_visibleDots)
+		int alpha = 128;
+		if ((markers.at(2*i+1)->brush().color().alpha() == alpha) & !m_visibleDots)
 			markers.at(2*i+1)->hovered(true); //Line
-		if ((markers.at(2*i)->brush().color().alphaF() < 1) & m_visibleDots)
+		if ((markers.at(2*i)->brush().color().alpha() == alpha) & m_visibleDots)
 			markers.at(2*i)->hovered(true); //Scatter
 		setYachsenVisebilityForMarker(); // Damit yAxen richtig dargestellt werden
 	}
