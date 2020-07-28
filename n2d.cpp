@@ -111,7 +111,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(xAchse, SIGNAL(activated()), this, SLOT(setXachseVisebility()));
 	QShortcut *yAchsen = new QShortcut(QKeySequence("Y"), this);
 	QObject::connect(yAchsen, SIGNAL(activated()), this, SLOT(setYachsenVisebility()));
-	QShortcut *gridVisebility = new QShortcut(QKeySequence("G"), this);
+	QShortcut *gridVisebility = new QShortcut(QKeySequence("H"), this);
 	QObject::connect(gridVisebility, SIGNAL(activated()), this, SLOT(setGridVisebility()));
 	QShortcut *printScreen = new QShortcut(QKeySequence("P"), this);
 	QObject::connect(printScreen, SIGNAL(activated()), this, SLOT(makePrintScreen()));
@@ -127,6 +127,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(rechtsVerschiebenVonKreuz, SIGNAL(activated()), this, SLOT(moveRightKreuz()));
 	QShortcut *werteVisebilityAufKreuz = new QShortcut(QKeySequence("W"), this);
 	QObject::connect(werteVisebilityAufKreuz, SIGNAL(activated()), this, SLOT(setWerteVisebilityAufKreuz()));
+	QShortcut *ortLegende = new QShortcut(QKeySequence("O"), this);
+	QObject::connect(ortLegende, SIGNAL(activated()), this, SLOT(setOrtLegende()));
 	// --> Hilfetext nachtragen in MainWindow::hilfeDialog();
 
 	this->setGridVisebility();
@@ -215,7 +217,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	// y:
 	int rechtsVersatz = 0;
 	for (int n = m_coordListYatUnten.count()-1; n+1 ; --n) {
-		int versatz = rechtsVersatz*70+10; // Textabstand
+		int versatz = rechtsVersatz*76+10; // Textabstand
 		m_coordListYatUnten.at(n)->setPos(versatz, hoehe);
 
 		QLineSeries *serie = m_series.at(n);
@@ -224,7 +226,6 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		wertePos.setY(wertePos.y() - 12);
 		m_coordListYatGraf.at(n)->setPos(wertePos);
 		m_series.at(n)->attachedAxes().last();
-		qDebug() << "(5%n)*4" << (n % 5)*4;
 		if (m_visibleAxisY)
 			m_coordListStricheAtYAxes.at(n)->setPos(n*4, wertePos.y());
 		else
@@ -604,6 +605,25 @@ void n2D::setWerteVisebilityAufKreuz()
 	//m_coordXatGraf->setVisible(m_visibleWerteAufKreuz);
 	foreach (QGraphicsSimpleTextItem *yGrafText, m_coordListYatGraf) {
 		yGrafText->setVisible(m_visibleWerteAufKreuz);
+	}
+}
+
+void n2D::setOrtLegende()
+{
+	switch (m_ortLegende) {
+	case 0:
+		chart()->legend()->setVisible(true);
+		chart()->legend()->setAlignment(Qt::AlignmentFlag::AlignTop);
+		m_ortLegende++;
+		break;
+	case 1:
+		chart()->legend()->setAlignment(Qt::AlignmentFlag::AlignRight);
+		m_ortLegende++;
+		break;
+	default:
+		chart()->legend()->setVisible(false);
+		m_ortLegende = 0;
+		break;
 	}
 }
 

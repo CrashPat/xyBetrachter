@@ -91,6 +91,7 @@ public slots:
 	void moveLeftKreuz();
 	void moveRightKreuz();
 	void setWerteVisebilityAufKreuz();
+	void setOrtLegende();
 
 	void handleMarkerHovered(bool);
 
@@ -127,6 +128,7 @@ private:
 	bool m_visibleDotsFirstUse = true;
 	bool m_visibleWerteAufKreuz = true;
 	bool m_isRubberbandHorizontal = true;
+	int m_ortLegende = 1;
 	QString m_windowTitle;
 	QList<QColor> m_farbPalette = {Qt::gray, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::magenta, Qt::cyan};
 //	QList<QColor> m_farbPalette = {4288268883, 4280328159, 4285358037, 4294354469, 4290730302, 4282156199, 4281904491, 4286283660, 4293625879}; --> Autogeneriert

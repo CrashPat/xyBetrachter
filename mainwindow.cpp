@@ -138,7 +138,7 @@ bool MainWindow::getDataOneFile(QString DateiMitPfad)
 	file.read(reinterpret_cast<char *>(&werte[0]), file.size());
 	file.close();
 
-	qDebug() << "werte.at(0) =" << werte.at(0); // Werte ausgeben
+//	qDebug() << "werte.at(0) =" << werte.at(0); // Werte ausgeben
 //	qDebug() << werte; // Werte ausgeben
 //	qDebug() << "file.size() =" << file.size();
 //	qDebug() << "werte.size() =" << werte.size();
@@ -217,7 +217,7 @@ void MainWindow::hilfeDialog()
 			   "- [X] 	x-Achse aus/ein-blenden.\n"
 			   "- [Y] 	y-Achsen aus/ein-blenden.\n"
 			   "- [Rad]	y-AchsenZoome\n"
-			   "- [G] 	Hilfslinien (Grid) aus/ein-blenden.\n"
+			   "- [H] 	Hilfslinien (Grid) aus/ein-blenden.\n"
 			   "- [P] 	Printscreen wird als PNG unter dem obigen genannten Pfad erzeugt.\n"
 			   "- [F] 	Fenster MAX (Fullscreen)\n"
 			   "- [Esc] 	Fenster ausblenden\n"
@@ -226,6 +226,7 @@ void MainWindow::hilfeDialog()
 			   "- [->] 	Kreuz nach rechts um einen Datenpunkt verschieben [rechte Pfeiltaste]\n"
 			   "- [<-] 	Kreuz nach links um einen Datenpunkt verschieben [linke Pfeiltaste]\n"
 			   "- [W] 	Werte auf Kreuz aus/ein-blenden.\n"
+			   "- [O] 	Ort der Legende oben/rechts/ausblenden umschalten\n"
 			   "\n"
-			   "					patrik.roth@gmx.de, 16.07.2020").arg(m_pfad) );
+			   "					patrik.roth@gmx.de, 28.07.2020").arg(m_pfad) );
 }
