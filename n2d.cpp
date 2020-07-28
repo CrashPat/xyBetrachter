@@ -64,7 +64,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		addSeries(series, scatSer);
 		m_coordListYatUnten.append(new QGraphicsSimpleTextItem(m_chart));
 		m_coordListYatGraf.append(new QGraphicsSimpleTextItem(m_chart));
-		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(0, 12, 10,0, m_chart)); //Position und Strichbreite wird hier festgelegt
+		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(0, 12, 10,1, m_chart)); //Position und Strichbreite wird hier festgelegt
 		m_coordListStricheAtYAxes.last()->setPen(series->pen());
 	}
 
@@ -215,7 +215,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	// y:
 	int rechtsVersatz = 0;
 	for (int n = m_coordListYatUnten.count()-1; n+1 ; --n) {
-		int versatz = rechtsVersatz*80+10; // Textabstand
+		int versatz = rechtsVersatz*70+10; // Textabstand
 		m_coordListYatUnten.at(n)->setPos(versatz, hoehe);
 
 		QLineSeries *serie = m_series.at(n);
@@ -224,7 +224,11 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		wertePos.setY(wertePos.y() - 12);
 		m_coordListYatGraf.at(n)->setPos(wertePos);
 		m_series.at(n)->attachedAxes().last();
-		m_coordListStricheAtYAxes.at(n)->setPos(n*4, wertePos.y());
+		qDebug() << "(5%n)*4" << (n % 5)*4;
+		if (m_visibleAxisY)
+			m_coordListStricheAtYAxes.at(n)->setPos(n*4, wertePos.y());
+		else
+			m_coordListStricheAtYAxes.at(n)->setPos((n % 12)*4, wertePos.y());
 
 		if (serie->isVisible() | m_scatSer.at(n)->isVisible()) {
 			++rechtsVersatz;
@@ -375,12 +379,10 @@ void n2D::setRubberband()
 	toggleBit(m_isRubberbandHorizontal);
 	if (m_isRubberbandHorizontal) {
 		setRubberBand(QChartView::HorizontalRubberBand); // x-Achse
-		setWindowTitle(m_windowTitle);
 		setCursor(Qt::CrossCursor);
 	}
 	else {
 		setRubberBand(QChartView::VerticalRubberBand); // y-Achse
-		setWindowTitle("[y-AchsenZoom] " + m_windowTitle);
 		setCursor(Qt::SizeVerCursor);
 	}
 }
