@@ -39,20 +39,21 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	//![2]
 	m_axisX = new QValueAxis;
 	connect(m_axisX, SIGNAL(rangeChanged(qreal, qreal)), this, SLOT(controlIfaxisXisOutOfRange(qreal, qreal))); // für HorizontalRubberBand
-//	qreal a,b;
-//	m_axisX->rangeChanged(a,b);
+																												//	qreal a,b;
+																												//	m_axisX->rangeChanged(a,b);
 	//![2]
 
 	// Add few series & Kopie der Werte erstellen
 	m_coordXatUnten = new QGraphicsSimpleTextItem(m_chart);
-	m_coordXatUnten->setPos(m_chart->size().width()/2, m_chart->size().height());
+	m_coordXatUnten->setPos(m_chart->size().width() / 2, m_chart->size().height());
 	m_coordXatGraf = new QGraphicsSimpleTextItem(m_chart);
 
 	int n = 0;
-	foreach (QLineSeries *ls, listLineSeries) {
+	foreach (QLineSeries *ls, listLineSeries)
+	{
 		// Serie kopieren da sonst die Original Serie abstürzt
 		QList<QPointF> vpf = ls->points(); // !!! erzeugt eine reale Kopie nur der Datenpunkte !!!
-		QLineSeries    *series = new QLineSeries();
+		QLineSeries *series = new QLineSeries();
 		QScatterSeries *scatSer = new QScatterSeries();
 		series->append(vpf);
 		scatSer->append(vpf);
@@ -64,12 +65,12 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		addSeries(series, scatSer);
 		m_coordListYatUnten.append(new QGraphicsSimpleTextItem(m_chart));
 		m_coordListYatGraf.append(new QGraphicsSimpleTextItem(m_chart));
-		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(0, 12, 10,1, m_chart)); //Position und Strichbreite wird hier festgelegt
+		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(0, 12, 10, 1, m_chart)); //Position und Strichbreite wird hier festgelegt
 		m_coordListStricheAtYAxes.last()->setPen(series->pen());
 	}
 
-	m_xHilfsLinie = new QGraphicsRectItem(10,10,0,100,m_chart);
-	m_yHilfsLinie = new QGraphicsRectItem(10,10,100,0,m_chart);
+	m_xHilfsLinie = new QGraphicsRectItem(10, 10, 0, 100, m_chart);
+	m_yHilfsLinie = new QGraphicsRectItem(10, 10, 100, 0, m_chart);
 	QPen pen;
 	pen.setColor(Qt::gray); //darkGray
 	pen.setWidthF(0.2);
@@ -163,21 +164,23 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	QVector<QPointF> vecExact = m_series.first()->pointsVector();
 	uint indexLen = vecExact.length();
 
-	if (richtung == "keine") {
+	if (richtung == "keine")
+	{
 		// nur Index von Kreuz finden
 		yPosMaus = position.y();
 		for (index = 0; index < indexLen; ++index) // aktuelle Position finden
 		{
-			if (vecExact.at(index).x() >= m_chart->mapToValue(position).x()) {
+			if (vecExact.at(index).x() >= m_chart->mapToValue(position).x())
+			{
 				break; // gefundener Index
 			}
 		}
 		// Index Überlauf abfangen:
-		if ( (indexLen - 1) < index )
+		if ((indexLen - 1) < index)
 			index = indexLen - 1;
-//		qDebug() << "position" << position;
-//		qDebug() << "mapToValue" << m_chart->mapToValue(position); /*<< " vecExact.at(i) = " << m_series.first()->pointsVector();*/
-//		qDebug() << "mapToPosition" << m_chart->mapToPosition(m_chart->mapToValue(position));
+		//		qDebug() << "position" << position;
+		//		qDebug() << "mapToValue" << m_chart->mapToValue(position); /*<< " vecExact.at(i) = " << m_series.first()->pointsVector();*/
+		//		qDebug() << "mapToPosition" << m_chart->mapToPosition(m_chart->mapToValue(position));
 	}
 	else if ((richtung == "links") |
 			 (richtung == "rechts"))
@@ -185,29 +188,33 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		// Index Überlauf abfangen:
 		if (richtung == "links") // Damit auch vorletzter Index ausgegeben wird
 			;
-		else if ( (indexLen - 2) < index )
+		else if ((indexLen - 2) < index)
 			index = indexLen - 2;
 
 		// Index für links/rechts inkrementieren:
-		if (richtung == "links") {
+		if (richtung == "links")
+		{
 			if (0 < index)
 				index--;
 		}
-		else { // rechts
+		else
+		{ // rechts
 			index++;
 		}
 	}
-	else {
+	else
+	{
 		qDebug() << QString("setKreuzMitXYWerten(position, richtung=\"%1\") "
-							"diese Richtung existiert nicht!").arg(richtung);
+							"diese Richtung existiert nicht!")
+						.arg(richtung);
 		return;
 	}
 	//qDebug() << "indexLen" << indexLen << ", index" << index;
 	/// [1] end
 
 	/// Vorbereitung Zeichenpositionen:
-	qreal breite = m_chart->size().width()-60;
-	qreal hoehe = m_chart->size().height()-15;
+	qreal breite = m_chart->size().width() - 60;
+	qreal hoehe = m_chart->size().height() - 15;
 
 	/// xyWerte als Text unten anzeigen:
 	// x:
@@ -218,8 +225,9 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 
 	// y:
 	int rechtsVersatz = 0;
-	for (int n = m_coordListYatUnten.count()-1; n+1 ; --n) {
-		int versatz = rechtsVersatz*76+10; // Textabstand
+	for (int n = m_coordListYatUnten.count() - 1; n + 1; --n)
+	{
+		int versatz = rechtsVersatz * 76 + 10; // Textabstand
 		m_coordListYatUnten.at(n)->setPos(versatz, hoehe);
 
 		QLineSeries *serie = m_series.at(n);
@@ -229,21 +237,23 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		m_coordListYatGraf.at(n)->setPos(wertePos);
 		m_series.at(n)->attachedAxes().last();
 		if (m_visibleAxisY)
-			m_coordListStricheAtYAxes.at(n)->setPos(n*4, wertePos.y());
+			m_coordListStricheAtYAxes.at(n)->setPos(n * 4, wertePos.y());
 		else
-			m_coordListStricheAtYAxes.at(n)->setPos((n % 12)*4, wertePos.y());
+			m_coordListStricheAtYAxes.at(n)->setPos((n % 12) * 4, wertePos.y());
 
-		if (serie->isVisible() | m_scatSer.at(n)->isVisible()) {
+		if (serie->isVisible() | m_scatSer.at(n)->isVisible())
+		{
 			++rechtsVersatz;
 			m_coordListYatUnten.at(n)->setPen(serie->pen());
-			m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n+1).arg(
+			m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n + 1).arg(
 				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
 			m_coordListYatGraf.at(n)->setPen(serie->pen());
 			m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
 				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
 			m_coordListStricheAtYAxes.at(n)->setVisible(true);
 		}
-		else {
+		else
+		{
 			m_coordListYatUnten.at(n)->setText("");
 			m_coordListYatGraf.at(n)->setText("");
 			m_coordListStricheAtYAxes.at(n)->setVisible(false);
@@ -252,10 +262,10 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 
 	/// Kreuz bei Mausposition zeichnen:
 	qreal xPosMausAtValue = m_chart->mapToPosition(vecExact.at(index)).x();
-	m_coordXatGraf->setPos(xPosMausAtValue, hoehe-13);
-	m_xHilfsLinie->setRect(xPosMausAtValue, 75, 0, hoehe-75-30);
+	m_coordXatGraf->setPos(xPosMausAtValue, hoehe - 13);
+	m_xHilfsLinie->setRect(xPosMausAtValue, 75, 0, hoehe - 75 - 30);
 	m_xHilfsLinie->setVisible(true);
-	m_yHilfsLinie->setRect(30, yPosMaus, breite-17 ,0);
+	m_yHilfsLinie->setRect(30, yPosMaus, breite - 17, 0);
 	m_yHilfsLinie->setVisible(true);
 	//m_xHilfsLinie->hide();
 	//m_yHilfsLinie->hide();
@@ -285,10 +295,12 @@ void n2D::addSeries(QLineSeries *series, QScatterSeries *scatSer)
 void n2D::addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer)
 {
 	// Achsen anhängen:
-	if (m_chart->axes(Qt::Horizontal).length() == 0) {
+	if (m_chart->axes(Qt::Horizontal).length() == 0)
+	{
 		m_chart->addAxis(m_axisX, Qt::AlignBottom);
 	}
-	if (series->attachedAxes().length() == 0) {
+	if (series->attachedAxes().length() == 0)
+	{
 		series->attachAxis(m_axisX);
 		scatSer->attachAxis(m_axisX);
 	}
@@ -308,7 +320,8 @@ float n2D::getYmax(QLineSeries *series)
 	QVector<QPointF> werte = series->pointsVector();
 	Q_ASSERT(werte.size() > 0);
 	float yMax = werte.first().y();
-	foreach (QPointF p, werte) {
+	foreach (QPointF p, werte)
+	{
 		yMax = qMax((double)yMax, p.y());
 	}
 	return yMax;
@@ -319,7 +332,8 @@ float n2D::getYmin(QLineSeries *series)
 	QVector<QPointF> werte = series->pointsVector();
 	Q_ASSERT(werte.size() > 0);
 	float yMin = werte.first().y();
-	foreach (QPointF p, werte) {
+	foreach (QPointF p, werte)
+	{
 		yMin = qMin((double)yMin, p.y());
 	}
 	return yMin;
@@ -332,12 +346,15 @@ void n2D::addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer)
 
 	if (yMin < 0) // logarithmisch nicht möglich?
 		addAxisYlinear(series, scatSer);
-	else { // logarithmisch
+	else
+	{ // logarithmisch
 		// Achsen anhängen:
-		if (m_chart->axes(Qt::Horizontal).length() == 0) {
+		if (m_chart->axes(Qt::Horizontal).length() == 0)
+		{
 			m_chart->addAxis(m_axisX, Qt::AlignBottom);
 		}
-		if (series->attachedAxes().length() == 0) {
+		if (series->attachedAxes().length() == 0)
+		{
 			series->attachAxis(m_axisX);
 			scatSer->attachAxis(m_axisX);
 		}
@@ -360,7 +377,8 @@ void n2D::setYLinearOrLogarithmisch()
 	// Remove attachedAxes
 
 	//m_chart->axes(Qt::Vertical).detach(); // alle y-Achsten löschen
-	for (int i = 0; i < m_series.length(); ++i) {
+	for (int i = 0; i < m_series.length(); ++i)
+	{
 		//qDebug() << "series->name() =" << series->name();
 		bool isVisibleAxisY = m_series.at(i)->attachedAxes().last()->isVisible();
 		delete m_series.at(i)->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
@@ -372,7 +390,7 @@ void n2D::setYLinearOrLogarithmisch()
 
 		m_series.at(i)->attachedAxes().last()->setVisible(isVisibleAxisY & m_visibleAxisY);
 		m_series.at(i)->attachedAxes().last()->setGridLineVisible(m_visibleGrid);
-		m_series.at(i)->pointsReplaced(); // Grafik aktualisieren
+		m_series.at(i)->pointsReplaced();  // Grafik aktualisieren
 		m_scatSer.at(i)->pointsReplaced(); // Grafik aktualisieren
 	}
 }
@@ -380,11 +398,13 @@ void n2D::setYLinearOrLogarithmisch()
 void n2D::setRubberband()
 {
 	toggleBit(m_isRubberbandHorizontal);
-	if (m_isRubberbandHorizontal) {
+	if (m_isRubberbandHorizontal)
+	{
 		setRubberBand(QChartView::HorizontalRubberBand); // x-Achse
 		setCursor(Qt::CrossCursor);
 	}
-	else {
+	else
+	{
 		setRubberBand(QChartView::VerticalRubberBand); // y-Achse
 		setCursor(Qt::SizeVerCursor);
 	}
@@ -393,9 +413,10 @@ void n2D::setRubberband()
 void n2D::removeHiddenSeries()
 {
 	// Remove last series from chart
-	for (int i = 0; i < m_series.length(); ++i) {
-//		if ( ! (m_series.at(i)->isVisible() | m_scatSer.at(i)->isVisible()) )
-		if ( ! m_series.at(i)->isVisible() )
+	for (int i = 0; i < m_series.length(); ++i)
+	{
+		//		if ( ! (m_series.at(i)->isVisible() | m_scatSer.at(i)->isVisible()) )
+		if (!m_series.at(i)->isVisible())
 		{
 			delete m_series.at(i)->attachedAxes().last();
 			m_chart->removeSeries(m_series.at(i));
@@ -413,14 +434,16 @@ void n2D::removeHiddenSeries()
 
 	// richtig durchnummerrieren:
 	int n = 1;
-	foreach (QLineSeries *series, m_series) {
+	foreach (QLineSeries *series, m_series)
+	{
 		QString name = series->name();
 		int pos = name.lastIndexOf(QChar('('));
 		name = name.left(pos);
 		series->setName(QString("%1 (%2)").arg(name).arg(n++));
 	}
 	n = 1;
-	foreach (QScatterSeries *series, m_scatSer) {
+	foreach (QScatterSeries *series, m_scatSer)
+	{
 		QString name = series->name();
 		int pos = name.lastIndexOf(QChar('('));
 		name = name.left(pos);
@@ -432,7 +455,8 @@ void n2D::connectMarkers()
 {
 	// Connect all markers to handler
 	const auto markers = m_chart->legend()->markers();
-	for (QLegendMarker *marker : markers) {
+	for (QLegendMarker *marker : markers)
+	{
 		// Disconnect possible existing connection to avoid multiple connections
 		// --> void handleMarkerClicked();
 		//		  QObject::disconnect(marker, &QLegendMarker::clicked,
@@ -445,66 +469,67 @@ void n2D::connectMarkers()
 
 void n2D::disconnectMarkers()
 {
-	 const auto markers = m_chart->legend()->markers();
-	 for (QLegendMarker *marker : markers) {
-		 QObject::disconnect(marker, SIGNAL(hovered(bool)), this, SLOT(handleMarkerHovered(bool)));
-	 }
+	const auto markers = m_chart->legend()->markers();
+	for (QLegendMarker *marker : markers)
+	{
+		QObject::disconnect(marker, SIGNAL(hovered(bool)), this, SLOT(handleMarkerHovered(bool)));
+	}
 }
 
 void n2D::handleMarkerHovered(bool darueber)
 {
 	if (!darueber)
 		return;
-	QLegendMarker* marker = qobject_cast<QLegendMarker*> (sender());
+	QLegendMarker *marker = qobject_cast<QLegendMarker *>(sender());
 	Q_ASSERT(marker);
 
 	switch (marker->type())
 	{
-		 case QLegendMarker::LegendMarkerTypeXY:
-		 {
-   //![5]
-			 // Toggle visibility of series
-			 marker->series()->setVisible(!marker->series()->isVisible());
-			 setYachsenVisebilityForMarker(); // y-Achse Ein/Aus blenden
+	case QLegendMarker::LegendMarkerTypeXY:
+	{
+		//![5]
+		// Toggle visibility of series
+		marker->series()->setVisible(!marker->series()->isVisible());
+		setYachsenVisebilityForMarker(); // y-Achse Ein/Aus blenden
 
-			 // Turn legend marker back to visible, since hiding series also hides the marker
-			 // and we don't want it to happen now.
-			 marker->setVisible(true);
-   //![5]
+		// Turn legend marker back to visible, since hiding series also hides the marker
+		// and we don't want it to happen now.
+		marker->setVisible(true);
+		//![5]
 
-   //![6]
-			 // Dim the marker, if series is not visible
-			 qreal alpha = 255;
+		//![6]
+		// Dim the marker, if series is not visible
+		qreal alpha = 255;
 
-			 if (!marker->series()->isVisible())
-				   alpha = 128;
+		if (!marker->series()->isVisible())
+			alpha = 128;
 
-			 QColor color;
-			 QBrush brush = marker->labelBrush();
-			 color = brush.color();
-			 color.setAlpha(alpha);
-			 brush.setColor(color);
-			 marker->setLabelBrush(brush);
+		QColor color;
+		QBrush brush = marker->labelBrush();
+		color = brush.color();
+		color.setAlpha(alpha);
+		brush.setColor(color);
+		marker->setLabelBrush(brush);
 
-			 brush = marker->brush();
-			 color = brush.color();
-			 color.setAlpha(alpha);
-			 brush.setColor(color);
-			 marker->setBrush(brush);
+		brush = marker->brush();
+		color = brush.color();
+		color.setAlpha(alpha);
+		brush.setColor(color);
+		marker->setBrush(brush);
 
-			 QPen pen = marker->pen();
-			 color = pen.color();
-			 color.setAlpha(alpha);
-			 pen.setColor(color);
-			 marker->setPen(pen);
-   //![6]
-			 break;
-		 }
+		QPen pen = marker->pen();
+		color = pen.color();
+		color.setAlpha(alpha);
+		pen.setColor(color);
+		marker->setPen(pen);
+		//![6]
+		break;
+	}
 	default:
-		 {
-			 qDebug() << "Unknown marker type";
-			 break;
-		 }
+	{
+		qDebug() << "Unknown marker type";
+		break;
+	}
 	}
 }
 
@@ -523,19 +548,21 @@ void n2D::setMinMaxXAchse()
 
 void n2D::setMinMaxYAchsen()
 {
-	foreach (QLineSeries *series, m_series) {
+	foreach (QLineSeries *series, m_series)
+	{
 		QAbstractAxis *yAxe = series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
 		yAxe->setRange(getYmin(series), getYmax(series));
 		qDebug() << "min, max =" << getYmin(series) << getYmax(series);
 	}
-	qDebug() <<"n2D::setMinMaxYAchsen()";
+	qDebug() << "n2D::setMinMaxYAchsen()";
 }
 
 void n2D::setTheme()
 {
 	toggleBit(m_binDark);
 	QPalette pal = window()->palette();
-	if (m_binDark) {
+	if (m_binDark)
+	{
 		chart()->setTheme(QChart::QChart::ChartThemeDark);
 		pal.setColor(QPalette::Window, QRgb(0x121218));
 		pal.setColor(QPalette::WindowText, QRgb(0xd6d6d6));
@@ -546,13 +573,13 @@ void n2D::setTheme()
 		pal.setColor(QPalette::Window, QRgb(0xf0f0f0));
 		pal.setColor(QPalette::WindowText, QRgb(0x404044));
 	}
-	 window()->setPalette(pal);
+	window()->setPalette(pal);
 
-//	 // Autogenerierte Farben ausgeben:
-//	 for (int i = 0; i < m_series.length(); ++i) {
-//		 qDebug() << m_series.at(i)->pen().color().rgb()
-//				  << m_scatSer.at(i)->color().rgb();
-//	 }
+	//	 // Autogenerierte Farben ausgeben:
+	//	 for (int i = 0; i < m_series.length(); ++i) {
+	//		 qDebug() << m_series.at(i)->pen().color().rgb()
+	//				  << m_scatSer.at(i)->color().rgb();
+	//	 }
 }
 
 void n2D::setXachseVisebility()
@@ -563,11 +590,12 @@ void n2D::setXachseVisebility()
 void n2D::setYachsenVisebility()
 {
 	toggleBit(m_visibleAxisY);
-	for (int i = 0; i < m_series.length(); ++i) {
+	for (int i = 0; i < m_series.length(); ++i)
+	{
 		if (!m_visibleAxisY)
-			m_series.at(i)->attachedAxes().last()->setVisible( false );
+			m_series.at(i)->attachedAxes().last()->setVisible(false);
 		else if (m_series.at(i)->isVisible() | m_scatSer.at(i)->isVisible())
-			m_series.at(i)->attachedAxes().last()->setVisible( true );
+			m_series.at(i)->attachedAxes().last()->setVisible(true);
 	}
 }
 
@@ -575,17 +603,15 @@ void n2D::setYachsenVisebilityForMarker()
 {
 	if (m_visibleAxisY)
 	{
-		for (int i = 0; i < m_series.length(); ++i) {
+		for (int i = 0; i < m_series.length(); ++i)
+		{
 			if (m_visibleDotsFirstUse)
-				m_series.at(i)->attachedAxes().last()
-					->setVisible( m_series.at(i)->isVisible() |
-								  m_scatSer.at(i)->isVisible() );
+				m_series.at(i)->attachedAxes().last()->setVisible(m_series.at(i)->isVisible() |
+																  m_scatSer.at(i)->isVisible());
 			else if (m_visibleDots)
-				m_series.at(i)->attachedAxes().last()
-					->setVisible( m_scatSer.at(i)->isVisible() );
+				m_series.at(i)->attachedAxes().last()->setVisible(m_scatSer.at(i)->isVisible());
 			else
-				m_series.at(i)->attachedAxes().last()
-					->setVisible( m_series.at(i)->isVisible() );
+				m_series.at(i)->attachedAxes().last()->setVisible(m_series.at(i)->isVisible());
 		}
 	}
 }
@@ -594,8 +620,10 @@ void n2D::setGridVisebility()
 {
 	toggleBit(m_visibleGrid);
 	QList<QAbstractAxis *> achsen = m_chart->axes();
-	foreach (QAbstractAxis *achse, achsen) {
-		if (achse->isVisible()) {// yAchsen
+	foreach (QAbstractAxis *achse, achsen)
+	{
+		if (achse->isVisible())
+		{ // yAchsen
 			achse->setGridLineVisible(m_visibleGrid);
 		}
 	}
@@ -605,14 +633,16 @@ void n2D::setWerteVisebilityAufKreuz()
 {
 	toggleBit(m_visibleWerteAufKreuz);
 	//m_coordXatGraf->setVisible(m_visibleWerteAufKreuz);
-	foreach (QGraphicsSimpleTextItem *yGrafText, m_coordListYatGraf) {
+	foreach (QGraphicsSimpleTextItem *yGrafText, m_coordListYatGraf)
+	{
 		yGrafText->setVisible(m_visibleWerteAufKreuz);
 	}
 }
 
 void n2D::setOrtLegende()
 {
-	switch (m_ortLegende) {
+	switch (m_ortLegende)
+	{
 	case 0:
 		chart()->legend()->setVisible(true);
 		chart()->legend()->setAlignment(Qt::AlignmentFlag::AlignTop);
@@ -640,12 +670,13 @@ void n2D::setLegendenVisebility()
 
 	const auto markers = m_chart->legend()->markers();
 	qDebug() << "markers.at(2*i)->brush().color().alpha()" << markers.at(0)->brush().color().alpha();
-	for (int i = 0; i < m_series.length(); ++i) {
+	for (int i = 0; i < m_series.length(); ++i)
+	{
 		// Sichtbarkeit richtig setzen:
-		if ((markers.at(2*i+1)->brush().color().alpha() == alpha) & (!m_visibleDots | m_visibleDotsFirstUse))
-			markers.at(2*i+1)->hovered(true); //Line
-		if ((markers.at(2*i)->brush().color().alpha() == alpha) & (m_visibleDots | m_visibleDotsFirstUse))
-			markers.at(2*i)->hovered(true); //Scatter
+		if ((markers.at(2 * i + 1)->brush().color().alpha() == alpha) & (!m_visibleDots | m_visibleDotsFirstUse))
+			markers.at(2 * i + 1)->hovered(true); //Line
+		if ((markers.at(2 * i)->brush().color().alpha() == alpha) & (m_visibleDots | m_visibleDotsFirstUse))
+			markers.at(2 * i)->hovered(true); //Scatter
 	}
 }
 
@@ -655,55 +686,58 @@ void n2D::setDottedGraphs()
 	m_visibleDotsFirstUse = false;
 
 	const auto markers = m_chart->legend()->markers();
-	for (int i = 0; i < m_series.length(); ++i) {
+	for (int i = 0; i < m_series.length(); ++i)
+	{
 		//muss gemacht werden wegen Legende richtig ein/aus blenden:
-		m_series.at(i)->setVisible(  m_visibleDots );
-		m_scatSer.at(i)->setVisible(!m_visibleDots );
-		m_series.at(i)->setVisible( !m_visibleDots );
-		m_scatSer.at(i)->setVisible( m_visibleDots );
+		m_series.at(i)->setVisible(m_visibleDots);
+		m_scatSer.at(i)->setVisible(!m_visibleDots);
+		m_series.at(i)->setVisible(!m_visibleDots);
+		m_scatSer.at(i)->setVisible(m_visibleDots);
 
 		// Text anpassen:
 		if (m_visibleDots)
-			m_scatSer.at(i)->setName(m_series.at(i)->name()/*+"D"*/);
+			m_scatSer.at(i)->setName(m_series.at(i)->name() /*+"D"*/);
 
 		// Sichtbarkeit richtig setzen:
 		int alpha = 128;
-		if ((markers.at(2*i+1)->brush().color().alpha() == alpha) & !m_visibleDots)
-			markers.at(2*i+1)->hovered(true); //Line
-		if ((markers.at(2*i)->brush().color().alpha() == alpha) & m_visibleDots)
-			markers.at(2*i)->hovered(true); //Scatter
-		setYachsenVisebilityForMarker(); // Damit yAxen richtig dargestellt werden
+		if ((markers.at(2 * i + 1)->brush().color().alpha() == alpha) & !m_visibleDots)
+			markers.at(2 * i + 1)->hovered(true); //Line
+		if ((markers.at(2 * i)->brush().color().alpha() == alpha) & m_visibleDots)
+			markers.at(2 * i)->hovered(true); //Scatter
+		setYachsenVisebilityForMarker();	  // Damit yAxen richtig dargestellt werden
 	}
 }
 
 void n2D::keyPressEvent(QKeyEvent *event)
 {
 	int taste = event->key();
-	if((Qt::Key_1 <= taste) & (taste <= Qt::Key_9))
+	if ((Qt::Key_1 <= taste) & (taste <= Qt::Key_9))
 	{
 		int nr = taste - Qt::Key_0 - 1;
-		if (nr < m_series.length()) {
+		if (nr < m_series.length())
+		{
 			const auto markers = m_chart->legend()->markers();
-			if (m_visibleDotsFirstUse) {
-				markers.at(2*nr)->hovered(true);
-				markers.at(2*nr+1)->hovered(true);
+			if (m_visibleDotsFirstUse)
+			{
+				markers.at(2 * nr)->hovered(true);
+				markers.at(2 * nr + 1)->hovered(true);
 			}
 			else if (m_visibleDots)
-				markers.at(2*nr)->hovered(true);
+				markers.at(2 * nr)->hovered(true);
 			else
-				markers.at(2*nr+1)->hovered(true);
+				markers.at(2 * nr + 1)->hovered(true);
 		}
 	}
 }
 
 void n2D::moveLeftKreuz()
 {
-	setKreuzMitXYWerten(QPoint(0,0), "links");
+	setKreuzMitXYWerten(QPoint(0, 0), "links");
 }
 
 void n2D::moveRightKreuz()
 {
-	setKreuzMitXYWerten(QPoint(0,0), "rechts");
+	setKreuzMitXYWerten(QPoint(0, 0), "rechts");
 }
 
 void n2D::wheelEvent(QWheelEvent *event)
@@ -715,7 +749,7 @@ void n2D::wheelEvent(QWheelEvent *event)
 	QRectF rect = chart()->plotArea();
 	QPointF c = chart()->plotArea().center();
 	//rect.setWidth(m_FactorZoom*rect.width()); // x-Achse
-	rect.setHeight(m_FactorZoom*rect.width()); // y-Achse
+	rect.setHeight(m_FactorZoom * rect.width()); // y-Achse
 	rect.moveCenter(c);
 	chart()->zoomIn(rect);
 

@@ -59,15 +59,15 @@
 
 QT_CHARTS_USE_NAMESPACE
 
-class n2D: public QChartView //QWidget// QDialog
+class n2D : public QChartView //QWidget// QDialog
 {
 	Q_OBJECT
 protected:
 	void closeEvent(QCloseEvent *event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;
-//	bool eventFilter(QObject *obj, QEvent *event) override;
+	//	bool eventFilter(QObject *obj, QEvent *event) override;
 	void keyPressEvent(QKeyEvent *event) override; // damit über die Nummerntasten die Marken gesteuert werden
-	void wheelEvent(QWheelEvent *event) override; // für y-AchsenZoome
+	void wheelEvent(QWheelEvent *event) override;  // für y-AchsenZoome
 	qreal m_FactorZoom = 1.0;
 
 public:
@@ -86,7 +86,7 @@ public slots:
 	void setYachsenVisebility();
 	void setYachsenVisebilityForMarker();
 	void setGridVisebility();
-	void makePrintScreen() {qDebug() << "makePrintScreen() noch nicht implementiert.";}
+	void makePrintScreen() { qDebug() << "makePrintScreen() noch nicht implementiert."; }
 	void setDottedGraphs();
 	void moveLeftKreuz();
 	void moveRightKreuz();
@@ -96,9 +96,9 @@ public slots:
 
 	void handleMarkerHovered(bool);
 
-	void close() {delete this;}
-	void reOpenSlot() {emit reOpenSignal();}
-	void hilfeSlot() {emit hilfeSignal();}
+	void close() { delete this; }
+	void reOpenSlot() { emit reOpenSignal(); }
+	void hilfeSlot() { emit hilfeSignal(); }
 	void setYLinearOrLogarithmisch();
 	void setRubberband();
 
@@ -116,7 +116,7 @@ private:
 	void setKreuzMitXYWerten(QPoint position, QString richtung = "keine");
 
 	static int countInstances;
-	void toggleBit(bool &bit) {bit = !bit;}
+	void toggleBit(bool &bit) { bit = !bit; }
 	QChart *m_chart;
 	QList<QLineSeries *> m_series;
 	QList<QScatterSeries *> m_scatSer;
@@ -133,8 +133,8 @@ private:
 	int m_ortLegende = 1;
 	QString m_windowTitle;
 	QList<QColor> m_farbPalette = {Qt::gray, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::magenta, Qt::cyan};
-//	QList<QColor> m_farbPalette = {4288268883, 4280328159, 4285358037, 4294354469, 4290730302, 4282156199, 4281904491, 4286283660, 4293625879}; --> Autogeneriert
-							 // = {0xff99ca53F, 0xff209fdfF, 0xff6d5fd5F, 0xfff6a625F, 0xffbf593eF, 0xff38ad6bF, 0xff7b7f8cF, 0xff3c84a7F}; das gleich nur in Hex
+	//	QList<QColor> m_farbPalette = {4288268883, 4280328159, 4285358037, 4294354469, 4290730302, 4282156199, 4281904491, 4286283660, 4293625879}; --> Autogeneriert
+	//                              = {0xff99ca53F, 0xff209fdfF, 0xff6d5fd5F, 0xfff6a625F, 0xffbf593eF, 0xff38ad6bF, 0xff7b7f8cF, 0xff3c84a7F}; das gleich nur in Hex
 
 	QGraphicsSimpleTextItem *m_coordXatUnten;
 	QGraphicsSimpleTextItem *m_coordXatGraf;

@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 
 	QStringList args = app.arguments(); // = argv
 	//if (2 >= args.length()) // mit Argument
-			//w.getDataOneFile(args.last());
+	//                           w.getDataOneFile(args.last());
 	// End Arguments
 	//w.show(); --> wird aktuell nicht bnötigt
 	return app.exec();
