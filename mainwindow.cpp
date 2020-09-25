@@ -136,9 +136,10 @@ bool MainWindow::getDataOneFile(QString DateiMitPfad)
 	/// Dateiinhalt (filecontent) in DataOneFile
 	std::vector<float> werte;
 	werte.resize(file.size() / sizeof(float));
-	file.read(reinterpret_cast<char *>(&werte[0]), file.size());
+	qint64 nBytes = file.read(reinterpret_cast<char *>(&werte[0]), file.size());
 	file.close();
 
+	qDebug() << "nBytes =" << nBytes;
 //	qDebug() << "werte.at(0) =" << werte.at(0); // Werte ausgeben
 //	qDebug() << werte; // Werte ausgeben
 //	qDebug() << "file.size() =" << file.size();
@@ -230,5 +231,5 @@ void MainWindow::hilfeDialog()
 			   "- [O] 	Ort der Legende oben/rechts/ausblenden umschalten\n"
 			   "- [A] 	Alle Legenden ein/ausblenden\n"
 			   "\n"
-			   "					patrik.roth@gmx.de, 28.07.2020").arg(m_pfad) );
+			   "					patrik.roth@gmx.de, 28.07.2020, V1").arg(m_pfad) );
 }
