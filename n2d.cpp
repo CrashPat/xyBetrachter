@@ -94,6 +94,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(rubberbandUmschaltung, SIGNAL(activated()), this, SLOT(setRubberband()));
 	QShortcut *hilfe = new QShortcut(QKeySequence("F1"), this);
 	QObject::connect(hilfe, SIGNAL(activated()), this, SLOT(hilfeSlot()));
+	QShortcut *ueberQt = new QShortcut(QKeySequence("F2"), this);
+	QObject::connect(ueberQt, SIGNAL(activated()), this, SLOT(ueberQtSlot()));
 	QShortcut *delLastSeries = new QShortcut(QKeySequence(Qt::Key_Delete), this);
 	QObject::connect(delLastSeries, SIGNAL(activated()), this, SLOT(removeHiddenSeries()));
 	QShortcut *closeSCut = new QShortcut(QKeySequence("Q"), this);

@@ -99,6 +99,7 @@ void MainWindow::open_n2D()
 	connect(n2d, SIGNAL(fensterGeschlossen()), this, SLOT(n2DwurdeGesschlossen()));
 	connect(n2d, SIGNAL(reOpenSignal()), this, SLOT(open_n2D()));
 	connect(n2d, SIGNAL(hilfeSignal()), this, SLOT(hilfeDialog()));
+	connect(n2d, SIGNAL(ueberQtSignal()), qApp, SLOT(aboutQt()));
 	//n2d->setRasterXAchse(10); --> geht noch nicht
 	qDebug() << "MainWindow::open_n2D()";
 }
@@ -236,6 +237,8 @@ void MainWindow::hilfeDialog()
 								"- [W] 	Werte auf Kreuz aus/ein-blenden.\n"
 								"- [O] 	Ort der Legende oben/rechts/ausblenden umschalten\n"
 								"- [A] 	Alle Legenden ein/ausblenden\n"
+								"- [F1] Hilfe\n"
+								"- [F2] Über Qt\n"
 								"\n"
 								"					patrik.roth@gmx.de, 28.07.2020, V1")
 								 .arg(m_pfad));

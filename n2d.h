@@ -99,6 +99,7 @@ public slots:
 	void close() { delete this; }
 	void reOpenSlot() { emit reOpenSignal(); }
 	void hilfeSlot() { emit hilfeSignal(); }
+	void ueberQtSlot() { emit ueberQtSignal(); }
 	void setYLinearOrLogarithmisch();
 	void setRubberband();
 
@@ -106,6 +107,7 @@ signals:
 	void fensterGeschlossen();
 	void reOpenSignal();
 	void hilfeSignal();
+	void ueberQtSignal();
 
 private:
 	void addSeries(QLineSeries *series, QScatterSeries *scatSer);
