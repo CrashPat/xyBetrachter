@@ -1,5 +1,5 @@
 # xyBetrachter
-patrik.roth@gmx.de, 16.10.2020, V1
+Patrik Roth, 16.10.2020, V1
 
 # Beschreibung:
 Dient zum Darstellen und Analysieren von Datensätzen in einer 2D-Grafik in Form von beliebig vielen xy-Graphen. Alle Funktionalitäten sind in der Bedienungsanleitung aufgelistet.
