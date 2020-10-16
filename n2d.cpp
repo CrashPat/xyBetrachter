@@ -119,7 +119,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QShortcut *printScreen = new QShortcut(QKeySequence("P"), this);
 	QObject::connect(printScreen, SIGNAL(activated()), this, SLOT(makePrintScreen()));
 	QShortcut *fullScreen = new QShortcut(QKeySequence("F"), this);
-	QObject::connect(fullScreen, SIGNAL(activated()), this, SLOT(showMaximized()));
+	QObject::connect(fullScreen, SIGNAL(activated()), this, SLOT(toggleWindowSize()));
 	QShortcut *miniScreen = new QShortcut(QKeySequence(Qt::Key_Escape), this);
 	QObject::connect(miniScreen, SIGNAL(activated()), this, SLOT(showMinimized()));
 	QShortcut *dottedGraphs = new QShortcut(QKeySequence("D"), this);

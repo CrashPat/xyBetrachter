@@ -87,6 +87,7 @@ public slots:
 	void setYachsenVisebilityForMarker();
 	void setGridVisebility();
 	void makePrintScreen() { qDebug() << "makePrintScreen() noch nicht implementiert."; }
+	void toggleWindowSize() {if(isMaximized()) {showNormal();} else {showMaximized();}}
 	void setDottedGraphs();
 	void moveLeftKreuz();
 	void moveRightKreuz();
