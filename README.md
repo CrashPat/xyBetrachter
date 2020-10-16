@@ -1,6 +1,8 @@
 # xyBetrachter
 Patrik Roth, 16.10.2020, V1
 
+![Titelbild](https://github.com/CrashPat/xyBetrachter/blob/master/Titelbild.png)
+
 # Beschreibung:
 Dient zum Darstellen und Analysieren von Datensätzen in einer 2D-Grafik in Form von beliebig vielen xy-Graphen. Alle Funktionalitäten sind in der Bedienungsanleitung aufgelistet.
 
