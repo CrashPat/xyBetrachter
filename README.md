@@ -1,6 +1,11 @@
 # xyBetrachter
 patrik.roth@gmx.de, 16.10.2020, V1
 
+# Beschreibung:
+Dient zum Darstellen und Analysieren von Datensätzen in einer 2D-Grafik in Form von beliebig vielen xy-Graphen. Alle Funktionalitäten sind in der Bedienungsanleitung aufgelistet.
+
+Die Grundstrukturen der Klasse n2D sind aus dem Qt-Beispiel "legendmakers" aufgebaut.
+
 # Bedienungsanleitung:
 
 ZOOM:
@@ -24,7 +29,7 @@ GRAPHEN:
 - [W] 	Werte auf Kreuz aus/ein-blenden.
 
 LEGENDE:
-- Legende einzeln ein/ausblenden: Mit Mauszeiger darüber fahren
+- Legende einzeln ein/ausblenden: Mit Mauszeiger darüberfahren
 - [1..9] 	Entsprechende Legenden ein/ausblenden
 - [O] 	Ort der Legende oben/rechts/ausblenden umschalten
 - [A] 	Alle Legenden ein/ausblenden
