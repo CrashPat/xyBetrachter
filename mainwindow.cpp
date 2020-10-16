@@ -245,6 +245,6 @@ void MainWindow::hilfeDialog()
 								"- [F1]	Hilfe\n"
 								"- [F2]	Über Qt\n"
 								"\n"
-								"					patrik.roth@gmx.de, 28.07.2020, V1")
+								"					patrik.roth@gmx.de, 16.10.2020, V1")
 								 .arg(m_pfad));
 }
