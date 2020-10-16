@@ -245,7 +245,7 @@ void MainWindow::hilfeDialog()
 		"- [F1]	Hilfe\n"
 		"- [F2]	Über Qt\n"
 		"\n"
-		"					patrik.roth@gmx.de, 16.10.2020, V1").arg(m_pfad);
+		"					Patrik Roth, 16.10.2020, V1").arg(m_pfad);
 	qDebug() << text.toStdString().c_str(); // einfaches Kopieren des Hilfetextes
 	QMessageBox::information(n2d, "Hilfe", text);
 }
