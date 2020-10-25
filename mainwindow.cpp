@@ -232,10 +232,10 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 
 	qDebug() << " Spalten:" << spalten;
 	qDebug() << "Datei" << DateiMitPfad << "wurden Werte eingelesen.";
-	qDebug() << "file.size()       =" << file.size();
-	qDebug() << "spalten.size()    =" << spalten.size();
-	qDebug() << "spalten[0].size() =" << spalten[0].size();
-	qDebug() << "sizeof(float)     =" << sizeof(float);
+//	qDebug() << "file.size()       =" << file.size();
+//	qDebug() << "spalten.size()    =" << spalten.size();
+//	qDebug() << "spalten[0].size() =" << spalten[0].size();
+//	qDebug() << "sizeof(float)     =" << sizeof(float);
 
 	file.close();
 
