@@ -96,6 +96,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(hilfe, SIGNAL(activated()), this, SLOT(hilfeSlot()));
 	QShortcut *ueberQt = new QShortcut(QKeySequence("F2"), this);
 	QObject::connect(ueberQt, SIGNAL(activated()), this, SLOT(ueberQtSlot()));
+	QShortcut *aussehenCSVdatei = new QShortcut(QKeySequence("F3"), this);
+	QObject::connect(aussehenCSVdatei, SIGNAL(activated()), this, SLOT(ueberCSVSlot()));
 	QShortcut *delLastSeries = new QShortcut(QKeySequence(Qt::Key_Delete), this);
 	QObject::connect(delLastSeries, SIGNAL(activated()), this, SLOT(removeHiddenSeries()));
 	QShortcut *closeSCut = new QShortcut(QKeySequence("Q"), this);

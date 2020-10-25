@@ -100,6 +100,7 @@ void MainWindow::open_n2D()
 	connect(n2d, SIGNAL(reOpenSignal()), this, SLOT(open_n2D()));
 	connect(n2d, SIGNAL(hilfeSignal()), this, SLOT(hilfeDialog()));
 	connect(n2d, SIGNAL(ueberQtSignal()), qApp, SLOT(aboutQt()));
+	connect(n2d, SIGNAL(ueberCSVSignal()), this, SLOT(ueberCSVDialog()));
 	//n2d->setRasterXAchse(10); --> geht noch nicht
 	qDebug() << "MainWindow::open_n2D()";
 }
@@ -206,38 +207,46 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 	QByteArray line = file.readLine();
 	QStringList spaltenueberschriften;
 	QList<QByteArray> werteZeile = line.split(';'); // = Seperator
-	bool keineUeberschrift = true;
+	bool lineReadNochmals = false;
 	if (!contains_number(werteZeile.first().toStdString())) // Wenn die allerste Zelle in der Datei kein Zahlenwert hat dann ist es eine Überschrift
 	{ // has Header
 		foreach (QString spalteName, werteZeile) {
 			spaltenueberschriften.append(spalteName.simplified()); // simplified() --> überflüssiger Zeilenumbruch löschen
 		}
-		keineUeberschrift = false;
+		lineReadNochmals = true;
 	}
 	qDebug() << " Spaltenüberschriften:" << spaltenueberschriften;
 
 	/// Body of Data:
 	int n = werteZeile.count(); // Anzahl Spalten
 	QVector<QVector<float>> spalten(n); // Spalten erzeugen, [col][row]
-
 	while (!file.atEnd()) { // Daten abfüllen
-		line = file.readLine();
-		if (keineUeberschrift | (spalten[0].count()>0) ) {
+		if (lineReadNochmals) {
+			line = file.readLine();
 			werteZeile = line.split(';'); // Wenn Überschriften vorhanden sind, dann neue Linie beim ersten mal nicht einlesen, sonst geht die erste Zeile verloren.
+		}
+		else {
+			lineReadNochmals = true;
+		}
+
+		if(werteZeile.count() < 2)
+		{
+			QMessageBox::warning(this, "Warnung", "Leerzeile in vorhanden. (Bitte entfernen))");
+			break;
 		}
 		for (uint i = 0; i < n; ++i) {
 			spalten[i].append(werteZeile[i].toDouble());
 		}
 	}
+	file.close();
 
 	qDebug() << " Spalten:" << spalten;
 	qDebug() << "Datei" << DateiMitPfad << "wurden Werte eingelesen.";
-//	qDebug() << "file.size()       =" << file.size();
-//	qDebug() << "spalten.size()    =" << spalten.size();
-//	qDebug() << "spalten[0].size() =" << spalten[0].size();
-//	qDebug() << "sizeof(float)     =" << sizeof(float);
+	qDebug() << "file.size()       =" << file.size();
+	qDebug() << "spalten.size()    =" << spalten.size();
+	qDebug() << "spalten[0].size() =" << spalten[0].size();
+	qDebug() << "sizeof(float)     =" << sizeof(float);
 
-	file.close();
 
 	// Daten bei n2D eintragen:
 	uint nSpalten = spaltenueberschriften.size();
@@ -344,9 +353,32 @@ void MainWindow::hilfeDialog()
 		"HILFE:\n"
 		"- [F1]	Hilfe\n"
 		"- [F2]	Über Qt\n"
+		"- [F3]	Über CSV-Dateien: Aufbau von einlesbaren Dateien\n"
 		"\n"
 		"					Patrik Roth, 16.10.2020, V1"
 		"ToDo: Programmabsturz bei unterschiedlichen Datensatzlängen!").arg(m_pfad);
+	qDebug() << text.toStdString().c_str(); // einfaches Kopieren des Hilfetextes
+	QMessageBox::information(n2d, "Hilfe", text);
+}
+
+void MainWindow::ueberCSVDialog()
+{
+	QString text = QString(
+		"CSV-Dateien:\n"
+		"\n"
+		"Möglicher Inhalt einer CSV-Datei:\n"
+		"	erste; zweite mit ; dritte;und vierte spalte\n"
+		"	2;1.90E+03;1.5;100\n"
+		"	4;2.00E+03;2.6;97\n"
+		"	6;2.10E+03;3.7;94\n"
+		"	8;2.20E+03;4.8;91\n"
+		"	10;2.30E+03;5.9;88\n"
+		"	12;2.40E+03;7;85\n"
+		"\n"
+		"Zu beachten ist:\n"
+		"- ';' separiert die Werte\n"
+		"- '.' Werte nur mit Punkt nicht mit Komma\n"
+		"- Spaltenüberschriften sind optional. Dies wird automatisch erkannt in dem in der ersten Spaltenüberschrift keie Zahl vorhanden ist.");
 	qDebug() << text.toStdString().c_str(); // einfaches Kopieren des Hilfetextes
 	QMessageBox::information(n2d, "Hilfe", text);
 }

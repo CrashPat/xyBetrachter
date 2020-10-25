@@ -16,6 +16,7 @@ private slots:
 	void n2DwurdeGesschlossen() { close(); }
 	void open_n2D();
 	void hilfeDialog();
+	void ueberCSVDialog();
 
 private:
 	bool findAndPlotAllFiles();

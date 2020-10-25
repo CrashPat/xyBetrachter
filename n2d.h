@@ -102,6 +102,7 @@ public slots:
 	void reOpenSlot() { emit reOpenSignal(); }
 	void hilfeSlot() { emit hilfeSignal(); }
 	void ueberQtSlot() { emit ueberQtSignal(); }
+	void ueberCSVSlot() { emit ueberCSVSignal(); }
 	void setYLinearOrLogarithmisch();
 	void setRubberband();
 
@@ -110,6 +111,7 @@ signals:
 	void reOpenSignal();
 	void hilfeSignal();
 	void ueberQtSignal();
+	void ueberCSVSignal();
 
 private:
 	void addSeries(QLineSeries *series, QScatterSeries *scatSer);
