@@ -130,6 +130,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(rechtsVerschiebenVonKreuz, SIGNAL(activated()), this, SLOT(moveRightKreuz()));
 	QShortcut *werteVisebilityAufKreuz = new QShortcut(QKeySequence("W"), this);
 	QObject::connect(werteVisebilityAufKreuz, SIGNAL(activated()), this, SLOT(setWerteVisebilityAufKreuz()));
+	QShortcut *expoZahlenDarstellung = new QShortcut(QKeySequence("E"), this);
+	QObject::connect(expoZahlenDarstellung, SIGNAL(activated()), this, SLOT(setExponentielleZahlenDarstellung()));
 	QShortcut *ortLegende = new QShortcut(QKeySequence("O"), this);
 	QObject::connect(ortLegende, SIGNAL(activated()), this, SLOT(setOrtLegende()));
 	QShortcut *legendenVisebility = new QShortcut(QKeySequence("A"), this);
@@ -246,14 +248,44 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		if (serie->isVisible() | m_scatSer.at(n)->isVisible())
 		{
 			++rechtsVersatz;
-			m_coordListYatUnten.at(n)->setPen(serie->pen());
-			m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n + 1).arg(
-				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
-			m_coordListYatGraf.at(n)->setPen(serie->pen());
-			m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
-				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+
+			if (m_exponentielleZahlenDarstellung)
+			{
+				m_coordListYatUnten.at(n)->setPen(serie->pen());
+				m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n + 1).arg(
+					serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+
+				m_coordListYatGraf.at(n)->setPen(serie->pen());
+				m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
+					serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+			}
+			else
+			{
+				m_coordListYatUnten.at(n)->setPen(serie->pen());
+				m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n + 1).arg(
+					serie->pointsVector().at(index).y())); // yWert ausgeben --> -1.234E+01
+
+				m_coordListYatGraf.at(n)->setPen(serie->pen());
+				m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
+					serie->pointsVector().at(index).y())); // yWert ausgeben --> -1.234E+01
+			}
+
 			m_coordListStricheAtYAxes.at(n)->setVisible(true);
 		}
+//		if (serie->isVisible() | m_scatSer.at(n)->isVisible())
+//		{
+//			++rechtsVersatz;
+
+//			m_coordListYatUnten.at(n)->setPen(serie->pen());
+//			m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n + 1).arg(
+//				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+
+//			m_coordListYatGraf.at(n)->setPen(serie->pen());
+//			m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
+//				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+
+//			m_coordListStricheAtYAxes.at(n)->setVisible(true);
+//		}
 		else
 		{
 			m_coordListYatUnten.at(n)->setText("");

@@ -92,6 +92,7 @@ public slots:
 	void moveLeftKreuz();
 	void moveRightKreuz();
 	void setWerteVisebilityAufKreuz();
+	void setExponentielleZahlenDarstellung() {toggleBit(m_exponentielleZahlenDarstellung);}
 	void setOrtLegende();
 	void setLegendenVisebility();
 
@@ -132,6 +133,7 @@ private:
 	bool m_visibleDotsFirstUse = true;
 	bool m_visibleWerteAufKreuz = true;
 	bool m_visibleLegenden = true;
+	bool m_exponentielleZahlenDarstellung = false;
 	bool m_isRubberbandHorizontal = true;
 	int m_ortLegende = 1;
 	QString m_windowTitle;

@@ -139,7 +139,7 @@ bool MainWindow::findAndPlotAllFiles()
 	}
 
 	// Meldung
-	if (!foundBin | !foundCsv)
+	if (!foundBin & !foundCsv)
 	{
 		QMessageBox::warning(this, "Warnung",
 			tr("Im Pfad \"%1\" sind keine Binärdateien als auch CSV-Dateien vorhanden").arg(m_pfad));
@@ -323,6 +323,7 @@ void MainWindow::hilfeDialog()
 		"- [->] 	Kreuz nach rechts um einen Datenpunkt verschieben [rechte Pfeiltaste]\n"
 		"- [<-] 	Kreuz nach links um einen Datenpunkt verschieben [linke Pfeiltaste]\n"
 		"- [W] 	Werte auf Kreuz aus/ein-blenden.\n"
+		"- [E] 	Exponentielle Zahlendarstellung (umschalten)\n"
 		"\n"
 		"LEGENDE:\n"
 		"- Legende einzeln ein/ausblenden: Mit Mauszeiger darüberfahren\n"
@@ -344,7 +345,8 @@ void MainWindow::hilfeDialog()
 		"- [F1]	Hilfe\n"
 		"- [F2]	Über Qt\n"
 		"\n"
-		"					Patrik Roth, 16.10.2020, V1").arg(m_pfad);
+		"					Patrik Roth, 16.10.2020, V1"
+		"ToDo: Programmabsturz bei unterschiedlichen Datensatzlängen!").arg(m_pfad);
 	qDebug() << text.toStdString().c_str(); // einfaches Kopieren des Hilfetextes
 	QMessageBox::information(n2d, "Hilfe", text);
 }
