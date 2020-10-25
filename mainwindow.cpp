@@ -107,27 +107,49 @@ void MainWindow::open_n2D()
 bool MainWindow::findAndPlotAllFiles()
 {
 	QDir dir(m_pfad); // auf Ordner
-	QStringList filters;
-	filters << "*.bin";
-	filters << "*.sbin";
-	dir.setNameFilters(filters);
-	if (!dir.count())
+	QStringList filtersBin, filterCSV;
+	filtersBin << "*.bin";
+	filtersBin << "*.sbin";
+	filterCSV << "*.csv";
+	bool foundBin = false;
+	bool foundCsv = false;
+
+	// .bin
+	dir.setNameFilters(filtersBin);
+	foundBin = (dir.count() > 0);
+	if (foundBin)
 	{
-		QMessageBox::warning(this, "Warnung", tr("Im Pfad \"%1\" sind keine Binärdateien vorhanden").arg(m_pfad));
-		return false;
-	}
-	foreach (QString dateiName, dir.entryList())
-	{
-		if (!getDataOneFile(m_pfad + dateiName))
+		foreach (QString dateiName, dir.entryList())
 		{
-			return false;
+			if (!getDataOneFileBin(m_pfad + dateiName))
+				return false;
 		}
+	}
+
+	// .csv
+	dir.setNameFilters(filterCSV);
+	foundCsv = (dir.count() > 0);
+	if (foundCsv)
+	{
+		foreach (QString dateiName, dir.entryList())
+		{
+			if (!getDataOneFileCsv(m_pfad + dateiName))
+				return false;
+		}
+	}
+
+	// Meldung
+	if (!foundBin | !foundCsv)
+	{
+		QMessageBox::warning(this, "Warnung",
+			tr("Im Pfad \"%1\" sind keine Binärdateien als auch CSV-Dateien vorhanden").arg(m_pfad));
+		return false;
 	}
 
 	return true;
 }
 
-bool MainWindow::getDataOneFile(QString DateiMitPfad)
+bool MainWindow::getDataOneFileBin(QString DateiMitPfad)
 {
 	/// open file
 	QFile file(DateiMitPfad);
@@ -150,7 +172,7 @@ bool MainWindow::getDataOneFile(QString DateiMitPfad)
 	//	qDebug() << "file.size() =" << file.size();
 	//	qDebug() << "werte.size() =" << werte.size();
 	//	qDebug() << "sizeof(float) =" << sizeof(float);
-	qDebug() << "Datei" << DateiMitPfad << "wurde geöffnet.";
+	qDebug() << "Datei" << DateiMitPfad << "wurden Werte eingelesen.";
 
 	// Daten bei n2D eintragen:
 	QLineSeries *series = new QLineSeries();
@@ -162,9 +184,86 @@ bool MainWindow::getDataOneFile(QString DateiMitPfad)
 	{
 		data.append(QPointF(i, werte[i]));
 	}
-	series->append(data);
 
+	series->append(data);
 	return true;
+}
+
+bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
+{ // https://de.wikipedia.org/wiki/CSV_(Dateiformat)
+	/// open file
+	QFile file(DateiMitPfad);
+
+	if (!file.open(QIODevice::ReadOnly))
+	{ // öffnen der Datei
+//		QMessageBox::warning(this, "Warnung", tr("Folgende Datei konnte nicht geöffnet werden: \"%1\"").arg(DateiMitPfad));
+		QMessageBox::warning(this, "Warnung", file.errorString());
+		return false;
+	}
+
+	/// Dateiinhalt (filecontent) in DataOneFile
+	/// Header
+	QByteArray line = file.readLine();
+	QStringList spaltenueberschriften;
+	QList<QByteArray> werteZeile = line.split(';'); // = Seperator
+	bool keineUeberschrift = true;
+	if (!contains_number(werteZeile.first().toStdString())) // Wenn die allerste Zelle in der Datei kein Zahlenwert hat dann ist es eine Überschrift
+	{ // has Header
+		foreach (QString spalteName, werteZeile) {
+			spaltenueberschriften.append(spalteName.simplified()); // simplified() --> überflüssiger Zeilenumbruch löschen
+		}
+		keineUeberschrift = false;
+	}
+	qDebug() << " Spaltenüberschriften:" << spaltenueberschriften;
+
+	/// Body of Data:
+	int n = werteZeile.count(); // Anzahl Spalten
+	QVector<QVector<float>> spalten(n); // Spalten erzeugen, [col][row]
+
+	while (!file.atEnd()) { // Daten abfüllen
+		line = file.readLine();
+		if (keineUeberschrift | (spalten[0].count()>0) ) {
+			werteZeile = line.split(';'); // Wenn Überschriften vorhanden sind, dann neue Linie beim ersten mal nicht einlesen, sonst geht die erste Zeile verloren.
+		}
+		for (uint i = 0; i < n; ++i) {
+			spalten[i].append(werteZeile[i].toDouble());
+		}
+	}
+
+	qDebug() << " Spalten:" << spalten;
+	qDebug() << "Datei" << DateiMitPfad << "wurden Werte eingelesen.";
+	qDebug() << "file.size()       =" << file.size();
+	qDebug() << "spalten.size()    =" << spalten.size();
+	qDebug() << "spalten[0].size() =" << spalten[0].size();
+	qDebug() << "sizeof(float)     =" << sizeof(float);
+
+	file.close();
+
+	// Daten bei n2D eintragen:
+	uint nSpalten = spaltenueberschriften.size();
+	int i = 0;
+	foreach (QVector<float> werte, spalten) {
+		QLineSeries *series = new QLineSeries();
+		n2DSeries.append(series);
+		QFileInfo fileInfo(file.fileName()); // um den Pfad zu entfernen
+		QString seriesName;
+		if (nSpalten)
+			seriesName += spaltenueberschriften.at(i++) + ": ";
+		seriesName += fileInfo.fileName();
+		series->setName(seriesName);
+		QList<QPointF> data;
+		for (int i = 0; i < werte.size(); i++)
+		{
+			data.append(QPointF(i, werte[i]));
+		}
+		series->append(data);
+	}
+	return true;
+}
+
+bool MainWindow::contains_number(const std::string &c)
+{
+	return (c.find_first_of("0123456789") != std::string::npos);
 }
 
 void MainWindow::erstelle_n2D()

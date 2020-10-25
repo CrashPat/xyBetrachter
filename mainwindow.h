@@ -20,7 +20,9 @@ private slots:
 private:
 	bool findAndPlotAllFiles();
 	void erstelle_n2D();
-	bool getDataOneFile(QString DateiMitPfad);
+	bool getDataOneFileBin(QString DateiMitPfad);
+	bool getDataOneFileCsv(QString DateiMitPfad); // CSV
+	bool contains_number(const std::string &c); // für CSV
 	void addSeriesSin();
 	n2D *n2d = NULL;
 	QList<QLineSeries *> n2DSeries;
