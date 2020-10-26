@@ -263,31 +263,17 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 			}
 			else
 			{
-				m_coordListYatUnten.at(n)->setPen(serie->pen());
+				m_coordListYatUnten.at(n)->setPen(serie->pen()); // hier liegt der Grund das die Schrift nicht auf einem Pixel beleibt :(
 				m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n + 1).arg(
-					serie->pointsVector().at(index).y())); // yWert ausgeben --> -1.234E+01
+					serie->pointsVector().at(index).y())); // yWert ausgeben
 
 				m_coordListYatGraf.at(n)->setPen(serie->pen());
 				m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
-					serie->pointsVector().at(index).y())); // yWert ausgeben --> -1.234E+01
+					serie->pointsVector().at(index).y())); // yWert ausgeben
 			}
 
 			m_coordListStricheAtYAxes.at(n)->setVisible(true);
 		}
-//		if (serie->isVisible() | m_scatSer.at(n)->isVisible())
-//		{
-//			++rechtsVersatz;
-
-//			m_coordListYatUnten.at(n)->setPen(serie->pen());
-//			m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n + 1).arg(
-//				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
-
-//			m_coordListYatGraf.at(n)->setPen(serie->pen());
-//			m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
-//				serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
-
-//			m_coordListStricheAtYAxes.at(n)->setVisible(true);
-//		}
 		else
 		{
 			m_coordListYatUnten.at(n)->setText("");
