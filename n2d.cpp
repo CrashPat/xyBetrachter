@@ -231,12 +231,23 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	int rechtsVersatz = 0;
 	for (int n = m_coordListYatUnten.count() - 1; n + 1; --n)
 	{
+
 		int versatz = rechtsVersatz * 76 + 10; // Textabstand
 		m_coordListYatUnten.at(n)->setPos(versatz, hoehe);
 
 		QLineSeries *serie = m_series.at(n);
 		QString colorName = serie->pen().color().name();
-		QPointF wert = serie->pointsVector().at(index);
+
+		QPointF wert;
+		int len(serie->pointsVector().length());
+		if (index >= len) // Indexüberlauf verhindern:
+//		{
+			index = len-1;
+//			wert = QPointF(0,0);
+//		}
+//		else
+			wert =serie->pointsVector().at(index);
+
 		QPointF wertePos = m_chart->mapToPosition(wert, serie);
 		wertePos.setY(wertePos.y() - 17);
 		wertePos.setX(wertePos.x() - 2);
