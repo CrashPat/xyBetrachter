@@ -81,6 +81,7 @@ public slots:
 	void controlIfaxisXisOutOfRange(qreal min, qreal max);
 	void setMinMaxXAchse();
 	void setMinMaxYAchsen();
+	void setMinNullYAchsen();
 	void setTheme();
 	void setXachseVisebility();
 	void setYachsenVisebility();

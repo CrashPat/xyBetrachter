@@ -320,8 +320,9 @@ void MainWindow::hilfeDialog()
 		"	   gewünschter Bereich auswählen und linke Taste los lassen\n"
 		"- [Rad]	+/- y-Achsen\n"
 		"- [L] 	Logarithmische/Lineare y-Achsen umschalten\n"
-		"- [N] 	y-Achsen wird auf ihre maximale Darstellung gebracht.\n"
-		"- [M] 	x-Achse wird auf ihre maximale Darstellung gebracht.\n"
+		"- [N] 	x-Achse wird auf ihre maximale Darstellung gebracht.\n"
+		"- [M] 	y-Achsen wird auf ihre maximale Darstellung gebracht.\n"
+		"- [,] 	y-Achsen wird auf Null gesetzt.\n"
 		"\n"
 		"GRAPHEN:\n"
 		"- [Entf]	Die ausgeblendeten Graphen werden geschlossen.\n"
@@ -355,7 +356,7 @@ void MainWindow::hilfeDialog()
 		"- [F2]	Über Qt\n"
 		"- [F3]	Über CSV-Dateien: Aufbau von einlesbaren Dateien\n"
 		"\n"
-		"					Patrik Roth, 16.10.2020, V1"
+		"					Patrik Roth, 16.10.2020, V1\n\n"
 		"ToDo: Programmabsturz bei unterschiedlichen Datensatzlängen!").arg(m_pfad);
 	qDebug() << text.toStdString().c_str(); // einfaches Kopieren des Hilfetextes
 	QMessageBox::information(n2d, "Hilfe", text);

@@ -105,10 +105,12 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QObject::connect(yLogarithmisch, SIGNAL(activated()), this, SLOT(setYLinearOrLogarithmisch()));
 	QShortcut *theme = new QShortcut(QKeySequence("T"), this);
 	QObject::connect(theme, SIGNAL(activated()), this, SLOT(setTheme()));
-	QShortcut *xMinMax = new QShortcut(QKeySequence("M"), this);
+	QShortcut *xMinMax = new QShortcut(QKeySequence("N"), this);
 	QObject::connect(xMinMax, SIGNAL(activated()), this, SLOT(setMinMaxXAchse()));
-	QShortcut *yMinMax = new QShortcut(QKeySequence("N"), this);
+	QShortcut *yMinMax = new QShortcut(QKeySequence("M"), this);
 	QObject::connect(yMinMax, SIGNAL(activated()), this, SLOT(setMinMaxYAchsen()));
+	QShortcut *yMinNull = new QShortcut(QKeySequence(","), this);
+	QObject::connect(yMinNull, SIGNAL(activated()), this, SLOT(setMinNullYAchsen()));
 	QShortcut *xAchse = new QShortcut(QKeySequence("X"), this);
 	QObject::connect(xAchse, SIGNAL(activated()), this, SLOT(setXachseVisebility()));
 	QShortcut *yAchsen = new QShortcut(QKeySequence("Y"), this);
@@ -239,14 +241,14 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		QString colorName = serie->pen().color().name();
 
 		QPointF wert;
-		int len(serie->pointsVector().length());
+		uint len(serie->pointsVector().length());
 		if (index >= len) // Indexüberlauf verhindern:
 //		{
 			index = len-1;
 //			wert = QPointF(0,0);
 //		}
 //		else
-			wert =serie->pointsVector().at(index);
+		wert =serie->pointsVector().at(index);
 
 		QPointF wertePos = m_chart->mapToPosition(wert, serie);
 		wertePos.setY(wertePos.y() - 17);
@@ -290,7 +292,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 
 	/// Kreuz bei Mausposition zeichnen:
 	qreal xPosMausAtValue = m_chart->mapToPosition(vecExact.at(index)).x();
-	m_coordXatGraf->setPos(xPosMausAtValue, hoehe - 13);
+	m_coordXatGraf->setPos(xPosMausAtValue - 5, hoehe - 13);
 	m_xHilfsLinie->setRect(xPosMausAtValue, 75, 0, hoehe - 75 - 30);
 	m_xHilfsLinie->setVisible(true);
 	m_yHilfsLinie->setRect(30, yPosMaus, breite - 17, 0);
@@ -581,6 +583,22 @@ void n2D::setMinMaxYAchsen()
 		qDebug() << "min, max =" << getYmin(series) << getYmax(series);
 	}
 	qDebug() << "n2D::setMinMaxYAchsen()";
+}
+
+void n2D::setMinNullYAchsen()
+{
+	foreach (QLineSeries *series, m_series)
+	{
+		QAbstractAxis *yAxe = series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
+		float min(getYmin(series));
+		float max(getYmax(series));
+		if (max>0)
+			yAxe->setRange(0, max);
+		else
+			yAxe->setRange(min, max);
+		qDebug() << "minNull, max =" << min << max;
+	}
+	qDebug() << "n2D::setMinNullYAchsen()";
 }
 
 void n2D::setTheme()
