@@ -64,7 +64,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		scatSer->setName(QString("%1)").arg(n));
 		addSeries(series, scatSer);
 		m_coordListYatUnten.append(new QGraphicsTextItem(m_chart));
-		m_coordListYatGraf.append(new QGraphicsSimpleTextItem(m_chart));
+		m_coordListYatGraf.append(new QGraphicsTextItem(m_chart));
 		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(0, 12, 10, 1, m_chart)); //Position und Strichbreite wird hier festgelegt
 		m_coordListStricheAtYAxes.last()->setPen(series->pen());
 	}
@@ -267,8 +267,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 				m_coordListYatUnten.at(n)->setHtml(QString("<font color=\"%1\">%2:%3</font>").arg(colorName).arg(n + 1).arg(
 					serie->pointsVector().at(index).y())); // yWert ausgeben
 
-				m_coordListYatGraf.at(n)->setPen(serie->pen());
-				m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
+				m_coordListYatGraf.at(n)->setHtml(QString("<font color=\"%1\">_%2</font>").arg(colorName).arg(
 					serie->pointsVector().at(index).y())); // yWert ausgeben
 			}
 
@@ -277,7 +276,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		else
 		{
 			m_coordListYatUnten.at(n)->setHtml("");
-			m_coordListYatGraf.at(n)->setText("");
+			m_coordListYatGraf.at(n)->setHtml("");
 			m_coordListStricheAtYAxes.at(n)->setVisible(false);
 		}
 	}
@@ -447,7 +446,7 @@ void n2D::removeHiddenSeries()
 			m_scatSer.removeOne(m_scatSer.at(i));
 			m_coordListYatUnten.last()->setHtml("");
 			m_coordListYatUnten.removeLast();
-			m_coordListYatGraf.last()->setText("");
+			m_coordListYatGraf.last()->setHtml("");
 			m_coordListYatGraf.removeLast();
 			m_coordListStricheAtYAxes.last()->setVisible(false);
 			m_coordListStricheAtYAxes.removeLast();
@@ -655,7 +654,7 @@ void n2D::setWerteVisebilityAufKreuz()
 {
 	toggleBit(m_visibleWerteAufKreuz);
 	//m_coordXatGraf->setVisible(m_visibleWerteAufKreuz);
-	foreach (QGraphicsSimpleTextItem *yGrafText, m_coordListYatGraf)
+	foreach (QGraphicsTextItem *yGrafText, m_coordListYatGraf)
 	{
 		yGrafText->setVisible(m_visibleWerteAufKreuz);
 	}
