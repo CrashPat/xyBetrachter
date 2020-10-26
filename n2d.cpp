@@ -44,9 +44,9 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	//![2]
 
 	// Add few series & Kopie der Werte erstellen
-	m_coordXatUnten = new QGraphicsSimpleTextItem(m_chart);
+	m_coordXatUnten = new QGraphicsTextItem(m_chart);
 	m_coordXatUnten->setPos(m_chart->size().width() / 2, m_chart->size().height());
-	m_coordXatGraf = new QGraphicsSimpleTextItem(m_chart);
+	m_coordXatGraf = new QGraphicsTextItem(m_chart);
 
 	int n = 0;
 	foreach (QLineSeries *ls, listLineSeries)
@@ -76,9 +76,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	pen.setWidthF(0.2);
 	m_xHilfsLinie->setPen(pen);
 	m_yHilfsLinie->setPen(pen);
-	pen.setWidthF(0.5);
-	m_coordXatUnten->setPen(pen);
-	m_coordXatGraf->setPen(pen);
 
 	connectMarkers();
 
@@ -220,14 +217,15 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 
 	/// Vorbereitung Zeichenpositionen:
 	qreal breite = m_chart->size().width() - 60;
-	qreal hoehe = m_chart->size().height() - 15;
+	qreal hoehe = m_chart->size().height() - 20;
+
 
 	/// xyWerte als Text unten anzeigen:
 	// x:
 	m_coordXatUnten->setPos(breite, hoehe);
-	m_coordXatUnten->setText(QString("X:%1").arg(vecExact.at(index).x()));
+	m_coordXatUnten->setHtml(QString("<font color=\"grey\">X:%2</font>").arg(vecExact.at(index).x()));
 	//m_coordXatGraf->setPos(breite, hoehe); // --> wird beim Kreuz gemacht
-	m_coordXatGraf->setText(QString("|%1").arg(vecExact.at(index).x()));
+	m_coordXatGraf->setHtml(QString("<font color=\"grey\">|%2</font>").arg(vecExact.at(index).x()));
 
 	// y:
 	int rechtsVersatz = 0;
@@ -237,9 +235,11 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		m_coordListYatUnten.at(n)->setPos(versatz, hoehe);
 
 		QLineSeries *serie = m_series.at(n);
+		QString colorName = serie->pen().color().name();
 		QPointF wert = serie->pointsVector().at(index);
 		QPointF wertePos = m_chart->mapToPosition(wert, serie);
-		wertePos.setY(wertePos.y() - 12);
+		wertePos.setY(wertePos.y() - 17);
+		wertePos.setX(wertePos.x() - 2);
 		m_coordListYatGraf.at(n)->setPos(wertePos);
 		m_series.at(n)->attachedAxes().last();
 		if (m_visibleAxisY)
@@ -251,26 +251,22 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		{
 			++rechtsVersatz;
 
-//			if (m_exponentielleZahlenDarstellung)
-//			{
-//				m_coordListYatUnten.at(n)->setPen(serie->pen());
-//				m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n + 1).arg(
-//					serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
-
-//				m_coordListYatGraf.at(n)->setPen(serie->pen());
-//				m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
-//					serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
-//			}
-//			else
+			if (m_exponentielleZahlenDarstellung)
 			{
-				QString colorName = serie->pen().color().name();
+				m_coordListYatUnten.at(n)->setHtml(QString("<font color=\"%1\">%2:%3</font>").arg(colorName).arg(n + 1).arg(
+					serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+
+				m_coordListYatGraf.at(n)->setHtml(QString("<font color=\"%1\">_%2</font>").arg(colorName).arg(
+					serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+			}
+			else
+			{
 				m_coordListYatUnten.at(n)->setHtml(QString("<font color=\"%1\">%2:%3</font>").arg(colorName).arg(n + 1).arg(
 					serie->pointsVector().at(index).y())); // yWert ausgeben
 
 				m_coordListYatGraf.at(n)->setHtml(QString("<font color=\"%1\">_%2</font>").arg(colorName).arg(
 					serie->pointsVector().at(index).y())); // yWert ausgeben
 			}
-
 			m_coordListStricheAtYAxes.at(n)->setVisible(true);
 		}
 		else
@@ -288,8 +284,6 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	m_xHilfsLinie->setVisible(true);
 	m_yHilfsLinie->setRect(30, yPosMaus, breite - 17, 0);
 	m_yHilfsLinie->setVisible(true);
-	//m_xHilfsLinie->hide();
-	//m_yHilfsLinie->hide();
 }
 
 void n2D::addSeries(QLineSeries *series, QScatterSeries *scatSer)
