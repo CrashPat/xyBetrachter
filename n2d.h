@@ -145,7 +145,7 @@ private:
 
 	QGraphicsSimpleTextItem *m_coordXatUnten;
 	QGraphicsSimpleTextItem *m_coordXatGraf;
-	QList<QGraphicsSimpleTextItem *> m_coordListYatUnten; // links unten
+	QList<QGraphicsTextItem *> m_coordListYatUnten; // links unten
 	QList<QGraphicsSimpleTextItem *> m_coordListYatGraf;
 	QList<QGraphicsRectItem *> m_coordListStricheAtYAxes;
 

@@ -63,7 +63,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 		series->setName(QString("%1) %2").arg(n).arg(ls->name()));
 		scatSer->setName(QString("%1)").arg(n));
 		addSeries(series, scatSer);
-		m_coordListYatUnten.append(new QGraphicsSimpleTextItem(m_chart));
+		m_coordListYatUnten.append(new QGraphicsTextItem(m_chart));
 		m_coordListYatGraf.append(new QGraphicsSimpleTextItem(m_chart));
 		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(0, 12, 10, 1, m_chart)); //Position und Strichbreite wird hier festgelegt
 		m_coordListStricheAtYAxes.last()->setPen(series->pen());
@@ -251,20 +251,20 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		{
 			++rechtsVersatz;
 
-			if (m_exponentielleZahlenDarstellung)
-			{
-				m_coordListYatUnten.at(n)->setPen(serie->pen());
-				m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n + 1).arg(
-					serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+//			if (m_exponentielleZahlenDarstellung)
+//			{
+//				m_coordListYatUnten.at(n)->setPen(serie->pen());
+//				m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n + 1).arg(
+//					serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
 
-				m_coordListYatGraf.at(n)->setPen(serie->pen());
-				m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
-					serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
-			}
-			else
+//				m_coordListYatGraf.at(n)->setPen(serie->pen());
+//				m_coordListYatGraf.at(n)->setText(QString("_%1").arg(
+//					serie->pointsVector().at(index).y(), 0, 'E', 3)); // yWert ausgeben --> -1.234E+01
+//			}
+//			else
 			{
-				m_coordListYatUnten.at(n)->setPen(serie->pen()); // hier liegt der Grund das die Schrift nicht auf einem Pixel beleibt :(
-				m_coordListYatUnten.at(n)->setText(QString("%1:%2").arg(n + 1).arg(
+				QString colorName = serie->pen().color().name();
+				m_coordListYatUnten.at(n)->setHtml(QString("<font color=\"%1\">%2:%3</font>").arg(colorName).arg(n + 1).arg(
 					serie->pointsVector().at(index).y())); // yWert ausgeben
 
 				m_coordListYatGraf.at(n)->setPen(serie->pen());
@@ -276,7 +276,7 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 		}
 		else
 		{
-			m_coordListYatUnten.at(n)->setText("");
+			m_coordListYatUnten.at(n)->setHtml("");
 			m_coordListYatGraf.at(n)->setText("");
 			m_coordListStricheAtYAxes.at(n)->setVisible(false);
 		}
@@ -445,7 +445,7 @@ void n2D::removeHiddenSeries()
 			m_chart->removeSeries(m_scatSer.at(i));
 			m_series.removeOne(m_series.at(i));
 			m_scatSer.removeOne(m_scatSer.at(i));
-			m_coordListYatUnten.last()->setText("");
+			m_coordListYatUnten.last()->setHtml("");
 			m_coordListYatUnten.removeLast();
 			m_coordListYatGraf.last()->setText("");
 			m_coordListYatGraf.removeLast();
