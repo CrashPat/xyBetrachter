@@ -49,3 +49,18 @@ ALLGEMEIN:
 HILFE:
 - [F1]	Hilfe
 - [F2]	Über Qt
+- [F3]	Über CSV-Dateien: Aufbau von einlesbaren Dateien
+
+CSV-DATEIEN:
+<br>Möglicher Inhalt einer CSV-Datei:
+<br>erste; zweite mit ; dritte;und vierte spalte
+<br>2;1.90E+03;1.5;100
+<br>4;2.00E+03;2.6;97
+<br>6;2.10E+03;3.7;94
+<br>8;2.20E+03;4.8;91
+<br>10;2.30E+03;5.9;88
+<br>12;2.40E+03;7;85'
+<br><br>Zu beachten ist:
+- ';' separiert die Werte
+- '.' Werte nur mit Punkt nicht mit Komma
+- Spaltenüberschriften sind optional. Dies wird automatisch erkannt in dem in der ersten Spaltenüberschrift keine Zahl vorhanden ist.
