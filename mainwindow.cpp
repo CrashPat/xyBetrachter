@@ -322,7 +322,7 @@ void MainWindow::hilfeDialog()
 		"- [L] 	Logarithmische/Lineare y-Achsen umschalten\n"
 		"- [N] 	x-Achse wird auf ihre maximale Darstellung gebracht.\n"
 		"- [M] 	y-Achsen wird auf ihre maximale Darstellung gebracht.\n"
-		"- [,] 	y-Achsen wird auf Null gesetzt.\n"
+		"- [,] 	y-Achsen wird auf Null (min) gesetzt oder beim zweiten mal 600 (max)\n"
 		"\n"
 		"GRAPHEN:\n"
 		"- [Entf]	Die ausgeblendeten Graphen werden geschlossen.\n"

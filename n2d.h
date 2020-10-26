@@ -81,7 +81,7 @@ public slots:
 	void controlIfaxisXisOutOfRange(qreal min, qreal max);
 	void setMinMaxXAchse();
 	void setMinMaxYAchsen();
-	void setMinNullYAchsen();
+	void setMinNullOderMaxYAchsen();
 	void setTheme();
 	void setXachseVisebility();
 	void setYachsenVisebility();
@@ -130,6 +130,7 @@ private:
 	QValueAxis *m_axisX;
 	bool m_binLogarithmisch = false;
 	bool m_binDark = false;
+	bool m_binNullY = false;
 	bool m_visibleGrid = true;
 	bool m_visibleAxisY = true;
 	bool m_visibleDots = false;

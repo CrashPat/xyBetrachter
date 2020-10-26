@@ -110,7 +110,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries)
 	QShortcut *yMinMax = new QShortcut(QKeySequence("M"), this);
 	QObject::connect(yMinMax, SIGNAL(activated()), this, SLOT(setMinMaxYAchsen()));
 	QShortcut *yMinNull = new QShortcut(QKeySequence(","), this);
-	QObject::connect(yMinNull, SIGNAL(activated()), this, SLOT(setMinNullYAchsen()));
+	QObject::connect(yMinNull, SIGNAL(activated()), this, SLOT(setMinNullOderMaxYAchsen()));
 	QShortcut *xAchse = new QShortcut(QKeySequence("X"), this);
 	QObject::connect(xAchse, SIGNAL(activated()), this, SLOT(setXachseVisebility()));
 	QShortcut *yAchsen = new QShortcut(QKeySequence("Y"), this);
@@ -585,15 +585,18 @@ void n2D::setMinMaxYAchsen()
 	qDebug() << "n2D::setMinMaxYAchsen()";
 }
 
-void n2D::setMinNullYAchsen()
+void n2D::setMinNullOderMaxYAchsen()
 {
+	toggleBit(m_binNullY);
 	foreach (QLineSeries *series, m_series)
 	{
 		QAbstractAxis *yAxe = series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
 		float min(getYmin(series));
 		float max(getYmax(series));
-		if (max>0)
+		if ((max>0) & m_binNullY)
 			yAxe->setRange(0, max);
+		else if ((max>0) & !m_binNullY)
+			yAxe->setRange(0, 600); // miny, maxy
 		else
 			yAxe->setRange(min, max);
 		qDebug() << "minNull, max =" << min << max;
