@@ -189,7 +189,7 @@ bool MainWindow::getDataOneFileBin(QString DateiMitPfad)
 
 	// y MinMax abspeichern
 	std::sort(werte.begin(), werte.end());
-	SeriesMitxyMinMax xym;
+	xyMinMax xym;
 	xym.yMin = werte.front();
 	xym.yMax = werte.back();
 	xym.series = series;
@@ -277,7 +277,7 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 
 		// y MinMax abspeichern
 		std::sort(werte.begin(), werte.end());
-		SeriesMitxyMinMax xym;
+		xyMinMax xym;
 		xym.yMin = werte.front();
 		xym.yMax = werte.back();
 		xym.series = series;
@@ -293,7 +293,7 @@ bool MainWindow::contains_number(const std::string &c)
 
 void MainWindow::erstelle_n2D()
 {
-	n2d = new n2D(n2DSeries);
+	n2d = new n2D(n2DSeries, nXYminMax);
 
 	////	QSize screenSize = QApplication::desktop()->screen()->size();
 	//	QSize screenSize = QGuiApplication::screens().first()->availableVirtualSize(); //Desktopsize ohne Taskleiste

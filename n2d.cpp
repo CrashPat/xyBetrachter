@@ -21,7 +21,7 @@ QT_CHARTS_USE_NAMESPACE
 
 int n2D::countInstances = 0;
 
-n2D::n2D(QList<QLineSeries *> listLineSeries)
+n2D::n2D(QList<QLineSeries *> listLineSeries, QList<xyMinMax> list_xyMinMax)
 {
 	qDebug() << "n2D(): Anzahl Instanzen" << ++countInstances;
 
@@ -348,16 +348,16 @@ QPointF n2D::getYMinMax(QLineSeries *series) // ToDo: Dieser Teile paralellisier
 { // Methode mit Gedächtnis, damit nur einmal berechnet wird, hilft dann wenn viele Datensätze vorhanden sind
   //   dadurch wird dann nach dem ersten mal berechnen schneller zweischen den Skalierungen gewechselt.
 	bool existSerie = false;
-	SeriesMitxyMinMax paar_serMitXY;
+	xyMinMax xy_MinMax;
 //	QPair<QPointF, QLineSeries*> paar;
-	static QVector<SeriesMitxyMinMax> vecSerMitXY;
+	static QVector<xyMinMax> vecSerMitXY;
 //	static QVector<QPair<QPointF, QLineSeries*>> yMinMaxMitSerie;
 
 	// Kontrolle ob Serie schon vorhanden ist:
 	for (int i = 0; i < vecSerMitXY.length(); ++i) {
 		QLineSeries *ls = vecSerMitXY.at(i).series;
 		if (series == ls) {
-			paar_serMitXY = vecSerMitXY.at(i);
+			xy_MinMax = vecSerMitXY.at(i);
 //			paar = yMinMaxMitSerie.at(i);
 			existSerie = true;
 			break;
@@ -376,10 +376,10 @@ QPointF n2D::getYMinMax(QLineSeries *series) // ToDo: Dieser Teile paralellisier
 		std::sort(yWerte.begin(), yWerte.end());
 
 		// Abfüllen:
-		paar_serMitXY.yMin = yWerte.first();
-		paar_serMitXY.yMax = yWerte.last();
-		paar_serMitXY.series = series;
-		vecSerMitXY.append(paar_serMitXY);
+		xy_MinMax.yMin = yWerte.first();
+		xy_MinMax.yMax = yWerte.last();
+		xy_MinMax.series = NULL;
+		vecSerMitXY.append(xy_MinMax);
 
 //		paar.first.setX(yWerte.first()); // min-y
 //		paar.first.setY(yWerte.last()); // max-y
@@ -393,7 +393,7 @@ QPointF n2D::getYMinMax(QLineSeries *series) // ToDo: Dieser Teile paralellisier
 //	foreach (var, container) {
 
 //	}
-	return QPointF(paar_serMitXY.yMin, paar_serMitXY.yMax); // min-y, max-y
+	return QPointF(xy_MinMax.yMin, xy_MinMax.yMax); // min-y, max-y
 //	return QPointF(paar.first.rx(), paar.first.ry()); // min-y, max-y
 }
 

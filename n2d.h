@@ -59,7 +59,7 @@
 
 QT_CHARTS_USE_NAMESPACE
 
-struct SeriesMitxyMinMax { // Zusammenfassen der min und max Werte der zugöhrigen Serien --> spart Rechenzeit
+struct xyMinMax { // Zusammenfassen der min und max Werte der zugöhrigen Serien --> spart Rechenzeit
 	QLineSeries* series;
 //	float xMin;
 //	float xMax;
@@ -79,7 +79,7 @@ protected:
 	qreal m_FactorZoom = 1.0;
 
 public:
-	explicit n2D(QList<QLineSeries *> listLineSeries);
+	explicit n2D(QList<QLineSeries *> listLineSeries, QList<xyMinMax> list_xyMinMax);
 	~n2D();
 
 public slots:
