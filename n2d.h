@@ -56,7 +56,6 @@
 #include <QMouseEvent>
 #include <QScatterSeries>
 #include <QVector4D>
-#include <QPair>
 
 QT_CHARTS_USE_NAMESPACE
 

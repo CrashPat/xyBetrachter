@@ -358,8 +358,9 @@ void MainWindow::hilfeDialog()
 		"- [F2]	Über Qt\n"
 		"- [F3]	Über CSV-Dateien: Aufbau von einlesbaren Dateien\n"
 		"\n"
-		"					Patrik Roth, 16.10.2020, V1\n\n"
-		"ToDo: Programmabsturz bei unterschiedlichen Datensatzlängen!").arg(m_pfad);
+		"					Patrik Roth, 27.10.2020, V1.1\n"
+		"\n"
+		"ToDo: n2D::getYMinMax(QLineSeries *series) --> Dieser Teile paralellisieren!").arg(m_pfad);
 	qDebug() << text.toStdString().c_str(); // einfaches Kopieren des Hilfetextes
 	QMessageBox::information(n2d, "Hilfe", text);
 }

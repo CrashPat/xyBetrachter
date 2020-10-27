@@ -15,6 +15,7 @@
 #include <QtCharts/QLogValueAxis>
 #include <QLayout>
 #include <QFont>
+#include <QPair>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -343,15 +344,45 @@ void n2D::addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer)
 	axisY->setLabelsColor(series->pen().color());
 }
 
-QPointF n2D::getYMinMax(QLineSeries *series)
-{
-	QVector<QPointF> werte = series->pointsVector();
-	Q_ASSERT(werte.size() > 0);
-	QVector<float> yWerte;
-	foreach (QPointF p, werte)
-		yWerte.append(p.ry());
-	std::sort(yWerte.begin(), yWerte.end());
-	return QPointF(yWerte.first(), yWerte.last()); // min-y, max-y
+QPointF n2D::getYMinMax(QLineSeries *series) // ToDo: Dieser Teile paralellisieren!
+{ // Methode mit Gedächtnis, damit nur einmal berechnet wird, hilft dann wenn viele Datensätze vorhanden sind
+  //   dadurch wird dann nach dem ersten mal berechnen schneller zweischen den Skalierungen gewechselt.
+	bool existSerie = false;
+	QPair<QPointF, QLineSeries*> paar;
+	static QVector<QPair<QPointF, QLineSeries*>> yMinMaxMitSerie;
+
+	// Kontrolle ob Serie schon vorhanden ist:
+	for (int i = 0; i < yMinMaxMitSerie.length(); ++i) {
+		QLineSeries *ls = yMinMaxMitSerie.at(i).second;
+		if (series == ls) {
+			paar = yMinMaxMitSerie.at(i);
+			existSerie = true;
+			break;
+		}
+	}
+
+	// rechenintensiv, desshalb wird hier nur einmal aufrufen
+	if (!existSerie) {
+		QVector<QPointF> werte = series->pointsVector(); //Einlesen
+		Q_ASSERT(werte.size() > 0);
+		QVector<float> yWerte;
+
+		foreach (QPointF p, werte) // Vector erstellen
+			yWerte.append(p.ry());
+
+		std::sort(yWerte.begin(), yWerte.end());
+
+		// Abfüllen:
+		paar.first.setX(yWerte.first()); // min-y
+		paar.first.setY(yWerte.last()); // max-y
+		paar.second = series;
+		yMinMaxMitSerie.append(paar);
+//		qDebug() << "getYMinMax() Serie mit yMinMax angehaengt";
+	}
+//	else
+//		qDebug() << "getYMinMax() Serie mit yMinMax war bereits vorhanden";
+
+	return QPointF(paar.first.rx(), paar.first.ry()); // min-y, max-y
 }
 
 QPointF n2D::getYMinMaxFromAllSeries() // rx = minAllerY-Werte, ry = maxAllerY-Werte
@@ -590,12 +621,8 @@ void n2D::setMinMaxYAchsen()
 
 void n2D::setMinNullOderMaxYAchsen()
 {
-	static bool einMal = true;
-	static float m_YmaxAll;
-	if (einMal) {
-		m_YmaxAll = getYMinMaxFromAllSeries().ry(); // rechenintensiv, nur einmal aufrufen
-		einMal = false;
-	}
+	float m_YmaxAll = getYMinMaxFromAllSeries().ry();
+
 	foreach (QLineSeries *series, m_series)
 	{
 		QAbstractAxis *yAxe = series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
