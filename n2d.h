@@ -56,6 +56,7 @@
 #include <QMouseEvent>
 #include <QScatterSeries>
 #include <QVector4D>
+#include <QPair>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -118,8 +119,8 @@ private:
 	void addSeries(QLineSeries *series, QScatterSeries *scatSer);
 	void addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer);
 	void addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer);
-	float getYmax(QLineSeries *series);
-	float getYmin(QLineSeries *series);
+	QPointF getYMinMax(QLineSeries *series); // rx = min, ry = max
+	QPointF getYMinMaxFromAllSeries(); // rx = minAllerY-Werte, ry = maxAllerY-Werte
 	void setKreuzMitXYWerten(QPoint position, QString richtung = "keine");
 
 	static int countInstances;
@@ -130,7 +131,6 @@ private:
 	QValueAxis *m_axisX;
 	bool m_binLogarithmisch = false;
 	bool m_binDark = false;
-	bool m_binNullY = false;
 	bool m_visibleGrid = true;
 	bool m_visibleAxisY = true;
 	bool m_visibleDots = false;

@@ -234,7 +234,7 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 			QMessageBox::warning(this, "Warnung", "Leerzeile in vorhanden. (Bitte entfernen))");
 			break;
 		}
-		for (uint i = 0; i < n; ++i) {
+		for (int i = 0; i < n; ++i) {
 			spalten[i].append(werteZeile[i].toDouble());
 		}
 	}
