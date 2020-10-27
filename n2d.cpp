@@ -595,12 +595,18 @@ void n2D::setMinNullOderMaxYAchsen()
 		float max(getYmax(series));
 		if ((max>0) & m_binNullY)
 			yAxe->setRange(0, max);
-		else if ((max>0) & !m_binNullY)
+		else if (/*(max>0) & */!m_binNullY)
+		{ // gleiche Achsenskalierung, damit reicht eine y-Achse zum Anzeigen aus
 			yAxe->setRange(0, 600); // miny, maxy
+			series->attachedAxes().last()->setVisible(false);
+		}
 		else
 			yAxe->setRange(min, max);
 		qDebug() << "minNull, max =" << min << max;
 	}
+	if (!m_binNullY)
+		m_series.at(0)->attachedAxes().last()->setVisible(true);
+
 	qDebug() << "n2D::setMinNullYAchsen()";
 }
 
