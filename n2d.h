@@ -59,12 +59,16 @@
 
 QT_CHARTS_USE_NAMESPACE
 
-struct xyMinMax { // Zusammenfassen der min und max Werte der zugöhrigen Serien --> spart Rechenzeit
-	QLineSeries* series;
+struct yMinMax {
 //	float xMin;
 //	float xMax;
 	float yMin;
 	float yMax;
+};
+
+struct SerieXMinMax { // Zusammenfassen der min und max Werte der zugöhrigen Serien --> spart Rechenzeit
+	QLineSeries* series;
+	yMinMax xminmax;
 };
 
 class n2D : public QChartView //QWidget// QDialog
@@ -79,7 +83,7 @@ protected:
 	qreal m_FactorZoom = 1.0;
 
 public:
-	explicit n2D(QList<QLineSeries *> listLineSeries, QList<xyMinMax> list_xyMinMax);
+	explicit n2D(QList<QLineSeries *> listLineSeries, QList<yMinMax> list_xyMinMax);
 	~n2D();
 
 public slots:
@@ -89,7 +93,7 @@ public slots:
 	void controlIfaxisXisOutOfRange(qreal min, qreal max);
 	void setMinMaxXAchse();
 	void setMinMaxYAchsen();
-	void setMinNullOderMaxYAchsen();
+	void setMin0undMaxAlleYAchse();
 	void setTheme();
 	void setXachseVisebility();
 	void setYachsenVisebility();
@@ -126,13 +130,14 @@ private:
 	void addSeries(QLineSeries *series, QScatterSeries *scatSer);
 	void addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer);
 	void addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer);
-	QPointF getYMinMax(QLineSeries *series); // rx = min, ry = max
-	QPointF getYMinMaxFromAllSeries(); // rx = minAllerY-Werte, ry = maxAllerY-Werte
+	yMinMax getYMinMax(QLineSeries *series); // rx = min, ry = max
+	yMinMax getYMinMaxFromAllSeries(); // rx = minAllerY-Werte, ry = maxAllerY-Werte
 	void setKreuzMitXYWerten(QPoint position, QString richtung = "keine");
 
 	static int countInstances;
 	void toggleBit(bool &bit) { bit = !bit; }
 	QChart *m_chart;
+	QList<SerieXMinMax> m_nSerieXMinMax;
 	QList<QLineSeries *> m_series;
 	QList<QScatterSeries *> m_scatSer;
 	QValueAxis *m_axisX;

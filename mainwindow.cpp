@@ -4,7 +4,6 @@
 #include <QDir>
 #include <QGuiApplication>
 #include <QScreen>
-#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -189,11 +188,10 @@ bool MainWindow::getDataOneFileBin(QString DateiMitPfad)
 
 	// y MinMax abspeichern
 	std::sort(werte.begin(), werte.end());
-	xyMinMax xym;
+	yMinMax xym;
 	xym.yMin = werte.front();
 	xym.yMax = werte.back();
-	xym.series = series;
-	nXYminMax.append(xym);
+	nXminmax.append(xym);
 
 	return true;
 }
@@ -277,11 +275,10 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 
 		// y MinMax abspeichern
 		std::sort(werte.begin(), werte.end());
-		xyMinMax xym;
+		yMinMax xym;
 		xym.yMin = werte.front();
 		xym.yMax = werte.back();
-		xym.series = series;
-		nXYminMax.append(xym);
+		nXminmax.append(xym);
 	}
 	return true;
 }
@@ -293,7 +290,7 @@ bool MainWindow::contains_number(const std::string &c)
 
 void MainWindow::erstelle_n2D()
 {
-	n2d = new n2D(n2DSeries, nXYminMax);
+	n2d = new n2D(n2DSeries, nXminmax);
 
 	////	QSize screenSize = QApplication::desktop()->screen()->size();
 	//	QSize screenSize = QGuiApplication::screens().first()->availableVirtualSize(); //Desktopsize ohne Taskleiste

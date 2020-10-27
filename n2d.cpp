@@ -16,12 +16,13 @@
 #include <QLayout>
 #include <QFont>
 #include <QPair>
+#include <QMessageBox>
 
 QT_CHARTS_USE_NAMESPACE
 
 int n2D::countInstances = 0;
 
-n2D::n2D(QList<QLineSeries *> listLineSeries, QList<xyMinMax> list_xyMinMax)
+n2D::n2D(QList<QLineSeries *> listLineSeries, QList<yMinMax> nXminmax)
 {
 	qDebug() << "n2D(): Anzahl Instanzen" << ++countInstances;
 
@@ -63,7 +64,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries, QList<xyMinMax> list_xyMinMax)
 		n++;
 		series->setName(QString("%1) %2").arg(n).arg(ls->name()));
 		scatSer->setName(QString("%1)").arg(n));
-		addSeries(series, scatSer);
+		addSeries(series, scatSer); // --> m_series, m_scatSer
+		m_nSerieXMinMax.append(SerieXMinMax{series, nXminmax.at(n-1)});
 		m_coordListYatUnten.append(new QGraphicsTextItem(m_chart));
 		m_coordListYatGraf.append(new QGraphicsTextItem(m_chart));
 		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(0, 12, 10, 1, m_chart)); //Position und Strichbreite wird hier festgelegt
@@ -111,7 +113,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries, QList<xyMinMax> list_xyMinMax)
 	QShortcut *yMinMax = new QShortcut(QKeySequence("M"), this);
 	QObject::connect(yMinMax, SIGNAL(activated()), this, SLOT(setMinMaxYAchsen()));
 	QShortcut *yMinNull = new QShortcut(QKeySequence(","), this);
-	QObject::connect(yMinNull, SIGNAL(activated()), this, SLOT(setMinNullOderMaxYAchsen()));
+	QObject::connect(yMinNull, SIGNAL(activated()), this, SLOT(setMin0undMaxAlleYAchse()));
 	QShortcut *xAchse = new QShortcut(QKeySequence("X"), this);
 	QObject::connect(xAchse, SIGNAL(activated()), this, SLOT(setXachseVisebility()));
 	QShortcut *yAchsen = new QShortcut(QKeySequence("Y"), this);
@@ -344,78 +346,43 @@ void n2D::addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer)
 	axisY->setLabelsColor(series->pen().color());
 }
 
-QPointF n2D::getYMinMax(QLineSeries *series) // ToDo: Dieser Teile paralellisieren!
-{ // Methode mit Gedächtnis, damit nur einmal berechnet wird, hilft dann wenn viele Datensätze vorhanden sind
-  //   dadurch wird dann nach dem ersten mal berechnen schneller zweischen den Skalierungen gewechselt.
-	bool existSerie = false;
-	xyMinMax xy_MinMax;
-//	QPair<QPointF, QLineSeries*> paar;
-	static QVector<xyMinMax> vecSerMitXY;
-//	static QVector<QPair<QPointF, QLineSeries*>> yMinMaxMitSerie;
-
-	// Kontrolle ob Serie schon vorhanden ist:
-	for (int i = 0; i < vecSerMitXY.length(); ++i) {
-		QLineSeries *ls = vecSerMitXY.at(i).series;
-		if (series == ls) {
-			xy_MinMax = vecSerMitXY.at(i);
-//			paar = yMinMaxMitSerie.at(i);
-			existSerie = true;
-			break;
-		}
+yMinMax n2D::getYMinMax(QLineSeries *series) // ToDo: Dieser Teile paralellisieren!
+{
+	for (int i = 0; i < m_nSerieXMinMax.count(); ++i)
+	{
+		if (series == m_nSerieXMinMax.at(i).series)
+			return yMinMax{m_nSerieXMinMax.at(i).xminmax.yMin,
+						   m_nSerieXMinMax.at(i).xminmax.yMax};
 	}
-
-	// rechenintensiv, desshalb wird hier nur einmal aufrufen
-	if (!existSerie) {
-		QVector<QPointF> werte = series->pointsVector(); //Einlesen
-		Q_ASSERT(werte.size() > 0);
-		QVector<float> yWerte;
-
-		foreach (QPointF p, werte) // Vector erstellen
-			yWerte.append(p.ry());
-
-		std::sort(yWerte.begin(), yWerte.end());
-
-		// Abfüllen:
-		xy_MinMax.yMin = yWerte.first();
-		xy_MinMax.yMax = yWerte.last();
-		xy_MinMax.series = NULL;
-		vecSerMitXY.append(xy_MinMax);
-
-//		paar.first.setX(yWerte.first()); // min-y
-//		paar.first.setY(yWerte.last()); // max-y
-//		paar.second = series;
-//		yMinMaxMitSerie.append(paar);
-		qDebug() << "getYMinMax() Serie mit yMinMax angehaengt";
-	}
-	else
-		qDebug() << "getYMinMax() Serie mit yMinMax war bereits vorhanden";
-
-//	foreach (var, container) {
-
-//	}
-	return QPointF(xy_MinMax.yMin, xy_MinMax.yMax); // min-y, max-y
-//	return QPointF(paar.first.rx(), paar.first.ry()); // min-y, max-y
+	QMessageBox::critical(this, "Warnung", tr("Serie ist bei getYMinMax() nicht vorhanden."));
+	return yMinMax{m_nSerieXMinMax.at(0).xminmax.yMin,
+				   m_nSerieXMinMax.at(0).xminmax.yMax};
 }
 
-QPointF n2D::getYMinMaxFromAllSeries() // rx = minAllerY-Werte, ry = maxAllerY-Werte
+yMinMax n2D::getYMinMaxFromAllSeries() // rx = minAllerY-Werte, ry = maxAllerY-Werte
 {
-	QVector<QPointF> yMinMaxallerSeries;
-	foreach(QLineSeries *series, m_series) {
-		yMinMaxallerSeries.append(getYMinMax(series));
+	QVector<yMinMax> yMinMaxAllerSeries;
+	foreach(QLineSeries *series, m_series)
+	{
+		yMinMaxAllerSeries.append(getYMinMax(series));
 	}
-	QVector<float> yWerte;
-	foreach (QPointF p, yMinMaxallerSeries) {
-		yWerte.append(p.rx()); // min
-		yWerte.append(p.ry()); // max
+	QVector<float> yMinWerte;
+	QVector<float> yMaxWerte;
+	foreach (yMinMax ym, yMinMaxAllerSeries)
+	{
+		yMinWerte.append(ym.yMin); // min
+		yMaxWerte.append(ym.yMax); // max
 	}
-	std::sort(yWerte.begin(), yWerte.end());
-	return QPointF(yWerte.first(), yWerte.last()); // rx = minAllerY-Werte, ry = maxAllerY-Werte
+	std::sort(yMinWerte.begin(), yMinWerte.end());
+	std::sort(yMaxWerte.begin(), yMaxWerte.end());
+	qDebug() << "getYMinMaxFromAllSeries() abgearbeitet";
+	return yMinMax{yMinWerte.first(), yMaxWerte.last()}; // rx = minAllerY-Werte, ry = maxAllerY-Werte
 }
 
 void n2D::addAxisYlogarithmisch(QLineSeries *series, QScatterSeries *scatSer)
 {
 	// Abfragen ob logarithmisch überhaubpt möglich:
-	float yMin = getYMinMax(series).rx();
+	float yMin = getYMinMax(series).yMin;
 
 	if (yMin < 0) // logarithmisch nicht möglich?
 		addAxisYlinear(series, scatSer);
@@ -489,9 +456,10 @@ void n2D::removeHiddenSeries()
 	for (int i = 0; i < m_series.length(); ++i)
 	{
 		//		if ( ! (m_series.at(i)->isVisible() | m_scatSer.at(i)->isVisible()) )
-		if (!m_series.at(i)->isVisible())
+		if (!m_series.at(i)->isVisible() & !m_scatSer.at(i)->isVisible())
 		{
 			delete m_series.at(i)->attachedAxes().last();
+			m_nSerieXMinMax.removeAt(i);
 			m_chart->removeSeries(m_series.at(i));
 			m_chart->removeSeries(m_scatSer.at(i));
 			m_series.removeOne(m_series.at(i));
@@ -510,17 +478,17 @@ void n2D::removeHiddenSeries()
 	foreach (QLineSeries *series, m_series)
 	{
 		QString name = series->name();
-		int pos = name.lastIndexOf(QChar('('));
-		name = name.left(pos);
-		series->setName(QString("%1 (%2)").arg(name).arg(n++));
+		int pos = name.indexOf(QChar(')'));
+		name = name.mid(pos+1);
+		series->setName(QString("%1) %2").arg(n++).arg(name));
 	}
 	n = 1;
 	foreach (QScatterSeries *series, m_scatSer)
 	{
 		QString name = series->name();
-		int pos = name.lastIndexOf(QChar('('));
-		name = name.left(pos);
-		series->setName(QString("%1 (%2)").arg(name).arg(n++));
+		int pos = name.indexOf(QChar(')'));
+		name = name.mid(pos+1);
+		series->setName(QString("%1) %2").arg(n++).arg(name));
 	}
 }
 
@@ -624,27 +592,30 @@ void n2D::setMinMaxYAchsen()
 	foreach (QLineSeries *series, m_series)
 	{
 		QAbstractAxis *yAxe = series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
-		QPointF yMinMax = getYMinMax(series);
-		yAxe->setRange(yMinMax.rx(), yMinMax.ry());
-		qDebug() << "min, max =" << yMinMax.rx() << yMinMax.ry();
+		yMinMax yminmax = getYMinMax(series);
+		yAxe->setRange(yminmax.yMin, yminmax.yMax);
+		qDebug() << "min, max =" << yminmax.yMin << yminmax.yMax;
 	}
 	qDebug() << "n2D::setMinMaxYAchsen()";
 }
 
-void n2D::setMinNullOderMaxYAchsen()
+void n2D::setMin0undMaxAlleYAchse()
 {
-	float m_YmaxAll = getYMinMaxFromAllSeries().ry();
+	float m_YmaxAll = getYMinMaxFromAllSeries().yMax;
 
+	int n = 0;
 	foreach (QLineSeries *series, m_series)
 	{
 		QAbstractAxis *yAxe = series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
 		// gleiche Achsenskalierung, damit reicht eine y-Achse zum Anzeigen aus
+		qDebug() << "yAxe->setRange(0, m_YmaxAll) --> vorher n =" << n;
+		/// TODO: setRange benötigt viel Rechenzeit bei über 100dert Achsen:
 		yAxe->setRange(0, m_YmaxAll); // min-y, maxAllerSerien-y
+		qDebug() << "yAxe->setRange(0, m_YmaxAll) --> nachher n =" << n++;
 		series->attachedAxes().last()->setVisible(false);
 	}
 	m_series.at(0)->attachedAxes().last()->setVisible(true);
-
-	qDebug() << "n2D::setMinNullYAchsen()";
+	qDebug() << "n2D::setMin0undMaxAlleYAchse()";
 }
 
 void n2D::setTheme()

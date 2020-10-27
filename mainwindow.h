@@ -27,7 +27,7 @@ private:
 	void addSeriesSin();
 	n2D *n2d = NULL;
 	QList<QLineSeries *> n2DSeries;
-	QList<xyMinMax> nXYminMax;
+	QList<yMinMax> nXminmax;
 	QList<QString> n2DnameList;
 	const QString m_pfad = ("C:/Users/Patrik Roth/Downloads/");
 };
