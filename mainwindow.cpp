@@ -382,7 +382,7 @@ void MainWindow::ueberCSVDialog()
 		"Zu beachten ist:\n"
 		"- ';' separiert die Werte\n"
 		"- '.' Werte nur mit Punkt nicht mit Komma\n"
-		"- Spaltenüberschriften sind optional. Dies wird automatisch erkannt in dem in der ersten Spaltenüberschrift keine Zahl vorhanden ist.");
+		"- Spaltenüberschriften sind optional. Dies wird automatisch erkannt in dem in der ersten Spaltenüberschrift keine Zahl vorhanden ist. --> Berechnung von yMinMax schon beim Dateien einlesen machen!");
 	qDebug() << text.toStdString().c_str(); // einfaches Kopieren des Hilfetextes
 	QMessageBox::information(n2d, "Hilfe", text);
 }

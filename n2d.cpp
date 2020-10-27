@@ -348,14 +348,17 @@ QPointF n2D::getYMinMax(QLineSeries *series) // ToDo: Dieser Teile paralellisier
 { // Methode mit Gedächtnis, damit nur einmal berechnet wird, hilft dann wenn viele Datensätze vorhanden sind
   //   dadurch wird dann nach dem ersten mal berechnen schneller zweischen den Skalierungen gewechselt.
 	bool existSerie = false;
-	QPair<QPointF, QLineSeries*> paar;
-	static QVector<QPair<QPointF, QLineSeries*>> yMinMaxMitSerie;
+	SerieMitXYminMax paar_serMitXY;
+//	QPair<QPointF, QLineSeries*> paar;
+	static QVector<SerieMitXYminMax> vecSerMitXY;
+//	static QVector<QPair<QPointF, QLineSeries*>> yMinMaxMitSerie;
 
 	// Kontrolle ob Serie schon vorhanden ist:
-	for (int i = 0; i < yMinMaxMitSerie.length(); ++i) {
-		QLineSeries *ls = yMinMaxMitSerie.at(i).second;
+	for (int i = 0; i < vecSerMitXY.length(); ++i) {
+		QLineSeries *ls = vecSerMitXY.at(i).series;
 		if (series == ls) {
-			paar = yMinMaxMitSerie.at(i);
+			paar_serMitXY = vecSerMitXY.at(i);
+//			paar = yMinMaxMitSerie.at(i);
 			existSerie = true;
 			break;
 		}
@@ -373,16 +376,22 @@ QPointF n2D::getYMinMax(QLineSeries *series) // ToDo: Dieser Teile paralellisier
 		std::sort(yWerte.begin(), yWerte.end());
 
 		// Abfüllen:
-		paar.first.setX(yWerte.first()); // min-y
-		paar.first.setY(yWerte.last()); // max-y
-		paar.second = series;
-		yMinMaxMitSerie.append(paar);
-//		qDebug() << "getYMinMax() Serie mit yMinMax angehaengt";
-	}
-//	else
-//		qDebug() << "getYMinMax() Serie mit yMinMax war bereits vorhanden";
+		paar_serMitXY.yMin = yWerte.first();
+		paar_serMitXY.yMax = yWerte.last();
+		paar_serMitXY.series = series;
+		vecSerMitXY.append(paar_serMitXY);
 
-	return QPointF(paar.first.rx(), paar.first.ry()); // min-y, max-y
+//		paar.first.setX(yWerte.first()); // min-y
+//		paar.first.setY(yWerte.last()); // max-y
+//		paar.second = series;
+//		yMinMaxMitSerie.append(paar);
+		qDebug() << "getYMinMax() Serie mit yMinMax angehaengt";
+	}
+	else
+		qDebug() << "getYMinMax() Serie mit yMinMax war bereits vorhanden";
+
+	return QPointF(paar_serMitXY.yMin, paar_serMitXY.yMax); // min-y, max-y
+//	return QPointF(paar.first.rx(), paar.first.ry()); // min-y, max-y
 }
 
 QPointF n2D::getYMinMaxFromAllSeries() // rx = minAllerY-Werte, ry = maxAllerY-Werte

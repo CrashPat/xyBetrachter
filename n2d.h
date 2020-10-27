@@ -59,6 +59,14 @@
 
 QT_CHARTS_USE_NAMESPACE
 
+struct SerieMitXYminMax { // Zusammenfassen der min und max Werte der zugöhrigen Serien --> spart Rechenzeit
+	QLineSeries* series;
+//	float xMin;
+//	float xMax;
+	float yMin;
+	float yMax;
+};
+
 class n2D : public QChartView //QWidget// QDialog
 {
 	Q_OBJECT
