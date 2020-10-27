@@ -59,7 +59,7 @@
 
 QT_CHARTS_USE_NAMESPACE
 
-struct SerieMitXYminMax { // Zusammenfassen der min und max Werte der zugöhrigen Serien --> spart Rechenzeit
+struct SeriesMitxyMinMax { // Zusammenfassen der min und max Werte der zugöhrigen Serien --> spart Rechenzeit
 	QLineSeries* series;
 //	float xMin;
 //	float xMax;

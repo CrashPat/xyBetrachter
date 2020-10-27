@@ -348,9 +348,9 @@ QPointF n2D::getYMinMax(QLineSeries *series) // ToDo: Dieser Teile paralellisier
 { // Methode mit Gedächtnis, damit nur einmal berechnet wird, hilft dann wenn viele Datensätze vorhanden sind
   //   dadurch wird dann nach dem ersten mal berechnen schneller zweischen den Skalierungen gewechselt.
 	bool existSerie = false;
-	SerieMitXYminMax paar_serMitXY;
+	SeriesMitxyMinMax paar_serMitXY;
 //	QPair<QPointF, QLineSeries*> paar;
-	static QVector<SerieMitXYminMax> vecSerMitXY;
+	static QVector<SeriesMitxyMinMax> vecSerMitXY;
 //	static QVector<QPair<QPointF, QLineSeries*>> yMinMaxMitSerie;
 
 	// Kontrolle ob Serie schon vorhanden ist:
@@ -390,6 +390,9 @@ QPointF n2D::getYMinMax(QLineSeries *series) // ToDo: Dieser Teile paralellisier
 	else
 		qDebug() << "getYMinMax() Serie mit yMinMax war bereits vorhanden";
 
+//	foreach (var, container) {
+
+//	}
 	return QPointF(paar_serMitXY.yMin, paar_serMitXY.yMax); // min-y, max-y
 //	return QPointF(paar.first.rx(), paar.first.ry()); // min-y, max-y
 }

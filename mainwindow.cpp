@@ -185,8 +185,16 @@ bool MainWindow::getDataOneFileBin(QString DateiMitPfad)
 	{
 		data.append(QPointF(i, werte[i]));
 	}
-
 	series->append(data);
+
+	// y MinMax abspeichern
+	std::sort(werte.begin(), werte.end());
+	SeriesMitxyMinMax xym;
+	xym.yMin = werte.front();
+	xym.yMax = werte.back();
+	xym.series = series;
+	nXYminMax.append(xym);
+
 	return true;
 }
 
@@ -266,6 +274,14 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 			data.append(QPointF(i, werte[i]));
 		}
 		series->append(data);
+
+		// y MinMax abspeichern
+		std::sort(werte.begin(), werte.end());
+		SeriesMitxyMinMax xym;
+		xym.yMin = werte.front();
+		xym.yMax = werte.back();
+		xym.series = series;
+		nXYminMax.append(xym);
 	}
 	return true;
 }
