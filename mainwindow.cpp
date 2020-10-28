@@ -212,18 +212,22 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 	/// Dateiinhalt (filecontent) in DataOneFile
 	/// Header
 	QByteArray line = file.readLine();
+	line.replace(",", "."); // Kommazahlen in Punkzahlen umwandeln, damit die Zahlenwerte richtig eingelesenwerden
+
 	QList<QByteArray> werteZeile = line.split(';'); // = Seperator Zeile
 	if (werteZeile.size()==1)
 		  werteZeile = line.split('\t'); // = Seperator Zeile = Tablullator
 //	if (werteZeile.length()==1)
 //		werteZeile = line.split(' '); // = Seperator = Leerzeichen --> VORSICHT: Tabellenüberschriften fürfen keine Leerzeichen in sich haben.
 
+	bool hatUeberschrift = false; // Null länge
 	QStringList spaltenueberschriften;
 	if (!contains_number(werteZeile.first().toStdString())) // Wenn die allerste Zelle in der Datei kein Zahlenwert hat dann ist es eine Überschrift
 	{ // has Header
 		foreach (QString spalteName, werteZeile) {
 			spaltenueberschriften.append(spalteName.simplified()); // simplified() --> überflüssiger Zeilenumbruch löschen
 		}
+		hatUeberschrift = true;
 	}
 	qDebug() << " Spaltenüberschriften:" << spaltenueberschriften;
 
@@ -231,11 +235,9 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 	int nSpalten = werteZeile.size(); // Anzahl Spalten
 	QVector<QVector<float>> spalten(nSpalten); // Spalten erzeugen, [col][row]
 
-	bool keineUeberschrift = !spaltenueberschriften.size(); // Null länge
-
 	while (!file.atEnd()) { // Daten abfüllen
 		// Wenn Überschriften vorhanden sind, dann neue Linie beim ersten mal nicht einlesen, sonst geht die erste Zeile verloren.
-		if (!keineUeberschrift) {
+		if (hatUeberschrift) {
 			line = file.readLine();
 
 			line.replace(",", "."); // Kommazahlen in Punkzahlen umwandeln, damit die Zahlenwerte richtig eingelesenwerden
@@ -253,12 +255,12 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 			nSpalten = werteZeile.size();
 		}
 		else {		
-			nSpalten = werteZeile.size(); // Notwendig, wenn keine Überschrift vorhanden ist
-			spalten.resize(nSpalten);
-			keineUeberschrift = false;
+//			nSpalten = werteZeile.size(); // Notwendig, wenn keine Überschrift vorhanden ist
+//			spalten.resize(nSpalten);
+			hatUeberschrift = true;
 		}
 
-		for (int i = 0; i < nSpalten; ++i) {
+		for (int i = 0; i < nSpalten; i++) {
 			spalten[i].append(werteZeile[i].toDouble());
 		}
 	}
