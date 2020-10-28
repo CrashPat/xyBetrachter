@@ -470,6 +470,7 @@ void n2D::removeHiddenSeries()
 			m_coordListYatGraf.removeLast();
 			m_coordListStricheAtYAxes.last()->setVisible(false);
 			m_coordListStricheAtYAxes.removeLast();
+			i--; //korrektur, da der nachfolge auf diesen index verschiebt
 		}
 	}
 

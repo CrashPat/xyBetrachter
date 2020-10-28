@@ -370,9 +370,9 @@ void MainWindow::hilfeDialog()
 		"- [F2]	Über Qt\n"
 		"- [F3]	Über CSV-Dateien: Aufbau von einlesbaren Dateien\n"
 		"\n"
-		"					Patrik Roth, 27.10.2020, V1.1\n"
+		"					Patrik Roth, 28.10.2020, V1.1\n"
 		"\n"
-		"ToDo: n2D::getYMinMax(QLineSeries *series) --> Dieser Teile paralellisieren!").arg(m_pfad);
+		"ToDo: [,] yAxe->setRange(0, m_YmaxAll) benötigt viel Rechenzeit bei über 100dert Achsen").arg(m_pfad);
 	qDebug() << text.toStdString().c_str(); // einfaches Kopieren des Hilfetextes
 	QMessageBox::information(n2d, "Hilfe", text);
 }
