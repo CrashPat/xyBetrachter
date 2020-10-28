@@ -219,23 +219,23 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 //		werteZeile = line.split(' '); // = Seperator = Leerzeichen --> VORSICHT: Tabellenüberschriften fürfen keine Leerzeichen in sich haben.
 
 	QStringList spaltenueberschriften;
-	bool lineReadNochmals = false;
 	if (!contains_number(werteZeile.first().toStdString())) // Wenn die allerste Zelle in der Datei kein Zahlenwert hat dann ist es eine Überschrift
 	{ // has Header
 		foreach (QString spalteName, werteZeile) {
 			spaltenueberschriften.append(spalteName.simplified()); // simplified() --> überflüssiger Zeilenumbruch löschen
 		}
-		lineReadNochmals = true;
 	}
 	qDebug() << " Spaltenüberschriften:" << spaltenueberschriften;
 
 	/// Body of Data:
-	int nSpalten = werteZeile.count(); // Anzahl Spalten
+	int nSpalten = werteZeile.size(); // Anzahl Spalten
 	QVector<QVector<float>> spalten(nSpalten); // Spalten erzeugen, [col][row]
-	int nSpaltenVorher = spaltenueberschriften.size();
+
+	bool keineUeberschrift = !spaltenueberschriften.size(); // Null länge
+
 	while (!file.atEnd()) { // Daten abfüllen
 		// Wenn Überschriften vorhanden sind, dann neue Linie beim ersten mal nicht einlesen, sonst geht die erste Zeile verloren.
-		if (lineReadNochmals) {
+		if (!keineUeberschrift) {
 			line = file.readLine();
 
 			line.replace(",", "."); // Kommazahlen in Punkzahlen umwandeln, damit die Zahlenwerte richtig eingelesenwerden
@@ -244,17 +244,18 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 			if (werteZeile.size()==1)
 				werteZeile = line.split('\t'); // = Seperator Zeile = Tablullator
 
-			if (werteZeile.size() != nSpaltenVorher)
+			if (werteZeile.size() != nSpalten)
 			{
 				QMessageBox::warning(this, "Warnung", QString("Anzahl Datenspalten zur vorangegangenen Zeile stimmen nicht überein! "
 															  "Siehe Zeile %1 in '%2'. (Bitte korrigieren)").arg(spalten[0].size()+1).arg(DateiMitPfad));
 				return false;
 			}
-			nSpaltenVorher = werteZeile.size();
+			nSpalten = werteZeile.size();
 		}
 		else {		
-			nSpaltenVorher = werteZeile.size(); // Notwendig, wenn keine Überschrift vorhanden ist
-			lineReadNochmals = true;
+			nSpalten = werteZeile.size(); // Notwendig, wenn keine Überschrift vorhanden ist
+			spalten.resize(nSpalten);
+			keineUeberschrift = false;
 		}
 
 		for (int i = 0; i < nSpalten; ++i) {
