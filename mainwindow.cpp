@@ -111,6 +111,7 @@ bool MainWindow::findAndPlotAllFiles()
 	filtersBin << "*.bin";
 	filtersBin << "*.sbin";
 	filterCSV << "*.csv";
+	filterCSV << "*.txt";
 	bool foundBin = false;
 	bool foundCsv = false;
 
@@ -211,8 +212,13 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 	/// Dateiinhalt (filecontent) in DataOneFile
 	/// Header
 	QByteArray line = file.readLine();
+	QList<QByteArray> werteZeile = line.split(';'); // = Seperator Zeile
+	if (werteZeile.size()==1)
+		  werteZeile = line.split('\t'); // = Seperator Zeile = Tablullator
+//	if (werteZeile.length()==1)
+//		werteZeile = line.split(' '); // = Seperator = Leerzeichen --> VORSICHT: Tabellenüberschriften fürfen keine Leerzeichen in sich haben.
+
 	QStringList spaltenueberschriften;
-	QList<QByteArray> werteZeile = line.split(';'); // = Seperator
 	bool lineReadNochmals = false;
 	if (!contains_number(werteZeile.first().toStdString())) // Wenn die allerste Zelle in der Datei kein Zahlenwert hat dann ist es eine Überschrift
 	{ // has Header
@@ -224,23 +230,34 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 	qDebug() << " Spaltenüberschriften:" << spaltenueberschriften;
 
 	/// Body of Data:
-	int n = werteZeile.count(); // Anzahl Spalten
-	QVector<QVector<float>> spalten(n); // Spalten erzeugen, [col][row]
+	int nSpalten = werteZeile.count(); // Anzahl Spalten
+	QVector<QVector<float>> spalten(nSpalten); // Spalten erzeugen, [col][row]
+	int nSpaltenVorher = spaltenueberschriften.size();
 	while (!file.atEnd()) { // Daten abfüllen
+		// Wenn Überschriften vorhanden sind, dann neue Linie beim ersten mal nicht einlesen, sonst geht die erste Zeile verloren.
 		if (lineReadNochmals) {
 			line = file.readLine();
-			werteZeile = line.split(';'); // Wenn Überschriften vorhanden sind, dann neue Linie beim ersten mal nicht einlesen, sonst geht die erste Zeile verloren.
+
+			line.replace(",", "."); // Kommazahlen in Punkzahlen umwandeln, damit die Zahlenwerte richtig eingelesenwerden
+
+			werteZeile = line.split(';'); // = Seperator Zeile
+			if (werteZeile.size()==1)
+				werteZeile = line.split('\t'); // = Seperator Zeile = Tablullator
+
+			if (werteZeile.size() != nSpaltenVorher)
+			{
+				QMessageBox::warning(this, "Warnung", QString("Anzahl Datenspalten zur vorangegangenen Zeile stimmen nicht überein! "
+															  "Siehe Zeile %1 in '%2'. (Bitte korrigieren)").arg(spalten[0].size()+1).arg(DateiMitPfad));
+				return false;
+			}
+			nSpaltenVorher = werteZeile.size();
 		}
-		else {
+		else {		
+			nSpaltenVorher = werteZeile.size(); // Notwendig, wenn keine Überschrift vorhanden ist
 			lineReadNochmals = true;
 		}
 
-		if(werteZeile.count() < 2)
-		{
-			QMessageBox::warning(this, "Warnung", "Leerzeile in vorhanden. (Bitte entfernen))");
-			break;
-		}
-		for (int i = 0; i < n; ++i) {
+		for (int i = 0; i < nSpalten; ++i) {
 			spalten[i].append(werteZeile[i].toDouble());
 		}
 	}
@@ -249,31 +266,36 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 	qDebug() << " Spalten:" << spalten;
 	qDebug() << "Datei" << DateiMitPfad << "wurden Werte eingelesen.";
 	qDebug() << "file.size()       =" << file.size();
-	qDebug() << "spalten.size()    =" << spalten.size();
-	qDebug() << "spalten[0].size() =" << spalten[0].size();
+	qDebug() << "spalten.size()    =" << spalten.size() << "= Spalten";
+	qDebug() << "spalten[0].size() =" << spalten[0].size() << "= Zeilen";
 	qDebug() << "sizeof(float)     =" << sizeof(float);
 
 
 	// Daten bei n2D eintragen:
-	uint nSpalten = spaltenueberschriften.size();
 	int i = 0;
 	foreach (QVector<float> werte, spalten) {
 		QLineSeries *series = new QLineSeries();
 		n2DSeries.append(series);
 		QFileInfo fileInfo(file.fileName()); // um den Pfad zu entfernen
+
+		// Überschriften:
 		QString seriesName;
+		uint nSpalten = spaltenueberschriften.size();
 		if (nSpalten)
 			seriesName += spaltenueberschriften.at(i++) + ": ";
 		seriesName += fileInfo.fileName();
 		series->setName(seriesName);
+
+		// Daten:
 		QList<QPointF> data;
 		for (int i = 0; i < werte.size(); i++)
 		{
-			data.append(QPointF(i, werte[i]));
+			data.append(QPointF(i, werte[i])); // (x,y)
 		}
 		series->append(data);
+		qDebug() << "data" << data;
 
-		// y MinMax abspeichern
+		// y MinMax abspeichern:
 		std::sort(werte.begin(), werte.end());
 		yMinMax xym;
 		xym.yMin = werte.front();
@@ -392,9 +414,9 @@ void MainWindow::ueberCSVDialog()
 		"	12;2.40E+03;7;85\n"
 		"\n"
 		"Zu beachten ist:\n"
-		"- ';' separiert die Werte\n"
+		"- ';' oder '\t' (=Tabulator) separiert die Werte\n"
 		"- '.' Werte nur mit Punkt nicht mit Komma\n"
-		"- Spaltenüberschriften sind optional. Dies wird automatisch erkannt in dem in der ersten Spaltenüberschrift keine Zahl vorhanden ist. --> Berechnung von yMinMax schon beim Dateien einlesen machen!");
+		"- Spaltenüberschriften sind optional. Dies wird automatisch erkannt in dem in der ersten Spaltenüberschrift keine Zahl vorhanden ist.");
 	qDebug() << text.toStdString().c_str(); // einfaches Kopieren des Hilfetextes
 	QMessageBox::information(n2d, "Hilfe", text);
 }
