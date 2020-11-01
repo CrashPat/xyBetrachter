@@ -65,7 +65,8 @@ n2D::n2D(QList<QLineSeries *> listLineSeries, QList<yMinMax> nYminmax)
 		series->setName(QString("%1) %2").arg(n).arg(ls->name()));
 		scatSer->setName(QString("%1)").arg(n));
 		addSeries(series, scatSer); // --> m_series, m_scatSer
-		m_nSerieYMinMax.append(SerieXMinMax{series, nYminmax.at(n-1)});
+//		m_nSerieYMinMax.append(SerieXMinMax{series, nYminmax.at(n-1)});
+		m_nSerieYMinMax.append(SerieXMinMax{series, getSerieYMinMax(vpf)});
 		m_coordListYatUnten.append(new QGraphicsTextItem(m_chart));
 		m_coordListYatGraf.append(new QGraphicsTextItem(m_chart));
 		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(0, 12, 10, 1, m_chart)); //Position und Strichbreite wird hier festgelegt
@@ -300,6 +301,20 @@ void n2D::setKreuzMitXYWerten(QPoint position, QString richtung)
 	m_xHilfsLinie->setVisible(true);
 	m_yHilfsLinie->setRect(30, yPosMaus, breite - 17, 0);
 	m_yHilfsLinie->setVisible(true);
+}
+
+yMinMax n2D::getSerieYMinMax(QList<QPointF> &vpf)
+{
+	// y MinMax abspeichern:
+	QVector<float> werte;
+	foreach (QPointF pWert, vpf) {
+		werte.append(pWert.ry());
+	}
+	std::sort(werte.begin(), werte.end());
+	yMinMax ymm;
+	ymm.yMin = werte.front();
+	ymm.yMax = werte.back();
+	return ymm;
 }
 
 void n2D::addSeries(QLineSeries *series, QScatterSeries *scatSer)

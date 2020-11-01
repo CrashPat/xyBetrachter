@@ -133,7 +133,7 @@ private:
 	yMinMax getYMinMax(QLineSeries *series); // rx = min, ry = max
 	yMinMax getYMinMaxFromAllSeries(); // rx = minAllerY-Werte, ry = maxAllerY-Werte
 	void setKreuzMitXYWerten(QPoint position, QString richtung = "keine");
-//	yMinMax getSerie
+	yMinMax getSerieYMinMax(QList<QPointF> &vpf);
 
 	static int countInstances;
 	void toggleBit(bool &bit) { bit = !bit; }
