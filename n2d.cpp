@@ -22,7 +22,7 @@ QT_CHARTS_USE_NAMESPACE
 
 int n2D::countInstances = 0;
 
-n2D::n2D(QList<QLineSeries *> listLineSeries, QList<yMinMax> nXminmax)
+n2D::n2D(QList<QLineSeries *> listLineSeries, QList<yMinMax> nYminmax)
 {
 	qDebug() << "n2D(): Anzahl Instanzen" << ++countInstances;
 
@@ -65,7 +65,7 @@ n2D::n2D(QList<QLineSeries *> listLineSeries, QList<yMinMax> nXminmax)
 		series->setName(QString("%1) %2").arg(n).arg(ls->name()));
 		scatSer->setName(QString("%1)").arg(n));
 		addSeries(series, scatSer); // --> m_series, m_scatSer
-		m_nSerieXMinMax.append(SerieXMinMax{series, nXminmax.at(n-1)});
+		m_nSerieYMinMax.append(SerieXMinMax{series, nYminmax.at(n-1)});
 		m_coordListYatUnten.append(new QGraphicsTextItem(m_chart));
 		m_coordListYatGraf.append(new QGraphicsTextItem(m_chart));
 		m_coordListStricheAtYAxes.append(new QGraphicsRectItem(0, 12, 10, 1, m_chart)); //Position und Strichbreite wird hier festgelegt
@@ -348,15 +348,15 @@ void n2D::addAxisYlinear(QLineSeries *series, QScatterSeries *scatSer)
 
 yMinMax n2D::getYMinMax(QLineSeries *series) // ToDo: Dieser Teile paralellisieren!
 {
-	for (int i = 0; i < m_nSerieXMinMax.count(); ++i)
+	for (int i = 0; i < m_nSerieYMinMax.count(); ++i)
 	{
-		if (series == m_nSerieXMinMax.at(i).series)
-			return yMinMax{m_nSerieXMinMax.at(i).xminmax.yMin,
-						   m_nSerieXMinMax.at(i).xminmax.yMax};
+		if (series == m_nSerieYMinMax.at(i).series)
+			return yMinMax{m_nSerieYMinMax.at(i).xminmax.yMin,
+						   m_nSerieYMinMax.at(i).xminmax.yMax};
 	}
 	QMessageBox::critical(this, "Warnung", tr("Serie ist bei getYMinMax() nicht vorhanden."));
-	return yMinMax{m_nSerieXMinMax.at(0).xminmax.yMin,
-				   m_nSerieXMinMax.at(0).xminmax.yMax};
+	return yMinMax{m_nSerieYMinMax.at(0).xminmax.yMin,
+				   m_nSerieYMinMax.at(0).xminmax.yMax};
 }
 
 yMinMax n2D::getYMinMaxFromAllSeries() // rx = minAllerY-Werte, ry = maxAllerY-Werte
@@ -459,7 +459,7 @@ void n2D::removeHiddenSeries()
 		if (!m_series.at(i)->isVisible() & !m_scatSer.at(i)->isVisible())
 		{
 			delete m_series.at(i)->attachedAxes().last();
-			m_nSerieXMinMax.removeAt(i);
+			m_nSerieYMinMax.removeAt(i);
 			m_chart->removeSeries(m_series.at(i));
 			m_chart->removeSeries(m_scatSer.at(i));
 			m_series.removeOne(m_series.at(i));

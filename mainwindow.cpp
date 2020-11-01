@@ -187,7 +187,7 @@ bool MainWindow::getDataOneFileBin(QString DateiMitPfad)
 	}
 	series->append(data);
 
-	// y MinMax abspeichern
+	// y MinMax abspeichern:
 	std::sort(werte.begin(), werte.end());
 	yMinMax xym;
 	xym.yMin = werte.front();
@@ -346,6 +346,17 @@ void MainWindow::addSeriesSin()
 	}
 
 	series->append(data);
+
+	// y MinMax abspeichern:
+	QVector<float> werte;
+	foreach (QPointF pWert, data) {
+		werte.append(pWert.ry());
+	}
+	std::sort(werte.begin(), werte.end());
+	yMinMax xym;
+	xym.yMin = werte.front();
+	xym.yMax = werte.back();
+	nXminmax.append(xym);
 }
 
 void MainWindow::hilfeDialog()

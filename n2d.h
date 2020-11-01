@@ -133,11 +133,12 @@ private:
 	yMinMax getYMinMax(QLineSeries *series); // rx = min, ry = max
 	yMinMax getYMinMaxFromAllSeries(); // rx = minAllerY-Werte, ry = maxAllerY-Werte
 	void setKreuzMitXYWerten(QPoint position, QString richtung = "keine");
+//	yMinMax getSerie
 
 	static int countInstances;
 	void toggleBit(bool &bit) { bit = !bit; }
 	QChart *m_chart;
-	QList<SerieXMinMax> m_nSerieXMinMax;
+	QList<SerieXMinMax> m_nSerieYMinMax;
 	QList<QLineSeries *> m_series;
 	QList<QScatterSeries *> m_scatSer;
 	QValueAxis *m_axisX;
