@@ -145,6 +145,7 @@ private:
 	bool m_binDark = false;
 	bool m_visibleGrid = true;
 	bool m_visibleAxisY = true;
+	bool m_visibleFirtsAxeYSameSkale = false; // bei gleicher Saklierung muss nur die erste y-Achse angezeigt werden
 	bool m_visibleDots = false;
 	bool m_visibleDotsFirstUse = true;
 	bool m_visibleWerteAufKreuz = true;

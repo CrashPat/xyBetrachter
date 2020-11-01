@@ -590,6 +590,12 @@ void n2D::setMinMaxXAchse()
 
 void n2D::setMinMaxYAchsen()
 {
+	m_visibleFirtsAxeYSameSkale = false;
+	if (m_visibleAxisY) { // damit die y-Achsen wieder sichtbar werden
+		setYachsenVisebility();
+		setYachsenVisebility(); // zwei mal wegen toggeln...
+	}
+
 	foreach (QLineSeries *series, m_series)
 	{
 		QAbstractAxis *yAxe = series->attachedAxes().last(); // last ist immer die yAchse --> siehe Konstruktor
@@ -602,6 +608,7 @@ void n2D::setMinMaxYAchsen()
 
 void n2D::setMin0undMaxAlleYAchse()
 {
+	m_visibleFirtsAxeYSameSkale = true;
 	float m_YmaxAll = getYMinMaxFromAllSeries().yMax;
 
 	int n = 0;
@@ -656,6 +663,10 @@ void n2D::setYachsenVisebility()
 	{
 		if (!m_visibleAxisY)
 			m_series.at(i)->attachedAxes().last()->setVisible(false);
+		else if (m_visibleFirtsAxeYSameSkale) {// erste y-Achse sichtbar machen
+			if (i == 0)
+				m_series.at(0)->attachedAxes().last()->setVisible(true);
+		}
 		else if (m_series.at(i)->isVisible() | m_scatSer.at(i)->isVisible())
 			m_series.at(i)->attachedAxes().last()->setVisible(true);
 	}
@@ -663,7 +674,7 @@ void n2D::setYachsenVisebility()
 
 void n2D::setYachsenVisebilityForMarker()
 {
-	if (m_visibleAxisY)
+	if (m_visibleAxisY & !m_visibleFirtsAxeYSameSkale)
 	{
 		for (int i = 0; i < m_series.length(); ++i)
 		{
