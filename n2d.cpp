@@ -22,7 +22,7 @@ QT_CHARTS_USE_NAMESPACE
 
 int n2D::countInstances = 0;
 
-n2D::n2D(QList<QLineSeries *> listLineSeries, QList<yMinMax> nYminmax)
+n2D::n2D(QList<QLineSeries *> listLineSeries)
 {
 	qDebug() << "n2D(): Anzahl Instanzen" << ++countInstances;
 
@@ -65,7 +65,6 @@ n2D::n2D(QList<QLineSeries *> listLineSeries, QList<yMinMax> nYminmax)
 		series->setName(QString("%1) %2").arg(n).arg(ls->name()));
 		scatSer->setName(QString("%1)").arg(n));
 		addSeries(series, scatSer); // --> m_series, m_scatSer
-//		m_nSerieYMinMax.append(SerieXMinMax{series, nYminmax.at(n-1)});
 		m_nSerieYMinMax.append(SerieXMinMax{series, getSerieYMinMax(vpf)});
 		m_coordListYatUnten.append(new QGraphicsTextItem(m_chart));
 		m_coordListYatGraf.append(new QGraphicsTextItem(m_chart));

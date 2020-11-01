@@ -83,7 +83,7 @@ protected:
 	qreal m_FactorZoom = 1.0;
 
 public:
-	explicit n2D(QList<QLineSeries *> listLineSeries, QList<yMinMax> list_xyMinMax);
+	explicit n2D(QList<QLineSeries *> listLineSeries);
 	~n2D();
 
 public slots:

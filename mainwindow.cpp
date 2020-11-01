@@ -186,14 +186,6 @@ bool MainWindow::getDataOneFileBin(QString DateiMitPfad)
 		data.append(QPointF(i, werte[i]));
 	}
 	series->append(data);
-
-	// y MinMax abspeichern:
-	std::sort(werte.begin(), werte.end());
-	yMinMax xym;
-	xym.yMin = werte.front();
-	xym.yMax = werte.back();
-	nXminmax.append(xym);
-
 	return true;
 }
 
@@ -297,13 +289,6 @@ bool MainWindow::getDataOneFileCsv(QString DateiMitPfad)
 		}
 		series->append(data);
 		qDebug() << "data" << data;
-
-		// y MinMax abspeichern:
-		std::sort(werte.begin(), werte.end());
-		yMinMax xym;
-		xym.yMin = werte.front();
-		xym.yMax = werte.back();
-		nXminmax.append(xym);
 	}
 	return true;
 }
@@ -315,7 +300,7 @@ bool MainWindow::contains_number(const std::string &c)
 
 void MainWindow::erstelle_n2D()
 {
-	n2d = new n2D(n2DSeries, nXminmax);
+	n2d = new n2D(n2DSeries);
 
 	////	QSize screenSize = QApplication::desktop()->screen()->size();
 	//	QSize screenSize = QGuiApplication::screens().first()->availableVirtualSize(); //Desktopsize ohne Taskleiste
@@ -346,17 +331,6 @@ void MainWindow::addSeriesSin()
 	}
 
 	series->append(data);
-
-	// y MinMax abspeichern:
-	QVector<float> werte;
-	foreach (QPointF pWert, data) {
-		werte.append(pWert.ry());
-	}
-	std::sort(werte.begin(), werte.end());
-	yMinMax xym;
-	xym.yMin = werte.front();
-	xym.yMax = werte.back();
-	nXminmax.append(xym);
 }
 
 void MainWindow::hilfeDialog()
