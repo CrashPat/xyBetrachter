@@ -153,6 +153,7 @@ private:
 	bool m_visibleLegenden = true;
 	bool m_exponentielleZahlenDarstellung = false;
 	bool m_isRubberbandHorizontal = true;
+	bool m_blockOnceZoomReset = false; // fix, weil sonst bei setMinMaxYAchsen() oder setMin0undMaxAlleYAchse() das wheelEvent() die Achsensaklierung falsch macht
 	int m_ortLegende = 1;
 	QString m_windowTitle;
 //	QList<QColor> m_farbPalette = {Qt::gray, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::magenta, Qt::cyan};

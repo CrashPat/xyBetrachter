@@ -605,6 +605,7 @@ void n2D::setMinMaxXAchse()
 void n2D::setMinMaxYAchsen()
 {
 	m_visibleFirtsAxeYSameSkale = false;
+	m_blockOnceZoomReset = true;
 	if (m_visibleAxisY) { // damit die y-Achsen wieder sichtbar werden
 		setYachsenVisebility();
 		setYachsenVisebility(); // zwei mal wegen toggeln...
@@ -623,6 +624,7 @@ void n2D::setMinMaxYAchsen()
 void n2D::setMin0undMaxAlleYAchse()
 {
 	m_visibleFirtsAxeYSameSkale = true;
+	m_blockOnceZoomReset = true;
 	float m_YmaxAll = getYMinMaxFromAllSeries().yMax;
 
 	int n = 0;
@@ -829,9 +831,16 @@ void n2D::moveRightKreuz()
 
 void n2D::wheelEvent(QWheelEvent *event)
 { // https://stackoverflow.com/questions/48623595/scale-x-axis-of-qchartview-using-mouse-wheel
-	chart()->zoomReset();
+	if (m_blockOnceZoomReset)
+	{
+//		chart()->zoomReset();
+		m_FactorZoom = 1.0;
+		m_blockOnceZoomReset = false;
+	}
 
-	m_FactorZoom *= event->angleDelta().y() > 0 ? 0.5 : 2;
+	m_FactorZoom = event->angleDelta().y() > 0 ? 0.5 : 2;
+	qDebug() << "event->angleDelta().y() =" << event->angleDelta().y();
+	qDebug() << "event->angleDelta().x() =" << event->angleDelta().x();
 
 	QRectF rect = chart()->plotArea();
 	QPointF c = chart()->plotArea().center();
