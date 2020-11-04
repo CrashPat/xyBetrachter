@@ -80,7 +80,6 @@ protected:
 	//	bool eventFilter(QObject *obj, QEvent *event) override;
 	void keyPressEvent(QKeyEvent *event) override; // damit über die Nummerntasten die Marken gesteuert werden
 	void wheelEvent(QWheelEvent *event) override;  // für y-AchsenZoome
-	qreal m_FactorZoom = 1.0;
 
 public:
 	explicit n2D(QList<QLineSeries *> listLineSeries);
@@ -153,7 +152,6 @@ private:
 	bool m_visibleLegenden = true;
 	bool m_exponentielleZahlenDarstellung = false;
 	bool m_isRubberbandHorizontal = true;
-	bool m_blockOnceZoomReset = false; // fix, weil sonst bei setMinMaxYAchsen() oder setMin0undMaxAlleYAchse() das wheelEvent() die Achsensaklierung falsch macht
 	int m_ortLegende = 1;
 	QString m_windowTitle;
 //	QList<QColor> m_farbPalette = {Qt::gray, Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::magenta, Qt::cyan};

@@ -605,7 +605,6 @@ void n2D::setMinMaxXAchse()
 void n2D::setMinMaxYAchsen()
 {
 	m_visibleFirtsAxeYSameSkale = false;
-	m_blockOnceZoomReset = true;
 	if (m_visibleAxisY) { // damit die y-Achsen wieder sichtbar werden
 		setYachsenVisebility();
 		setYachsenVisebility(); // zwei mal wegen toggeln...
@@ -624,7 +623,6 @@ void n2D::setMinMaxYAchsen()
 void n2D::setMin0undMaxAlleYAchse()
 {
 	m_visibleFirtsAxeYSameSkale = true;
-	m_blockOnceZoomReset = true;
 	float m_YmaxAll = getYMinMaxFromAllSeries().yMax;
 
 	int n = 0;
@@ -831,21 +829,33 @@ void n2D::moveRightKreuz()
 
 void n2D::wheelEvent(QWheelEvent *event)
 { // https://stackoverflow.com/questions/48623595/scale-x-axis-of-qchartview-using-mouse-wheel
-	if (m_blockOnceZoomReset)
-	{
-//		chart()->zoomReset();
-		m_FactorZoom = 1.0;
-		m_blockOnceZoomReset = false;
-	}
+//	bool m_blockOnceZoomReset = false; // fix, weil sonst bei setMinMaxYAchsen() oder setMin0undMaxAlleYAchse() das wheelEvent() die Achsensaklierung falsch macht
 
-	m_FactorZoom = event->angleDelta().y() > 0 ? 0.5 : 2;
-	qDebug() << "event->angleDelta().y() =" << event->angleDelta().y();
-	qDebug() << "event->angleDelta().x() =" << event->angleDelta().x();
+	double m_FactorZoomX;
+	double m_FactorZoomY;
+	int winkelX = event->angleDelta().x();
+	int winkelY = event->angleDelta().y();
+
+	if (winkelX == 0)
+		m_FactorZoomX = 0.0;
+	else if (winkelX < 0)
+		m_FactorZoomX = 1.1;
+	else
+		m_FactorZoomX = 1.0/1.1;
+
+	if (winkelY == 0)
+		m_FactorZoomY = 0.0;
+	else if (winkelY < 0)
+		m_FactorZoomY = 1.2;
+	else
+		m_FactorZoomY = 1.0/1.2;
 
 	QRectF rect = chart()->plotArea();
 	QPointF c = chart()->plotArea().center();
-	//rect.setWidth(m_FactorZoom*rect.width()); // x-Achse
-	rect.setHeight(m_FactorZoom * rect.width()); // y-Achse
+	if (m_FactorZoomX != 0)
+		rect.setWidth (m_FactorZoomX * rect.width()); // x-Achse
+	else
+		rect.setHeight(m_FactorZoomY * rect.height()); // y-Achse
 	rect.moveCenter(c);
 	chart()->zoomIn(rect);
 
